@@ -905,7 +905,7 @@
         <div class="indicators-section">
             <div class="indicators-header">
                 <h2>📊 Indicadores Econômicos</h2>
-                <button class="btn-update-indicators" onclick="updateIndicators()">
+                <button class="btn-update-indicators" id="btnUpdateIndicators" onclick="updateIndicators()" style="display: none;">
                     🔄 Atualizar Agora
                 </button>
             </div>
@@ -981,6 +981,7 @@
                 
                 if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
                     document.getElementById('btnAdmin').style.display = 'block';
+                    document.getElementById('btnUpdateIndicators').style.display = 'block';
                 }
             } else {
                 // Redirecionar para login

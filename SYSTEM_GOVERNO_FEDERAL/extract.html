@@ -326,6 +326,9 @@
             border-radius: 10px;
             padding: 1.5rem;
             transition: var(--transition);
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-word;
         }
 
         .transaction-card:hover {
@@ -338,17 +341,24 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
+            gap: 1rem;
         }
 
         .transaction-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary-color);
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
         }
 
         .transaction-amount {
             font-size: 1.3rem;
             font-weight: 800;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .transaction-amount.expense {
@@ -379,6 +389,9 @@
             font-size: 0.9rem;
             color: #666;
             line-height: 1.6;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         /* Empty State */
