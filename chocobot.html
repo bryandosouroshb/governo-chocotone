@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocoBot - Assistente Jurídico IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Botão Flutuante */
+        .chocobot-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .chocobot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(102, 126, 234, 0.7); }
+        }
+
+        .chocobot-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Container do Chat */
+        .chocobot-container {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            width: 420px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 9998;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chocobot-container.active {
+            display: flex;
+        }
+
+        /* Header */
+        .chocobot-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chocobot-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .chocobot-title h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .chocobot-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 0.2rem;
+        }
+
+        .chocobot-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .chocobot-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* Messages Area */
+        .chocobot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f5f7fa;
+        }
+
+        .chocobot-message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chocobot-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.bot {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message-avatar.user {
+            background: #e0e0e0;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .message-content.bot {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        .message-content.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 0.3rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.3rem;
+            padding: 0.8rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Input Area */
+        .chocobot-input {
+            padding: 1rem;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .chocobot-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .chocobot-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-button {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .send-button:hover {
+            transform: scale(1.1);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            padding: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .quick-action {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .welcome-screen h4 {
+            color: #333;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+
+        .welcome-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .chocobot-container {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                right: 10px;
+                bottom: 90px;
+            }
+
+            .chocobot-button {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botão Flutuante -->
+    <button class="chocobot-button" id="chocobotButton" onclick="toggleChocobot()">
+        🤖
+        <span class="chocobot-badge" id="chocobotBadge" style="display: none;">IA</span>
+    </button>
+
+    <!-- Container do Chat -->
+    <div class="chocobot-container" id="chocobotContainer">
+        <div class="chocobot-header">
+            <div class="chocobot-title">
+                <span>🤖</span>
+                <div>
+                    <h3>ChocoBot</h3>
+                    <div class="chocobot-subtitle">Assistente Jurídico com IA</div>
+                </div>
+            </div>
+            <button class="chocobot-close" onclick="toggleChocobot()">×</button>
+        </div>
+
+        <div class="chocobot-messages" id="chocobotMessages">
+            <div class="welcome-screen">
+                <div class="welcome-icon">⚖️</div>
+                <h4>Olá! Sou o ChocoBot</h4>
+                <p>Assistente jurídico especializado em:</p>
+                <p style="margin-top: 1rem;">
+                    📜 Constituição Federal (CF-RPG)<br>
+                    ⚖️ Código Penal<br>
+                    📋 Código Civil<br>
+                    🏛️ Leis e Decretos
+                </p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #999;">
+                    Pergunte o que quiser sobre legislação!
+                </p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-action" onclick="sendQuickMessage('Qual o processo para aprovar uma lei?')">
+                📜 Processo legislativo
+            </button>
+            <button class="quick-action" onclick="sendQuickMessage('Quais são os crimes de responsabilidade?')">
+                ⚖️ Crimes de responsabilidade
+            </button>
+            <button class="quick-action" onclick="sendQuickMessage('Como funciona o orçamento federal?')">
+                💰 Orçamento federal
+            </button>
+        </div>
+
+        <div class="chocobot-input">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="chocobotInput" 
+                    placeholder="Pergunte sobre leis, constituição..." 
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { LEGAL_CONTEXT } from './chocobot-context.js';
+        
+        let conversationHistory = [];
+        let isTyping = false;
+
+        // OpenRouter API Configuration
+        const OPENROUTER_CONFIG = {
+            apiKey: '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',
+            apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
+            model: 'google/gemini-2.0-flash-exp:free',  // Gemini 2.0 Flash - 1M tokens de contexto
+            siteUrl: 'https://bryandosouroshb.github.io/governo-chocotone',
+            siteName: 'Governo Chocotone - ChocoBot Jurídico'
+        };
+
+        // Contexto legal completo agora importado de chocobot-context.js
+        // (Contém CF-RPG completa + Código Penal completo + Código Civil completo)
+        console.log('✅ Contexto legal carregado:', LEGAL_CONTEXT.length, 'caracteres');
+
+        window.toggleChocobot = function() {
+            const container = document.getElementById('chocobotContainer');
+            const button = document.getElementById('chocobotButton');
+            
+            container.classList.toggle('active');
+            
+            if (container.classList.contains('active')) {
+                document.getElementById('chocobotInput').focus();
+            }
+        };
+
+        window.sendQuickMessage = function(message) {
+            document.getElementById('chocobotInput').value = message;
+            sendMessage();
+        };
+
+        window.handleKeyPress = function(event) {
+            if (event.key === 'Enter' && !isTyping) {
+                sendMessage();
+            }
+        };
+
+        window.sendMessage = async function() {
+            const input = document.getElementById('chocobotInput');
+            const message = input.value.trim();
+            
+            if (!message || isTyping) return;
+            
+            // Adicionar mensagem do usuário
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Mostrar indicador de digitação
+            isTyping = true;
+            showTypingIndicator();
+            
+            try {
+                // Chamar API do OpenRouter
+                const response = await callOpenRouter(message);
+                
+                // Remover indicador e mostrar resposta
+                hideTypingIndicator();
+                addMessage(response, 'bot');
+                
+            } catch (error) {
+                console.error('Erro ao chamar IA:', error);
+                hideTypingIndicator();
+                addMessage('❌ Desculpe, estou com dificuldades técnicas. Tente novamente em alguns segundos.', 'bot');
+            }
+            
+            isTyping = false;
+        };
+
+        async function callOpenRouter(userMessage) {
+            conversationHistory.push({
+                role: 'user',
+                content: userMessage
+            });
+
+            const response = await fetch(OPENROUTER_CONFIG.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENROUTER_CONFIG.apiKey}`,
+                    'HTTP-Referer': OPENROUTER_CONFIG.siteUrl,
+                    'X-Title': OPENROUTER_CONFIG.siteName
+                },
+                body: JSON.stringify({
+                    model: OPENROUTER_CONFIG.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: LEGAL_CONTEXT
+                        },
+                        ...conversationHistory
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1500
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const botMessage = data.choices[0].message.content;
+
+            conversationHistory.push({
+                role: 'assistant',
+                content: botMessage
+            });
+
+            return botMessage;
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chocobotMessages');
+            
+            // Remover welcome screen se existir
+            const welcomeScreen = messagesDiv.querySelector('.welcome-screen');
+            if (welcomeScreen) {
+                welcomeScreen.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chocobot-message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `message-avatar ${sender}`;
+            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+            
+            const content = document.createElement('div');
+            content.className = `message-content ${sender}`;
+            content.textContent = text;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chocobotMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chocobot-message bot';
+            typingDiv.id = 'typingIndicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar bot">🤖</div>
+                <div class="message-content bot">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // Expor funções globalmente
+        window.toggleChocobot = toggleChocobot;
+        window.sendMessage = sendMessage;
+        window.sendQuickMessage = sendQuickMessage;
+        window.handleKeyPress = handleKeyPress;
+    </script>
+</body>
+</html>
