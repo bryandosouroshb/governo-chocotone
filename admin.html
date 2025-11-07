@@ -1172,6 +1172,33 @@ ${proposal.justification}
             return 'Data inválida';
         }
 
+        // Funções de controle do sistema (placeholders)
+        function adjustBudget() {
+            alert('⚙️ Função de ajuste de orçamento ainda não implementada.');
+        }
+
+        function forceUpdateIndicators() {
+            alert('🔄 Forçando atualização de indicadores...');
+            window.location.href = 'dashboard.html';
+        }
+
+        function resetSystem() {
+            if (confirm('⚠️ Tem certeza que deseja resetar o sistema? Esta ação não pode ser desfeita!')) {
+                alert('❌ Função de reset não implementada por segurança.');
+            }
+        }
+
+        function exportData() {
+            alert('📥 Exportação de dados em desenvolvimento.');
+        }
+
+        function viewProposal(proposalId) {
+            const proposal = proposals.find(p => p.id === proposalId);
+            if (proposal) {
+                alert(`📄 Visualização detalhada:\n\n${JSON.stringify(proposal, null, 2)}`);
+            }
+        }
+
         // Tornar funções globais para onclick
         window.openApproveModal = openApproveModal;
         window.openRejectModal = openRejectModal;
@@ -1182,6 +1209,10 @@ ${proposal.justification}
         window.confirmReject = confirmReject;
         window.confirmAdjust = confirmAdjust;
         window.switchTab = switchTab;
+        window.adjustBudget = adjustBudget;
+        window.forceUpdateIndicators = forceUpdateIndicators;
+        window.resetSystem = resetSystem;
+        window.exportData = exportData;
     </script>
 </body>
 </html>

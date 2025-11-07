@@ -1057,6 +1057,11 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
+        // Expor funções para uso global
+        window.openConstitutionalAnalysis = openConstitutionalAnalysis;
+        window.resetForm = resetForm;
+        window.closeModal = closeModal;
+
         function formatCurrency(value) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
