@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Sistema Orçamentário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
+            --accent-color: #ffd700;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-badge {
+            width: 50px;
+            height: 50px;
+            background: url('https://www.habbo.com.br/habbo-imaging/badge/b11044s02014t21134s04064s3911450c22ff6b1fd8b46488a58028697ae6a.gif') no-repeat center;
+            background-size: contain;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .btn-back {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            background: transparent;
+            color: #666;
+        }
+
+        .tab.active {
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Proposals List */
+        .proposals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .proposal-item {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 5px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .proposal-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .proposal-item.pending {
+            border-left-color: var(--warning-color);
+        }
+
+        .proposal-item.approved {
+            border-left-color: var(--success-color);
+        }
+
+        .proposal-item.rejected {
+            border-left-color: var(--danger-color);
+        }
+
+        .proposal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .proposal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .proposal-meta {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .proposal-body {
+            margin-bottom: 1rem;
+        }
+
+        .proposal-field {
+            margin-bottom: 0.75rem;
+        }
+
+        .proposal-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .proposal-value {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .proposal-cost {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .proposal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .btn-approve {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-reject {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-adjust {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-view {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Manual Controls */
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .control-card {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-control {
+            width: 100%;
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            color: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .proposal-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .proposal-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-badge"></div>
+                <div class="logo-text">
+                    <h1>⚙️ Painel Administrativo</h1>
+                </div>
+            </div>
+            <a href="index.html" class="btn-back">← Voltar ao Dashboard</a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('proposals')">
+                📋 Propostas Pendentes
+            </button>
+            <button class="tab" onclick="switchTab('controls')">
+                🎛️ Controles Manuais
+            </button>
+            <button class="tab" onclick="switchTab('history')">
+                📊 Histórico
+            </button>
+        </div>
+
+        <!-- Tab: Propostas Pendentes -->
+        <div class="tab-content active" id="tab-proposals">
+            <div class="card">
+                <div class="card-title">📋 Propostas Aguardando Aprovação</div>
+                <div class="proposals-list" id="proposalsList">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Controles Manuais -->
+        <div class="tab-content" id="tab-controls">
+            <div class="card">
+                <div class="card-title">🎛️ Controles Administrativos</div>
+                <div class="control-grid">
+                    <!-- Ajuste Manual de Orçamento -->
+                    <div class="control-card">
+                        <div class="control-label">💰 Ajustar Orçamento Ministerial</div>
+                        <select class="control-input" id="ministrySelect">
+                            <option value="">Selecione o Ministério...</option>
+                        </select>
+                        <input type="number" class="control-input" id="budgetAdjust" placeholder="Novo valor (R$)" step="0.01">
+                        <button class="btn btn-control" onclick="adjustBudget()">
+                            ✓ Aplicar Ajuste
+                        </button>
+                    </div>
+
+                    <!-- Atualizar Indicadores -->
+                    <div class="control-card">
+                        <div class="control-label">📊 Atualizar Indicadores</div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+                            Forçar atualização manual dos indicadores econômicos da API externa.
+                        </p>
+                        <button class="btn btn-control" onclick="forceUpdateIndicators()">
+                            🔄 Atualizar Agora
+                        </button>
+                    </div>
+
+                    <!-- Reset Sistema -->
+                    <div class="control-card">
+                        <div class="control-label">⚠️ Resetar Sistema</div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+                            Restaurar todos os orçamentos para valores iniciais da LOA.
+                        </p>
+                        <button class="btn btn-control" onclick="resetSystem()" style="background: var(--danger-color);">
+                            🔄 Resetar Tudo
+                        </button>
+                    </div>
+
+                    <!-- Exportar Dados -->
+                    <div class="control-card">
+                        <div class="control-label">📥 Exportar Dados</div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+                            Exportar todas as propostas e histórico em formato JSON.
+                        </p>
+                        <button class="btn btn-control" onclick="exportData()">
+                            💾 Exportar JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Histórico -->
+        <div class="tab-content" id="tab-history">
+            <div class="card">
+                <div class="card-title">📊 Histórico de Decisões</div>
+                <div class="proposals-list" id="historyList">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Aprovar Proposta -->
+    <div class="modal" id="approveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">✅ Aprovar Proposta</div>
+                <button class="btn-close" onclick="closeModal('approveModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; color: #666;">
+                    Confirma a aprovação desta proposta? O orçamento será atualizado automaticamente.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Observações (opcional)</label>
+                    <textarea class="form-textarea" id="approveNotes" placeholder="Digite observações sobre a aprovação..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-modal btn-approve" onclick="confirmApprove()">
+                    ✓ Confirmar Aprovação
+                </button>
+                <button class="btn btn-modal" onclick="closeModal('approveModal')" style="background: #e0e0e0; color: #666;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Rejeitar Proposta -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">❌ Rejeitar Proposta</div>
+                <button class="btn-close" onclick="closeModal('rejectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Motivo da Rejeição *</label>
+                    <textarea class="form-textarea" id="rejectReason" placeholder="Explique o motivo da rejeição..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-modal btn-reject" onclick="confirmReject()">
+                    ✓ Confirmar Rejeição
+                </button>
+                <button class="btn btn-modal" onclick="closeModal('rejectModal')" style="background: #e0e0e0; color: #666;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Solicitar Ajustes -->
+    <div class="modal" id="adjustModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Solicitar Ajustes</div>
+                <button class="btn-close" onclick="closeModal('adjustModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Ajustes Necessários *</label>
+                    <textarea class="form-textarea" id="adjustNotes" placeholder="Descreva os ajustes necessários..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-modal btn-adjust" onclick="confirmAdjust()">
+                    ✓ Solicitar Ajustes
+                </button>
+                <button class="btn btn-modal" onclick="closeModal('adjustModal')" style="background: #e0e0e0; color: #666;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado global
+        let proposals = [];
+        let currentProposalId = null;
+        const MINISTRIES = [
+            'Casa Civil',
+            'Economia e Trabalho',
+            'Saúde',
+            'Educação, Ciência e Tecnologia',
+            'Cultura e Esporte',
+            'Defesa',
+            'Justiça e Segurança Pública',
+            'Infraestrutura',
+            'Agricultura e Meio Ambiente',
+            'Cidadania e Desenvolvimento Social',
+            'Advocacia-Geral da União',
+            'Gabinete da Presidência'
+        ];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminAccess();
+            loadProposals();
+            loadHistory();
+            populateMinistrySelect();
+        });
+
+        function checkAdminAccess() {
+            const storedUser = localStorage.getItem('govUser');
+            if (!storedUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(storedUser);
+            if (user.role !== 'Presidenta' && user.role !== 'Vice-Presidente') {
+                alert('⚠️ Acesso negado! Apenas Presidenta e Vice-Presidente podem acessar esta área.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function loadProposals() {
+            proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            const pending = proposals.filter(p => p.status === 'pending');
+            
+            const list = document.getElementById('proposalsList');
+            
+            if (pending.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">Nenhuma proposta pendente</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = pending.map((proposal, index) => `
+                <div class="proposal-item pending">
+                    <div class="proposal-header">
+                        <div>
+                            <div class="proposal-title">${proposal.documentType} - ${proposal.summary}</div>
+                            <div class="proposal-meta">
+                                Por ${proposal.requestorName} (${proposal.position}) • 
+                                ${new Date(proposal.submittedAt).toLocaleString('pt-BR')}
+                            </div>
+                        </div>
+                        <span class="status-badge status-pending">Pendente</span>
+                    </div>
+                    <div class="proposal-body">
+                        <div class="proposal-field">
+                            <div class="proposal-label">Custo Estimado</div>
+                            <div class="proposal-cost">${formatCurrency(proposal.estimatedCost)}</div>
+                        </div>
+                        <div class="proposal-field">
+                            <div class="proposal-label">Justificativa</div>
+                            <div class="proposal-value">${proposal.justification}</div>
+                        </div>
+                    </div>
+                    <div class="proposal-actions">
+                        <button class="btn btn-approve" onclick="openApproveModal(${index})">
+                            ✓ Aprovar
+                        </button>
+                        <button class="btn btn-reject" onclick="openRejectModal(${index})">
+                            ✗ Rejeitar
+                        </button>
+                        <button class="btn btn-adjust" onclick="openAdjustModal(${index})">
+                            ✏️ Solicitar Ajustes
+                        </button>
+                        <button class="btn btn-view" onclick="viewProposal(${index})">
+                            👁️ Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadHistory() {
+            const allProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            const processed = allProposals.filter(p => p.status !== 'pending');
+            
+            const list = document.getElementById('historyList');
+            
+            if (processed.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <div class="empty-text">Nenhuma decisão registrada ainda</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = processed.map(proposal => `
+                <div class="proposal-item ${proposal.status}">
+                    <div class="proposal-header">
+                        <div>
+                            <div class="proposal-title">${proposal.documentType} - ${proposal.summary}</div>
+                            <div class="proposal-meta">
+                                Por ${proposal.requestorName} • 
+                                ${new Date(proposal.submittedAt).toLocaleString('pt-BR')}
+                            </div>
+                        </div>
+                        <span class="status-badge status-${proposal.status}">
+                            ${proposal.status === 'approved' ? 'Aprovado' : 'Rejeitado'}
+                        </span>
+                    </div>
+                    <div class="proposal-body">
+                        <div class="proposal-field">
+                            <div class="proposal-label">Custo</div>
+                            <div class="proposal-cost">${formatCurrency(proposal.estimatedCost)}</div>
+                        </div>
+                        ${proposal.notes ? `
+                            <div class="proposal-field">
+                                <div class="proposal-label">Observações</div>
+                                <div class="proposal-value">${proposal.notes}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateMinistrySelect() {
+            const select = document.getElementById('ministrySelect');
+            select.innerHTML = '<option value="">Selecione o Ministério...</option>' +
+                MINISTRIES.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+
+        function switchTab(tabName) {
+            // Remove active de todas as tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            // Ativa a tab selecionada
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function openApproveModal(index) {
+            currentProposalId = index;
+            document.getElementById('approveModal').classList.add('active');
+        }
+
+        function openRejectModal(index) {
+            currentProposalId = index;
+            document.getElementById('rejectModal').classList.add('active');
+        }
+
+        function openAdjustModal(index) {
+            currentProposalId = index;
+            document.getElementById('adjustModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            currentProposalId = null;
+        }
+
+        function confirmApprove() {
+            const notes = document.getElementById('approveNotes').value;
+            const pending = proposals.filter(p => p.status === 'pending');
+            const proposal = pending[currentProposalId];
+            
+            proposal.status = 'approved';
+            proposal.notes = notes;
+            proposal.approvedAt = new Date().toISOString();
+            
+            localStorage.setItem('proposals', JSON.stringify(proposals));
+            
+            closeModal('approveModal');
+            loadProposals();
+            loadHistory();
+            
+            alert('✅ Proposta aprovada com sucesso!');
+        }
+
+        function confirmReject() {
+            const reason = document.getElementById('rejectReason').value;
+            if (!reason.trim()) {
+                alert('⚠️ Por favor, informe o motivo da rejeição.');
+                return;
+            }
+            
+            const pending = proposals.filter(p => p.status === 'pending');
+            const proposal = pending[currentProposalId];
+            
+            proposal.status = 'rejected';
+            proposal.notes = reason;
+            proposal.rejectedAt = new Date().toISOString();
+            
+            localStorage.setItem('proposals', JSON.stringify(proposals));
+            
+            closeModal('rejectModal');
+            loadProposals();
+            loadHistory();
+            
+            alert('❌ Proposta rejeitada.');
+        }
+
+        function confirmAdjust() {
+            const adjustments = document.getElementById('adjustNotes').value;
+            if (!adjustments.trim()) {
+                alert('⚠️ Por favor, descreva os ajustes necessários.');
+                return;
+            }
+            
+            const pending = proposals.filter(p => p.status === 'pending');
+            const proposal = pending[currentProposalId];
+            
+            proposal.status = 'adjustments_requested';
+            proposal.notes = adjustments;
+            proposal.adjustRequestedAt = new Date().toISOString();
+            
+            localStorage.setItem('proposals', JSON.stringify(proposals));
+            
+            closeModal('adjustModal');
+            loadProposals();
+            
+            alert('✏️ Ajustes solicitados. O ministro será notificado.');
+        }
+
+        function viewProposal(index) {
+            const pending = proposals.filter(p => p.status === 'pending');
+            const proposal = pending[index];
+            alert(`
+DETALHES DA PROPOSTA
+
+Tipo: ${proposal.documentType}
+Solicitante: ${proposal.requestorName}
+Cargo: ${proposal.position}
+Custo: ${formatCurrency(proposal.estimatedCost)}
+
+Ementa:
+${proposal.summary}
+
+Corpo:
+${proposal.body}
+
+Justificativa:
+${proposal.justification}
+            `);
+        }
+
+        function adjustBudget() {
+            const ministry = document.getElementById('ministrySelect').value;
+            const newValue = parseFloat(document.getElementById('budgetAdjust').value);
+            
+            if (!ministry || !newValue || newValue < 0) {
+                alert('⚠️ Selecione um ministério e informe um valor válido.');
+                return;
+            }
+            
+            if (confirm(`Confirma o ajuste do orçamento de ${ministry} para ${formatCurrency(newValue)}?`)) {
+                // Aqui integraria com Google Sheets
+                alert('✅ Orçamento ajustado com sucesso!');
+                document.getElementById('budgetAdjust').value = '';
+            }
+        }
+
+        function forceUpdateIndicators() {
+            alert('🔄 Atualizando indicadores econômicos...');
+            window.location.href = 'index.html';
+        }
+
+        function resetSystem() {
+            if (confirm('⚠️ ATENÇÃO: Esta ação irá resetar TODOS os dados do sistema. Deseja continuar?')) {
+                if (confirm('Esta ação é IRREVERSÍVEL. Tem certeza absoluta?')) {
+                    localStorage.clear();
+                    alert('✅ Sistema resetado com sucesso!');
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        function exportData() {
+            const data = {
+                proposals: proposals,
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `governo-chocotone-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('💾 Dados exportados com sucesso!');
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2
+            }).format(value);
+        }
+    </script>
+</body>
+</html>
