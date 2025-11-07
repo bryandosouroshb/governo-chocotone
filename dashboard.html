@@ -697,6 +697,156 @@
             font-weight: 600;
         }
 
+        /* Proposals Tracking */
+        .proposals-tracking {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease 0.5s backwards;
+        }
+
+        .tracking-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tracking-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .tracking-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .proposals-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .proposal-track-card {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+
+        .proposal-track-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .proposal-track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .proposal-track-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            flex: 1;
+        }
+
+        .proposal-track-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-badge-track {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .status-aguardando {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-publicado {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-vigor {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .proposal-track-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-mark-published {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .btn-mark-published:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .document-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .document-link:hover {
+            text-decoration: underline;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -734,10 +884,37 @@
                 white-space: nowrap;
             }
 
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
             th, td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-                max-width: 150px;
+                padding: 0.5rem 0.3rem;
+                font-size: 0.75rem;
+                max-width: none;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            th:first-child, td:first-child {
+                min-width: 120px;
+            }
+
+            th:nth-child(2), td:nth-child(2),
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4) {
+                min-width: 90px;
+            }
+
+            th:nth-child(5), td:nth-child(5) {
+                min-width: 70px;
+            }
+
+            th:nth-child(6), td:nth-child(6) {
+                min-width: 80px;
             }
             
             .logo-text h1 {
@@ -769,13 +946,22 @@
             }
 
             .notifications-panel {
-                width: 90vw;
-                right: 5vw;
+                width: 100vw;
+                right: 0;
+                left: 0;
+                top: 60px;
                 max-width: none;
+                border-radius: 0;
+                max-height: calc(100vh - 60px);
             }
 
             .ministry-table {
                 overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .ministry-table table {
+                min-width: 800px;
             }
         }
         
@@ -825,6 +1011,28 @@
                 width: 20px;
                 height: 20px;
                 font-size: 0.7rem;
+            }
+
+            .notifications-panel {
+                top: 50px;
+                max-height: calc(100vh - 50px);
+            }
+
+            .notifications-list {
+                max-height: calc(100vh - 150px);
+            }
+
+            th, td {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.2rem;
+            }
+
+            .ministry-table {
+                padding: 1rem;
+            }
+
+            .ministry-table h2 {
+                font-size: 1.1rem;
             }
         }
 
@@ -1142,6 +1350,17 @@
             </table>
         </div>
 
+        <!-- Proposals Implementation Tracking -->
+        <div class="proposals-tracking" id="proposalsTracking" style="display: none;">
+            <div class="tracking-header">
+                <h2>📋 Acompanhamento de Propostas Aprovadas</h2>
+                <p class="tracking-subtitle">Status de publicação no System Oficial</p>
+            </div>
+            <div id="proposalsList" class="proposals-list">
+                <!-- Será preenchido via JavaScript -->
+            </div>
+        </div>
+
         <!-- Economic Indicators -->
         <div class="indicators-section">
             <div class="indicators-header">
@@ -1224,6 +1443,9 @@
                     document.getElementById('btnAdmin').style.display = 'block';
                     document.getElementById('btnUpdateIndicators').style.display = 'block';
                 }
+
+                // Carregar propostas aprovadas
+                loadApprovedProposals();
             } else {
                 // Redirecionar para login
                 window.location.href = 'index.html';
@@ -1561,6 +1783,125 @@
             if (seconds < 86400) return `${Math.floor(seconds / 3600)}h atrás`;
             if (seconds < 604800) return `${Math.floor(seconds / 86400)}d atrás`;
             return date.toLocaleDateString('pt-BR');
+        }
+
+        // ==== SISTEMA DE ACOMPANHAMENTO DE PROPOSTAS ====
+        function loadApprovedProposals() {
+            const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            const approved = proposals.filter(p => p.status === 'approved');
+
+            if (approved.length === 0) {
+                return; // Não mostra a seção se não houver propostas
+            }
+
+            // Mostrar seção
+            document.getElementById('proposalsTracking').style.display = 'block';
+
+            const listContainer = document.getElementById('proposalsList');
+            
+            // Filtrar propostas relevantes
+            const relevantProposals = userData.role === 'Presidenta' || userData.role === 'Vice-Presidente'
+                ? approved // Pres/Vice veem todas
+                : approved.filter(p => p.requestorName === userData.name); // Ministros veem apenas suas
+
+            if (relevantProposals.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">Nenhuma proposta aprovada ainda</p>';
+                return;
+            }
+
+            listContainer.innerHTML = relevantProposals.map((proposal, index) => {
+                const globalIndex = proposals.indexOf(proposal);
+                const publicationStatus = proposal.publicationStatus || 'aguardando';
+                const statusText = {
+                    'aguardando': '⏳ Aguardando Publicação',
+                    'publicado': '✅ Publicado no System',
+                    'vigor': '🎯 Em Vigor'
+                };
+                const statusClass = `status-${publicationStatus}`;
+
+                const canMarkPublished = (userData.role !== 'Presidenta' && userData.role !== 'Vice-Presidente' && proposal.requestorName === userData.name) || 
+                                       (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente');
+
+                return `
+                    <div class="proposal-track-card">
+                        <div class="proposal-track-header">
+                            <div class="proposal-track-title">${proposal.documentType}: ${proposal.summary}</div>
+                            <span class="status-badge-track ${statusClass}">${statusText[publicationStatus]}</span>
+                        </div>
+                        
+                        <div class="proposal-track-info">
+                            <div class="info-item">
+                                <span class="info-label">Solicitante</span>
+                                <span class="info-value">${proposal.requestorName}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Cargo</span>
+                                <span class="info-value">${proposal.position}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Custo</span>
+                                <span class="info-value">${formatCurrency(proposal.estimatedCost)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Aprovado em</span>
+                                <span class="info-value">${new Date(proposal.approvedAt).toLocaleDateString('pt-BR')}</span>
+                            </div>
+                        </div>
+
+                        ${proposal.systemDocumentLink ? `
+                            <div style="margin-top: 1rem;">
+                                <a href="${proposal.systemDocumentLink}" target="_blank" class="document-link">
+                                    🔗 Ver documento no System Oficial
+                                </a>
+                            </div>
+                        ` : ''}
+
+                        ${canMarkPublished && publicationStatus === 'aguardando' ? `
+                            <div class="proposal-track-actions">
+                                <button class="btn-mark-published" onclick="markAsPublished(${globalIndex})">
+                                    ✅ Marcar como Publicado
+                                </button>
+                            </div>
+                        ` : ''}
+
+                        ${canMarkPublished && publicationStatus === 'publicado' ? `
+                            <div class="proposal-track-actions">
+                                <button class="btn-mark-published" onclick="markAsInForce(${globalIndex})" style="background: #1565c0;">
+                                    🎯 Marcar como Em Vigor
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function markAsPublished(proposalIndex) {
+            const link = prompt('Cole o link ou número do documento publicado no System Oficial:');
+            if (!link) return;
+
+            const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            proposals[proposalIndex].publicationStatus = 'publicado';
+            proposals[proposalIndex].systemDocumentLink = link;
+            proposals[proposalIndex].publishedAt = new Date().toISOString();
+            
+            localStorage.setItem('proposals', JSON.stringify(proposals));
+            loadApprovedProposals();
+            
+            alert('✅ Proposta marcada como publicada!');
+        }
+
+        function markAsInForce(proposalIndex) {
+            if (!confirm('Confirma que este documento já está em vigor?')) return;
+
+            const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            proposals[proposalIndex].publicationStatus = 'vigor';
+            proposals[proposalIndex].inForceAt = new Date().toISOString();
+            
+            localStorage.setItem('proposals', JSON.stringify(proposals));
+            loadApprovedProposals();
+            
+            alert('🎯 Proposta marcada como em vigor!');
         }
 
         // Atualizar badge ao carregar a página
