@@ -181,29 +181,6 @@
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
         }
 
-        .btn-notif {
-            background: white;
-            color: #1a237e;
-            border: 2px solid #e0e0e0;
-            padding: 0.75rem 1rem;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Montserrat', sans-serif;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-notif:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            border-color: #667eea;
-        }
-
         /* Container */
         .container {
             max-width: 1400px;
@@ -697,156 +674,6 @@
             font-weight: 600;
         }
 
-        /* Proposals Tracking */
-        .proposals-tracking {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 2rem;
-            animation: fadeInUp 0.5s ease 0.5s backwards;
-        }
-
-        .tracking-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .tracking-header h2 {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-
-        .tracking-subtitle {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .proposals-list {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .proposal-track-card {
-            background: #f8f9ff;
-            border-radius: 15px;
-            padding: 1.5rem;
-            border-left: 4px solid var(--primary-color);
-            transition: all 0.3s;
-        }
-
-        .proposal-track-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .proposal-track-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .proposal-track-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            flex: 1;
-        }
-
-        .proposal-track-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .info-label {
-            font-size: 0.75rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .info-value {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .status-badge-track {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        .status-aguardando {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .status-publicado {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-vigor {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .proposal-track-actions {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-mark-published {
-            background: var(--success-color);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-        }
-
-        .btn-mark-published:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-        }
-
-        .document-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .document-link:hover {
-            text-decoration: underline;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -864,9 +691,6 @@
 
             .btn {
                 min-width: 100%;
-                padding: 1rem;
-                font-size: 1rem;
-                touch-action: manipulation;
             }
 
             .budget-amount {
@@ -879,42 +703,12 @@
 
             table {
                 font-size: 0.85rem;
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            thead, tbody, tr {
-                display: table;
-                width: 100%;
-                table-layout: fixed;
             }
 
             th, td {
-                padding: 0.5rem 0.3rem;
-                font-size: 0.75rem;
-                max-width: none;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            th:first-child, td:first-child {
-                min-width: 120px;
-            }
-
-            th:nth-child(2), td:nth-child(2),
-            th:nth-child(3), td:nth-child(3),
-            th:nth-child(4), td:nth-child(4) {
-                min-width: 90px;
-            }
-
-            th:nth-child(5), td:nth-child(5) {
-                min-width: 70px;
-            }
-
-            th:nth-child(6), td:nth-child(6) {
-                min-width: 80px;
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                max-width: 150px;
             }
             
             .logo-text h1 {
@@ -932,36 +726,6 @@
             
             .indicators-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .btn-notif {
-                width: 45px;
-                height: 45px;
-                font-size: 1.3rem;
-            }
-
-            .btn-logout {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.9rem;
-            }
-
-            .notifications-panel {
-                width: 100vw;
-                right: 0;
-                left: 0;
-                top: 60px;
-                max-width: none;
-                border-radius: 0;
-                max-height: calc(100vh - 60px);
-            }
-
-            .ministry-table {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .ministry-table table {
-                min-width: 800px;
             }
         }
         
@@ -985,55 +749,6 @@
             .budget-showcase {
                 padding: 2rem 1.5rem;
             }
-
-            header {
-                padding: 0.75rem 1rem;
-            }
-
-            .logo-badge {
-                width: 35px;
-                height: 35px;
-            }
-
-            .user-info {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .btn-notif {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                margin-right: 0.5rem;
-            }
-
-            .notification-badge {
-                width: 20px;
-                height: 20px;
-                font-size: 0.7rem;
-            }
-
-            .notifications-panel {
-                top: 50px;
-                max-height: calc(100vh - 50px);
-            }
-
-            .notifications-list {
-                max-height: calc(100vh - 150px);
-            }
-
-            th, td {
-                font-size: 0.7rem;
-                padding: 0.4rem 0.2rem;
-            }
-
-            .ministry-table {
-                padding: 1rem;
-            }
-
-            .ministry-table h2 {
-                font-size: 1.1rem;
-            }
         }
 
         /* Scrollbar */
@@ -1052,155 +767,6 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-color);
-        }
-
-        /* Notifications Panel */
-        .notifications-panel {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 400px;
-            max-height: 600px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 9999;
-            animation: slideInRight 0.3s ease;
-            overflow: hidden;
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .notifications-header {
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notifications-header h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .btn-close-notif {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .btn-close-notif:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(90deg);
-        }
-
-        .notifications-list {
-            max-height: 500px;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-
-        .notification-item {
-            background: #f8f9ff;
-            border-left: 4px solid #667eea;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 0.75rem;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .notification-item.new {
-            background: #e8f5e9;
-            border-left-color: #4caf50;
-        }
-
-        .notification-item.warning {
-            background: #fff3e0;
-            border-left-color: #ff9800;
-        }
-
-        .notification-item.error {
-            background: #ffebee;
-            border-left-color: #f44336;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .notification-title {
-            font-weight: 700;
-            color: #1a237e;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .notification-message {
-            font-size: 0.85rem;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .notification-time {
-            font-size: 0.75rem;
-            color: #999;
-            margin-top: 0.5rem;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #f44336;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
-            }
-            50% {
-                transform: scale(1.1);
-                box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
-            }
         }
     </style>
 </head>
@@ -1222,10 +788,6 @@
                 </div>
             </div>
             <div class="user-info">
-                <button id="btnNotifications" class="btn-notif" onclick="toggleNotifications()" style="position: relative; margin-right: 1rem;">
-                    🔔
-                    <span id="notifBadge" class="notification-badge" style="display: none;"></span>
-                </button>
                 <div class="user-badge">
                     <span id="userName">Visitante</span>
                     <span class="user-role" id="userRole">Sem permissão</span>
@@ -1234,17 +796,6 @@
             </div>
         </div>
     </header>
-
-    <!-- Notifications Panel -->
-    <div id="notificationsPanel" class="notifications-panel" style="display: none;">
-        <div class="notifications-header">
-            <h3>🔔 Notificações</h3>
-            <button onclick="closeNotifications()" class="btn-close-notif">×</button>
-        </div>
-        <div id="notificationsList" class="notifications-list">
-            <!-- Será preenchido via JavaScript -->
-        </div>
-    </div>
 
     <!-- Main Container -->
     <div class="container">
@@ -1350,22 +901,11 @@
             </table>
         </div>
 
-        <!-- Proposals Implementation Tracking -->
-        <div class="proposals-tracking" id="proposalsTracking" style="display: none;">
-            <div class="tracking-header">
-                <h2>📋 Acompanhamento de Propostas Aprovadas</h2>
-                <p class="tracking-subtitle">Status de publicação no System Oficial</p>
-            </div>
-            <div id="proposalsList" class="proposals-list">
-                <!-- Será preenchido via JavaScript -->
-            </div>
-        </div>
-
         <!-- Economic Indicators -->
         <div class="indicators-section">
             <div class="indicators-header">
                 <h2>📊 Indicadores Econômicos</h2>
-                <button class="btn-update-indicators" id="btnUpdateIndicators" onclick="updateIndicators()" style="display: none;">
+                <button class="btn-update-indicators" onclick="updateIndicators()">
                     🔄 Atualizar Agora
                 </button>
             </div>
@@ -1381,33 +921,31 @@
         <p>Desenvolvido com 💜 para o Congresso Nacional Habbo</p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, getDocs, doc, updateDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
-          authDomain: "governo-chocotone.firebaseapp.com",
-          projectId: "governo-chocotone",
-          storageBucket: "governo-chocotone.firebasestorage.app",
-          messagingSenderId: "829728497507",
-          appId: "1:829728497507:web:5689c0ad79c42dbe583d56"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
+    <script>
         // Configurações
         const CONFIG = {
+            SHEETS_API_URL: 'https://script.google.com/macros/s/AKfycbz-gPC5CKQSlVqfVPsWAtKaA8hD7mnRxJz-pkztNClXjPb-gXM-2lwTdQfNbLvnqK68Vw/exec',
             INDICATORS_API: 'https://congressohb.com.br/api/economic-ai/indicators?period=hour',
             UPDATE_INTERVAL: 3600000, // 1 hora em ms
             SPENDING_CEILING: 1900000000000, // Teto de gastos R$ 1.9 trilhão
             LOA_DATA: {
                 totalRevenue: 4392000000000,
                 totalExpense: 1900000000000,
-                surplus: 2192000000000
+                surplus: 2192000000000,
+                ministries: [
+                    { name: 'Casa Civil', budget: 15000000000, spent: 0 },
+                    { name: 'Economia e Trabalho', budget: 250000000000, spent: 0 },
+                    { name: 'Saúde', budget: 200000000000, spent: 0 },
+                    { name: 'Educação, Ciência e Tecnologia', budget: 260000000000, spent: 0 },
+                    { name: 'Cultura e Esporte', budget: 45000000000, spent: 0 },
+                    { name: 'Defesa', budget: 150000000000, spent: 0 },
+                    { name: 'Justiça e Segurança Pública', budget: 120000000000, spent: 0 },
+                    { name: 'Infraestrutura', budget: 300000000000, spent: 0 },
+                    { name: 'Agricultura e Meio Ambiente', budget: 130000000000, spent: 0 },
+                    { name: 'Cidadania e Desenvolvimento Social', budget: 250000000000, spent: 0 },
+                    { name: 'Advocacia-Geral da União', budget: 30000000000, spent: 0 },
+                    { name: 'Gabinete da Presidência', budget: 150000000000, spent: 0 }
+                ]
             }
         };
 
@@ -1418,153 +956,36 @@
             ministries: []
         };
 
-        let budgetData = [];
-        let proposalsData = [];
-        let notificationsData = [];
+        let budgetData = JSON.parse(JSON.stringify(CONFIG.LOA_DATA));
         let indicatorsData = null;
-        let unsubscribeBudgets = null;
-        let unsubscribeProposals = null;
-        let unsubscribeNotifications = null;
 
         // Funções de inicialização
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 checkAuth();
+                loadBudgetData();
+                loadMinistryTable();
+                updateIndicators();
+                setInterval(updateIndicators, CONFIG.UPDATE_INTERVAL);
             }, 1500);
         });
 
         function checkAuth() {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    const storedUser = localStorage.getItem('govUser');
-                    if (storedUser) {
-                        userData = JSON.parse(storedUser);
-                        document.getElementById('userName').textContent = userData.name;
-                        document.getElementById('userRole').textContent = userData.role;
-                        
-                        if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
-                            document.getElementById('btnAdmin').style.display = 'block';
-                            document.getElementById('btnUpdateIndicators').style.display = 'block';
-                        }
-
-                        // Iniciar listeners em realtime
-                        loadBudgetsRealtime();
-                        loadProposalsRealtime();
-                        loadNotificationsRealtime();
-                        updateIndicators();
-                        setInterval(updateIndicators, CONFIG.UPDATE_INTERVAL);
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                } else {
-                    window.location.href = 'index.html';
+            // Simulação de autenticação (será integrado com Google)
+            const storedUser = localStorage.getItem('govUser');
+            if (storedUser) {
+                userData = JSON.parse(storedUser);
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userRole').textContent = userData.role;
+                
+                if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
+                    document.getElementById('btnAdmin').style.display = 'block';
                 }
-            });
-        }
-
-        function loadBudgetsRealtime() {
-            const q = query(collection(db, 'budgets'));
-            
-            unsubscribeBudgets = onSnapshot(q, (snapshot) => {
-                budgetData = [];
-                snapshot.forEach((doc) => {
-                    budgetData.push({ id: doc.id, ...doc.data() });
-                });
-                
-                loadBudgetData();
-                loadMinistryTable();
-            }, (error) => {
-                console.error('Erro ao carregar orçamentos:', error);
-            });
-        }
-
-        function loadProposalsRealtime() {
-            const q = query(
-                collection(db, 'proposals'),
-                where('status', '==', 'approved'),
-                orderBy('approvedAt', 'desc')
-            );
-            
-            unsubscribeProposals = onSnapshot(q, (snapshot) => {
-                proposalsData = [];
-                snapshot.forEach((doc) => {
-                    proposalsData.push({ id: doc.id, ...doc.data() });
-                });
-                
-                loadApprovedProposals();
-            }, (error) => {
-                console.error('Erro ao carregar propostas:', error);
-            });
-        }
-
-        function loadNotificationsRealtime() {
-            const q = query(
-                collection(db, 'notifications'),
-                where('targetUsers', 'array-contains', userData.role),
-                orderBy('createdAt', 'desc')
-            );
-            
-            unsubscribeNotifications = onSnapshot(q, (snapshot) => {
-                notificationsData = [];
-                let unreadCount = 0;
-                
-                snapshot.forEach((doc) => {
-                    const notification = { id: doc.id, ...doc.data() };
-                    notificationsData.push(notification);
-                    if (!notification.read) unreadCount++;
-                });
-                
-                updateNotificationBadge(unreadCount);
-                displayNotifications();
-            }, (error) => {
-                console.error('Erro ao carregar notificações:', error);
-            });
-        }
-
-        function updateNotificationBadge(count) {
-            const badge = document.getElementById('notificationBadge');
-            if (!badge) return; // Verificar se elemento existe
-            
-            if (count > 0) {
-                badge.textContent = count > 99 ? '99+' : count;
-                badge.style.display = 'flex';
             } else {
-                badge.style.display = 'none';
+                // Redirecionar para login
+                // window.location.href = 'login.html';
             }
-        }
-
-        function displayNotifications() {
-            const container = document.getElementById('notificationsList');
-            if (!container) return;
-            
-            if (notificationsData.length === 0) {
-                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;">Nenhuma notificação</div>';
-                return;
-            }
-            
-            container.innerHTML = notificationsData.map(notif => `
-                <div class="notification-item ${notif.read ? '' : 'unread'}">
-                    <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
-                    <div class="notification-content">
-                        <div class="notification-title">${notif.title}</div>
-                        <div class="notification-message">${notif.message || ''}</div>
-                        <div class="notification-time">${formatDate(notif.createdAt)}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getNotificationIcon(type) {
-            const icons = {
-                'proposal_submitted': '📝',
-                'proposal_approved': '✅',
-                'proposal_rejected': '❌',
-                'proposal_needs_adjustment': '✏️',
-                'budget_updated': '💰',
-                'system_update': '🔔'
-            };
-            return icons[type] || '📢';
         }
 
         function formatCurrency(value) {
@@ -1575,32 +996,16 @@
             }).format(value);
         }
 
-        function formatDate(timestamp) {
-            if (!timestamp) return 'Data não disponível';
-            
-            if (timestamp && timestamp.toDate) {
-                return timestamp.toDate().toLocaleString('pt-BR');
-            }
-            
-            if (typeof timestamp === 'string') {
-                return new Date(timestamp).toLocaleString('pt-BR');
-            }
-            
-            return 'Data inválida';
-        }
-
         function loadBudgetData() {
-            if (budgetData.length === 0) return;
-            
-            const totalExpense = budgetData.reduce((sum, m) => sum + (m.spent || 0), 0);
-            const totalBudget = CONFIG.LOA_DATA.totalRevenue - totalExpense;
+            const totalExpense = budgetData.ministries.reduce((sum, m) => sum + m.spent, 0);
+            const totalBudget = budgetData.totalRevenue - totalExpense;
             
             // Verificar se ultrapassou o teto de gastos
             const ceilingPercentage = (totalExpense / CONFIG.SPENDING_CEILING) * 100;
             
             // Atualizar display principal
             document.getElementById('totalBudget').textContent = formatCurrency(totalBudget);
-            document.getElementById('totalRevenue').textContent = formatCurrency(CONFIG.LOA_DATA.totalRevenue).replace(',00', '');
+            document.getElementById('totalRevenue').textContent = formatCurrency(budgetData.totalRevenue).replace(',00', '');
             
             // Atualizar informação do teto
             document.getElementById('ceilingPercentage').textContent = ceilingPercentage.toFixed(2) + '%';
@@ -1638,7 +1043,7 @@
                 expenseProgressBar.style.background = 'var(--bg-gradient)';
             }
             
-            document.getElementById('surplus').textContent = formatCurrency(CONFIG.LOA_DATA.surplus).replace(',00', '');
+            document.getElementById('surplus').textContent = formatCurrency(budgetData.surplus).replace(',00', '');
             
             const now = new Date();
             document.getElementById('currentDate').textContent = `Atualizado em: ${now.toLocaleString('pt-BR')}`;
@@ -1704,14 +1109,9 @@
             const tbody = document.getElementById('ministryTableBody');
             tbody.innerHTML = '';
             
-            if (budgetData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Carregando orçamentos...</td></tr>';
-                return;
-            }
-            
-            budgetData.forEach(ministry => {
-                const available = ministry.totalBudget - (ministry.spent || 0);
-                const percent = ministry.totalBudget > 0 ? (((ministry.spent || 0) / ministry.totalBudget) * 100).toFixed(1) : 0;
+            budgetData.ministries.forEach(ministry => {
+                const available = ministry.budget - ministry.spent;
+                const percent = ministry.budget > 0 ? ((ministry.spent / ministry.budget) * 100).toFixed(1) : 0;
                 
                 let statusClass = 'status-ok';
                 let statusText = 'OK';
@@ -1729,9 +1129,9 @@
                 
                 const row = `
                     <tr>
-                        <td><strong>${ministry.ministry}</strong></td>
-                        <td>${formatCurrency(ministry.totalBudget)}</td>
-                        <td style="color: ${percent > 90 ? '#f44336' : 'inherit'}">${formatCurrency(ministry.spent || 0)}</td>
+                        <td><strong>${ministry.name}</strong></td>
+                        <td>${formatCurrency(ministry.budget)}</td>
+                        <td style="color: ${percent > 90 ? '#f44336' : 'inherit'}">${formatCurrency(ministry.spent)}</td>
                         <td style="color: ${available < 0 ? '#f44336' : 'inherit'}">${formatCurrency(available)}</td>
                         <td><strong>${percent}%</strong></td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
@@ -1750,9 +1150,6 @@
                 console.error('Erro ao atualizar indicadores:', error);
             }
         }
-
-        // Expor função para uso global (chamada via onclick)
-        window.updateIndicators = updateIndicators;
 
         function displayIndicators() {
             if (!indicatorsData) return;
@@ -1815,230 +1212,6 @@
             localStorage.removeItem('govUser');
             window.location.reload();
         }
-
-        // Expor funções para uso global (chamadas via onclick)
-        window.openSubmitProposal = openSubmitProposal;
-        window.openExtract = openExtract;
-        window.openAdminPanel = openAdminPanel;
-        window.logout = logout;
-
-        // ==== SISTEMA DE NOTIFICAÇÕES ====
-        function toggleNotifications() {
-            const panel = document.getElementById('notificationsPanel');
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                loadNotifications();
-                // Marcar todas como lidas
-                markAllAsRead();
-            } else {
-                panel.style.display = 'none';
-            }
-        }
-
-        function closeNotifications() {
-            document.getElementById('notificationsPanel').style.display = 'none';
-        }
-
-        // Expor funções de notificação
-        window.toggleNotifications = toggleNotifications;
-        window.closeNotifications = closeNotifications;
-
-        function loadNotifications() {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            const listContainer = document.getElementById('notificationsList');
-            
-            if (notifications.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;">Nenhuma notificação</div>';
-                return;
-            }
-
-            // Filtrar notificações relevantes para o usuário atual
-            const relevantNotifications = notifications.filter(notif => {
-                if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
-                    // Presidenta/Vice vêem propostas recebidas
-                    return notif.type === 'proposal_submitted';
-                } else {
-                    // Ministros vêem respostas às suas propostas
-                    return notif.type === 'proposal_response' && notif.targetUser === userData.name;
-                }
-            });
-
-            if (relevantNotifications.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;">Nenhuma notificação</div>';
-                return;
-            }
-
-            // Ordenar por data (mais recentes primeiro)
-            relevantNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-            listContainer.innerHTML = relevantNotifications.map(notif => {
-                const statusClass = notif.isNew ? 'new' : '';
-                const statusColor = notif.status === 'approved' ? '#4caf50' : notif.status === 'rejected' ? '#f44336' : '#ff9800';
-                
-                let message = '';
-                if (notif.type === 'proposal_submitted') {
-                    message = `<strong>${notif.senderName}</strong> enviou uma proposta de <strong>${notif.documentType}</strong> no valor de <strong>${formatCurrency(notif.estimatedCost)}</strong>`;
-                } else {
-                    const statusText = notif.status === 'approved' ? 'APROVADA ✅' : notif.status === 'rejected' ? 'REPROVADA ❌' : 'PRECISA DE AJUSTES ⚠️';
-                    message = `Sua proposta foi <strong style="color: ${statusColor}">${statusText}</strong>`;
-                    if (notif.feedback) {
-                        message += `<br><small>Feedback: ${notif.feedback}</small>`;
-                    }
-                }
-
-                return `
-                    <div class="notification-item ${statusClass}">
-                        <div class="notification-title">${notif.title}</div>
-                        <div class="notification-message">${message}</div>
-                        <div class="notification-time">${formatTimeAgo(notif.createdAt)}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function markAllAsRead() {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            notifications.forEach(n => n.isNew = false);
-            localStorage.setItem('notifications', JSON.stringify(notifications));
-            updateNotificationBadge();
-        }
-
-        function formatTimeAgo(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const seconds = Math.floor((now - date) / 1000);
-
-            if (seconds < 60) return 'Agora mesmo';
-            if (seconds < 3600) return `${Math.floor(seconds / 60)} min atrás`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h atrás`;
-            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d atrás`;
-            return date.toLocaleDateString('pt-BR');
-        }
-
-        // ==== SISTEMA DE ACOMPANHAMENTO DE PROPOSTAS ====
-        function loadApprovedProposals() {
-            if (proposalsData.length === 0) {
-                return; // Não mostra a seção se não houver propostas
-            }
-
-            // Mostrar seção
-            document.getElementById('proposalsTracking').style.display = 'block';
-
-            const listContainer = document.getElementById('proposalsList');
-            
-            // Filtrar propostas relevantes
-            const relevantProposals = userData.role === 'Presidenta' || userData.role === 'Vice-Presidente'
-                ? proposalsData // Pres/Vice veem todas
-                : proposalsData.filter(p => p.requestorName === userData.name); // Ministros veem apenas suas
-
-            if (relevantProposals.length === 0) {
-                listContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">Nenhuma proposta aprovada ainda</p>';
-                return;
-            }
-
-            listContainer.innerHTML = relevantProposals.map((proposal) => {
-                const publicationStatus = proposal.publicationStatus || 'pending_approval';
-                const statusText = {
-                    'pending_approval': '⏳ Aguardando Publicação',
-                    'published': '✅ Publicado no System',
-                    'in_force': '🎯 Em Vigor'
-                };
-                const statusClass = `status-${publicationStatus}`;
-
-                const canMarkPublished = (userData.role !== 'Presidenta' && userData.role !== 'Vice-Presidente' && proposal.requestorName === userData.name) || 
-                                       (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente');
-
-                return `
-                    <div class="proposal-track-card">
-                        <div class="proposal-track-header">
-                            <div class="proposal-track-title">${proposal.documentType}: ${proposal.summary}</div>
-                            <span class="status-badge-track ${statusClass}">${statusText[publicationStatus]}</span>
-                        </div>
-                        
-                        <div class="proposal-track-info">
-                            <div class="info-item">
-                                <span class="info-label">Solicitante</span>
-                                <span class="info-value">${proposal.requestorName}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Cargo</span>
-                                <span class="info-value">${proposal.position}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Custo</span>
-                                <span class="info-value">${formatCurrency(proposal.estimatedCost)}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Aprovado em</span>
-                                <span class="info-value">${formatDate(proposal.approvedAt)}</span>
-                            </div>
-                        </div>
-
-                        ${proposal.systemDocumentLink ? `
-                            <div style="margin-top: 1rem;">
-                                <a href="${proposal.systemDocumentLink}" target="_blank" class="document-link">
-                                    🔗 Ver documento no System Oficial
-                                </a>
-                            </div>
-                        ` : ''}
-
-                        ${canMarkPublished && publicationStatus === 'pending_approval' ? `
-                            <div class="proposal-track-actions">
-                                <button class="btn-mark-published" onclick="window.markAsPublished('${proposal.id}')">
-                                    ✅ Marcar como Publicado
-                                </button>
-                            </div>
-                        ` : ''}
-
-                        ${canMarkPublished && publicationStatus === 'published' ? `
-                            <div class="proposal-track-actions">
-                                <button class="btn-mark-published" onclick="window.markAsInForce('${proposal.id}')" style="background: #1565c0;">
-                                    🎯 Marcar como Em Vigor
-                                </button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function markAsPublished(proposalId) {
-            const link = prompt('Cole o link ou número do documento publicado no System Oficial:');
-            if (!link) return;
-
-            try {
-                await updateDoc(doc(db, 'proposals', proposalId), {
-                    publicationStatus: 'published',
-                    systemDocumentLink: link,
-                    publishedAt: serverTimestamp()
-                });
-
-                alert('✅ Proposta marcada como publicada!');
-            } catch (error) {
-                console.error('Erro ao atualizar proposta:', error);
-                alert('❌ Erro ao atualizar proposta. Tente novamente.');
-            }
-        }
-
-        async function markAsInForce(proposalId) {
-            if (!confirm('Confirmar que o documento está oficialmente em vigor?')) return;
-
-            try {
-                await updateDoc(doc(db, 'proposals', proposalId), {
-                    publicationStatus: 'in_force',
-                    inForceAt: serverTimestamp()
-                });
-
-                alert('🎯 Proposta marcada como em vigor!');
-            } catch (error) {
-                console.error('Erro ao atualizar proposta:', error);
-                alert('❌ Erro ao atualizar proposta. Tente novamente.');
-            }
-        }
-
-        // Tornar funções globais
-        window.markAsPublished = markAsPublished;
-        window.markAsInForce = markAsInForce;
     </script>
 </body>
 </html>

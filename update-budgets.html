@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Orçamentos - LEI 006/2025</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 { 
+            color: #00ff00; 
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #00aaff;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .warning {
+            background: #ff6b00;
+            color: #000;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .info-box {
+            background: #003300;
+            border: 2px solid #00ff00;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        .info-box h3 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+        }
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .budget-table th {
+            background: #003300;
+            color: #00ff00;
+            padding: 0.8rem;
+            text-align: left;
+            border: 1px solid #00ff00;
+        }
+        .budget-table td {
+            padding: 0.6rem;
+            border: 1px solid #00ff00;
+            color: #00aaff;
+        }
+        .old-value {
+            color: #ff0000;
+            text-decoration: line-through;
+        }
+        .new-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        .log {
+            background: #000;
+            padding: 1rem;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            height: 400px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        .log div {
+            margin: 0.5rem 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning-text { color: #ffaa00; }
+        .info { color: #00aaff; }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            display: block;
+            margin: 1rem auto;
+            width: 100%;
+            max-width: 500px;
+        }
+        button:hover {
+            background: #00dd00;
+        }
+        button:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>💰 ATUALIZAÇÃO AUTOMÁTICA DE ORÇAMENTOS</h1>
+    <p class="subtitle">Conformidade com LEI 006/2025 (PLOA 01/2025)</p>
+    
+    <div class="warning">
+        ⚠️ Este script atualiza TODOS os orçamentos no Firestore automaticamente<br>
+        Os valores serão ajustados conforme ANEXO I da PLOA<br>
+        Gastos já realizados (campo "spent") serão preservados
+    </div>
+
+    <div class="info-box">
+        <h3>📊 Valores que serão aplicados (LEI 006/2025):</h3>
+        <table class="budget-table">
+            <thead>
+                <tr>
+                    <th>Ministério</th>
+                    <th>❌ Valor Antigo</th>
+                    <th>✅ Novo (LEI 006)</th>
+                    <th>% PLOA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Economia e Trabalho</td>
+                    <td class="old-value">R$ 5 milhões</td>
+                    <td class="new-value">R$ 342 bilhões</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>Saúde</td>
+                    <td class="old-value">R$ 10 milhões</td>
+                    <td class="new-value">R$ 247 bilhões</td>
+                    <td>13%</td>
+                </tr>
+                <tr>
+                    <td>Educação, Ciência e Tecnologia</td>
+                    <td class="old-value">R$ 8 milhões</td>
+                    <td class="new-value">R$ 266 bilhões</td>
+                    <td>14%</td>
+                </tr>
+                <tr>
+                    <td>Cidadania e Desenvolvimento Social</td>
+                    <td class="old-value">R$ 6 milhões</td>
+                    <td class="new-value">R$ 209 bilhões</td>
+                    <td>11%</td>
+                </tr>
+                <tr>
+                    <td>Defesa</td>
+                    <td class="old-value">R$ 12 milhões</td>
+                    <td class="new-value">R$ 95 bilhões</td>
+                    <td>5%</td>
+                </tr>
+                <tr>
+                    <td>Justiça e Segurança Pública</td>
+                    <td class="old-value">R$ 7 milhões</td>
+                    <td class="new-value">R$ 171 bilhões</td>
+                    <td>9%</td>
+                </tr>
+                <tr>
+                    <td>Infraestrutura</td>
+                    <td class="old-value">R$ 15 milhões</td>
+                    <td class="new-value">R$ 190 bilhões</td>
+                    <td>10%</td>
+                </tr>
+                <tr>
+                    <td>Agricultura e Meio Ambiente</td>
+                    <td class="old-value">R$ 9 milhões</td>
+                    <td class="new-value">R$ 95 bilhões</td>
+                    <td>5%</td>
+                </tr>
+                <tr>
+                    <td>Cultura e Esporte</td>
+                    <td class="old-value">R$ 4 milhões</td>
+                    <td class="new-value">R$ 76 bilhões</td>
+                    <td>4%</td>
+                </tr>
+                <tr>
+                    <td>Advocacia-Geral da União</td>
+                    <td class="old-value">R$ 3 milhões</td>
+                    <td class="new-value">R$ 57 bilhões</td>
+                    <td>3%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button id="btnUpdate" onclick="updateAllBudgets()">🚀 ATUALIZAR ORÇAMENTOS AGORA</button>
+    
+    <div class="log" id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "829728497507",
+          appId: "1:829728497507:web:5689c0ad79c42dbe583d56"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ORÇAMENTOS CORRETOS CONFORME LEI 006/2025 (PLOA 01/2025) - ANEXO I
+        const CORRECT_BUDGETS = {
+          'Casa_Civil': {
+            ministry: 'Casa Civil',
+            totalBudget: 57000000000,  // R$ 57 bilhões
+            percentage: '3%'
+          },
+          'Economia_e_Trabalho': {
+            ministry: 'Economia e Trabalho',
+            totalBudget: 342000000000,  // R$ 342 bilhões
+            percentage: '18%'
+          },
+          'Saude': {
+            ministry: 'Saúde',
+            totalBudget: 247000000000,  // R$ 247 bilhões
+            percentage: '13%'
+          },
+          'Educacao__Ciencia_e_Tecnologia': {
+            ministry: 'Educação, Ciência e Tecnologia',
+            totalBudget: 266000000000,  // R$ 266 bilhões
+            percentage: '14%'
+          },
+          'Cidadania__Desenvolvimento_Social__Direitos_Humanos_e_Povos_Originarios': {
+            ministry: 'Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários',
+            totalBudget: 209000000000,  // R$ 209 bilhões
+            percentage: '11%'
+          },
+          'Defesa': {
+            ministry: 'Defesa',
+            totalBudget: 95000000000,  // R$ 95 bilhões
+            percentage: '5%'
+          },
+          'Justica_e_Seguranca_Publica': {
+            ministry: 'Justiça e Segurança Pública',
+            totalBudget: 171000000000,  // R$ 171 bilhões
+            percentage: '9%'
+          },
+          'Infraestrutura': {
+            ministry: 'Infraestrutura',
+            totalBudget: 190000000000,  // R$ 190 bilhões
+            percentage: '10%'
+          },
+          'Agricultura__Meio_Ambiente__Turismo_e_Desenvolvimento_Rural': {
+            ministry: 'Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural',
+            totalBudget: 95000000000,  // R$ 95 bilhões
+            percentage: '5%'
+          },
+          'Cultura_e_Esporte': {
+            ministry: 'Cultura e Esporte',
+            totalBudget: 76000000000,  // R$ 76 bilhões
+            percentage: '4%'
+          },
+          'Advocacia_Geral_da_Uniao': {
+            ministry: 'Advocacia-Geral da União',
+            totalBudget: 38000000000,  // R$ 38 bilhões
+            percentage: '2%'
+          }
+        };
+
+        function log(message, type = 'success') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function formatCurrency(value) {
+            return `R$ ${(value / 1000000000).toFixed(1)} bilhões`;
+        }
+
+        window.updateAllBudgets = async function() {
+            const btn = document.getElementById('btnUpdate');
+            btn.disabled = true;
+            
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('💰 INICIANDO ATUALIZAÇÃO AUTOMÁTICA DE ORÇAMENTOS', 'info');
+            log('📜 Base Legal: LEI 006/2025 (PLOA 01/2025) - ANEXO I', 'info');
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('', 'success');
+
+            // Fazer login como Presidenta para ter permissões
+            log('🔐 Fazendo login como Presidenta...', 'warning-text');
+            try {
+                await signInWithEmailAndPassword(auth, 'chocotone@gov.br', 'GovChoco2025!');
+                log('✅ Login realizado com sucesso!', 'success');
+                log('', 'success');
+            } catch (error) {
+                log(`❌ Erro ao fazer login: ${error.message}`, 'error');
+                log('⚠️ Impossível atualizar sem permissões de admin', 'error');
+                btn.textContent = '❌ ERRO - Sem permissões';
+                btn.style.background = '#ff0000';
+                return;
+            }
+
+            log('📥 Buscando orçamentos existentes no Firestore...', 'warning-text');
+            log('', 'success');
+
+            let updated = 0;
+            let created = 0;
+            let errors = 0;
+            let preserved = 0;
+
+            try {
+                // Buscar todos os documentos existentes
+                const budgetsSnapshot = await getDocs(collection(db, 'budgets'));
+                const existingBudgets = {};
+                
+                budgetsSnapshot.forEach((doc) => {
+                    if (doc.id !== '_init') {
+                        existingBudgets[doc.id] = doc.data();
+                    }
+                });
+
+                log(`✅ Encontrados ${Object.keys(existingBudgets).length} orçamentos existentes`, 'success');
+                log('', 'success');
+                log('🔄 Iniciando atualização...', 'warning-text');
+                log('', 'success');
+
+                // Atualizar cada orçamento
+                for (const [docId, correctData] of Object.entries(CORRECT_BUDGETS)) {
+                    try {
+                        const existingData = existingBudgets[docId];
+                        
+                        if (existingData) {
+                            // Preservar gastos já realizados
+                            const spentAmount = existingData.spent || 0;
+                            const newAvailable = correctData.totalBudget - spentAmount;
+
+                            log(`  📊 ${correctData.ministry}:`, 'info');
+                            log(`     • Orçamento: ${formatCurrency(existingData.totalBudget)} → ${formatCurrency(correctData.totalBudget)}`, 'info');
+                            
+                            if (spentAmount > 0) {
+                                log(`     • Gastos preservados: ${formatCurrency(spentAmount)}`, 'warning-text');
+                                preserved++;
+                            }
+                            
+                            log(`     • Disponível: ${formatCurrency(newAvailable)}`, 'info');
+
+                            await updateDoc(doc(db, 'budgets', docId), {
+                                ministry: correctData.ministry,
+                                totalBudget: correctData.totalBudget,
+                                spent: spentAmount,
+                                available: newAvailable,
+                                lastUpdated: new Date().toISOString(),
+                                legalBasis: 'LEI 006/2025 (PLOA 01/2025) - ANEXO I',
+                                percentage: correctData.percentage
+                            });
+
+                            log(`  ✅ Atualizado com sucesso!`, 'success');
+                            updated++;
+                        } else {
+                            // Criar novo documento se não existir
+                            log(`  📝 ${correctData.ministry}:`, 'info');
+                            log(`     • Criando novo: ${formatCurrency(correctData.totalBudget)}`, 'info');
+
+                            await setDoc(doc(db, 'budgets', docId), {
+                                ministry: correctData.ministry,
+                                totalBudget: correctData.totalBudget,
+                                spent: 0,
+                                available: correctData.totalBudget,
+                                lastUpdated: new Date().toISOString(),
+                                legalBasis: 'LEI 006/2025 (PLOA 01/2025) - ANEXO I',
+                                percentage: correctData.percentage
+                            });
+
+                            log(`  ✅ Criado com sucesso!`, 'success');
+                            created++;
+                        }
+                        
+                        log('', 'success');
+                        
+                    } catch (error) {
+                        log(`  ❌ Erro em ${correctData.ministry}: ${error.message}`, 'error');
+                        errors++;
+                        log('', 'success');
+                    }
+                }
+
+                log('═══════════════════════════════════════════════════════', 'success');
+                log('🎉 ATUALIZAÇÃO CONCLUÍDA!', 'success');
+                log('═══════════════════════════════════════════════════════', 'success');
+                log('', 'success');
+                log('📊 RESUMO DA OPERAÇÃO:', 'info');
+                log(`   • Orçamentos atualizados: ${updated}`, 'info');
+                log(`   • Orçamentos criados: ${created}`, 'info');
+                log(`   • Gastos preservados: ${preserved} ministérios`, 'warning-text');
+                log(`   • Erros: ${errors}`, errors > 0 ? 'error' : 'info');
+                log('', 'success');
+                log('✅ Sistema agora está em conformidade com LEI 006/2025', 'success');
+                log('➡️  Volte para o dashboard e atualize a página (F5)', 'warning-text');
+                log('', 'success');
+
+                if (errors === 0) {
+                    btn.textContent = '✅ ATUALIZAÇÃO CONCLUÍDA COM SUCESSO';
+                    btn.style.background = '#00aa00';
+                } else {
+                    btn.textContent = '⚠️ CONCLUÍDO COM ERROS';
+                    btn.style.background = '#ff6b00';
+                }
+
+            } catch (error) {
+                log('', 'error');
+                log('═══════════════════════════════════════════════════════', 'error');
+                log(`❌ ERRO CRÍTICO: ${error.message}`, 'error');
+                log('═══════════════════════════════════════════════════════', 'error');
+                log('', 'error');
+                log('🔍 Verifique se:', 'warning-text');
+                log('   • Você executou setup-users.html primeiro', 'warning-text');
+                log('   • As regras do Firestore permitem escrita', 'warning-text');
+                log('   • Sua conexão com Firebase está ativa', 'warning-text');
+                
+                btn.textContent = '❌ ERRO NA ATUALIZAÇÃO';
+                btn.style.background = '#ff0000';
+            }
+        };
+
+        log('✅ Firebase inicializado e pronto', 'success');
+        log('⚠️ Clique no botão para atualizar os orçamentos', 'warning-text');
+        log('💡 Esta operação é segura: gastos já realizados serão preservados', 'info');
+    </script>
+</body>
+</html>

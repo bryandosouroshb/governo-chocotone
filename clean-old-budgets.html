@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Orçamentos Antigos</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #ff6b00;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 { color: #ff6b00; text-align: center; }
+        .warning {
+            background: #ff0000;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .log {
+            background: #000;
+            padding: 1rem;
+            border: 1px solid #ff6b00;
+            border-radius: 5px;
+            height: 400px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        .log div {
+            margin: 0.5rem 0;
+            font-size: 13px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning-text { color: #ffaa00; }
+        .info { color: #00aaff; }
+        button {
+            background: #ff6b00;
+            color: #000;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            display: block;
+            margin: 1rem auto;
+            width: 100%;
+            max-width: 400px;
+        }
+        button:hover { background: #ff5500; }
+        button:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗑️ DELETAR ORÇAMENTOS ANTIGOS (DUPLICADOS)</h1>
+    
+    <div class="warning">
+        ⚠️ ATENÇÃO: Este script deleta APENAS os orçamentos com valores em MILHÕES<br>
+        Os orçamentos em BILHÕES (corretos) serão PRESERVADOS<br>
+        Execute ANTES de rodar update-budgets.html novamente
+    </div>
+
+    <button id="btnClean" onclick="cleanOldBudgets()">🗑️ DELETAR ORÇAMENTOS ANTIGOS</button>
+    
+    <div class="log" id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "829728497507",
+          appId: "1:829728497507:web:5689c0ad79c42dbe583d56"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function log(message, type = 'success') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        window.cleanOldBudgets = async function() {
+            const btn = document.getElementById('btnClean');
+            btn.disabled = true;
+            
+            log('═══════════════════════════════════════', 'info');
+            log('🗑️ INICIANDO LIMPEZA DE ORÇAMENTOS ANTIGOS', 'warning-text');
+            log('═══════════════════════════════════════', 'info');
+            log('', 'success');
+
+            // Login como Presidenta
+            log('🔐 Fazendo login como Presidenta...', 'warning-text');
+            try {
+                await signInWithEmailAndPassword(auth, 'chocotone@gov.br', 'GovChoco2025!');
+                log('✅ Login realizado!', 'success');
+                log('', 'success');
+            } catch (error) {
+                log(`❌ Erro ao fazer login: ${error.message}`, 'error');
+                btn.textContent = '❌ ERRO';
+                btn.style.background = '#ff0000';
+                return;
+            }
+
+            log('📥 Buscando orçamentos duplicados...', 'info');
+            log('', 'success');
+
+            let deleted = 0;
+            let preserved = 0;
+
+            try {
+                const budgetsSnapshot = await getDocs(collection(db, 'budgets'));
+                
+                for (const docSnapshot of budgetsSnapshot.docs) {
+                    if (docSnapshot.id === '_init') continue;
+
+                    const data = docSnapshot.data();
+                    const totalBudget = data.totalBudget || 0;
+
+                    // Deletar se for valor em MILHÕES (< 100 milhões)
+                    if (totalBudget < 100000000) {  // Menor que 100 milhões
+                        log(`🗑️ Deletando: ${data.ministry} (R$ ${(totalBudget / 1000000).toFixed(1)}M) - ANTIGO`, 'warning-text');
+                        await deleteDoc(doc(db, 'budgets', docSnapshot.id));
+                        deleted++;
+                    } else {
+                        log(`✅ Preservado: ${data.ministry} (R$ ${(totalBudget / 1000000000).toFixed(1)}B) - CORRETO`, 'success');
+                        preserved++;
+                    }
+                }
+
+                log('', 'success');
+                log('═══════════════════════════════════════', 'success');
+                log('🎉 LIMPEZA CONCLUÍDA!', 'success');
+                log('═══════════════════════════════════════', 'success');
+                log('', 'success');
+                log(`📊 Deletados: ${deleted} orçamentos antigos`, 'warning-text');
+                log(`✅ Preservados: ${preserved} orçamentos corretos`, 'success');
+                log('', 'success');
+                log('➡️ Volte ao dashboard e atualize (F5)', 'info');
+
+                btn.textContent = '✅ LIMPEZA CONCLUÍDA';
+                btn.style.background = '#00aa00';
+
+            } catch (error) {
+                log(`❌ ERRO: ${error.message}`, 'error');
+                btn.textContent = '❌ ERRO';
+                btn.style.background = '#ff0000';
+            }
+        };
+
+        log('✅ Firebase inicializado', 'success');
+        log('⚠️ Clique para deletar orçamentos duplicados', 'warning-text');
+    </script>
+</body>
+</html>

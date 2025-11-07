@@ -173,17 +173,20 @@
           }
         };
 
+        // ORÇAMENTOS CONFORME LEI ORÇAMENTÁRIA ANUAL (LEI 006/2025) - ANEXO I
+        // Valores em reais (R$) - PLOA 01/2025
         const BUDGETS = [
-          { ministry: 'Economia e Trabalho', totalBudget: 5000000, spent: 0 },
-          { ministry: 'Saúde', totalBudget: 10000000, spent: 0 },
-          { ministry: 'Educação, Ciência e Tecnologia', totalBudget: 8000000, spent: 0 },
-          { ministry: 'Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários', totalBudget: 6000000, spent: 0 },
-          { ministry: 'Defesa', totalBudget: 12000000, spent: 0 },
-          { ministry: 'Justiça e Segurança Pública', totalBudget: 7000000, spent: 0 },
-          { ministry: 'Infraestrutura', totalBudget: 15000000, spent: 0 },
-          { ministry: 'Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural', totalBudget: 9000000, spent: 0 },
-          { ministry: 'Cultura e Esporte', totalBudget: 4000000, spent: 0 },
-          { ministry: 'Advocacia-Geral da União', totalBudget: 3000000, spent: 0 }
+          { ministry: 'Casa Civil', totalBudget: 57000000000, spent: 0 },  // R$ 57 bilhões (3%)
+          { ministry: 'Economia e Trabalho', totalBudget: 342000000000, spent: 0 },  // R$ 342 bilhões (18%)
+          { ministry: 'Saúde', totalBudget: 247000000000, spent: 0 },  // R$ 247 bilhões (13%)
+          { ministry: 'Educação, Ciência e Tecnologia', totalBudget: 266000000000, spent: 0 },  // R$ 266 bilhões (14%)
+          { ministry: 'Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários', totalBudget: 209000000000, spent: 0 },  // R$ 209 bilhões (11%)
+          { ministry: 'Defesa', totalBudget: 95000000000, spent: 0 },  // R$ 95 bilhões (5%)
+          { ministry: 'Justiça e Segurança Pública', totalBudget: 171000000000, spent: 0 },  // R$ 171 bilhões (9%)
+          { ministry: 'Infraestrutura', totalBudget: 190000000000, spent: 0 },  // R$ 190 bilhões (10%)
+          { ministry: 'Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural', totalBudget: 95000000000, spent: 0 },  // R$ 95 bilhões (5%)
+          { ministry: 'Cultura e Esporte', totalBudget: 76000000000, spent: 0 },  // R$ 76 bilhões (4%)
+          { ministry: 'Advocacia-Geral da União', totalBudget: 38000000000, spent: 0 }  // R$ 38 bilhões (2%)
         ];
 
         function log(message, type = 'success') {
@@ -299,7 +302,7 @@
                         lastUpdated: new Date().toISOString()
                     });
                     
-                    log(`  ✅ ${budget.ministry}: R$ ${(budget.totalBudget / 1000000).toFixed(1)}M`, 'success');
+                    log(`  ✅ ${budget.ministry}: R$ ${(budget.totalBudget / 1000000000).toFixed(1)} bilhões`, 'success');
                     budgetsSuccess++;
                     
                 } catch (error) {

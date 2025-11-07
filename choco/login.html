@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema Governo Federal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-badge {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            background: url('https://www.habbo.com.br/habbo-imaging/badge/b11044s02014t21134s04064s3911450c22ff6b1fd8b46488a58028697ae6a.gif') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1a237e;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-sans-serif;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            font-size: 1rem;
+            color: #1a237e;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo-badge"></div>
+            <h1>Governo Federal</h1>
+            <p class="subtitle">Sistema de Gestão Orçamentária</p>
+        </div>
+
+        <div class="alert alert-error" id="alertError"></div>
+        <div class="alert alert-success" id="alertSuccess"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="userSelect">👤 Selecione seu usuário:</label>
+                <select id="userSelect" required>
+                    <option value="">Escolha...</option>
+                    <optgroup label="Presidência">
+                        <option value="Chocotone|Presidenta|all">Chocotone (Presidenta)</option>
+                        <option value="Bryan dos Ouros|Vice-Presidente|all">Bryan dos Ouros (Vice-Presidente)</option>
+                    </optgroup>
+                    <optgroup label="Ministros">
+                        <option value="-Furia-|Ministro|Economia e Trabalho">-Furia- (Min. Economia e Trabalho)</option>
+                        <option value="joaobatistagc|Ministra|Saúde">joaobatistagc (Min. Saúde)</option>
+                        <option value="Stroch|Ministro|Educação, Ciência e Tecnologia">Stroch (Min. Educação, Ciência e Tecnologia)</option>
+                        <option value="Nyxalis|Ministra|Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários">Nyxalis (Min. Cidadania)</option>
+                        <option value="MalopRRN|Ministro|Defesa">MalopRRN (Min. Defesa)</option>
+                        <option value="guguinhoHop|Ministro|Justiça e Segurança Pública">guguinhoHop (Min. Justiça e Segurança)</option>
+                        <option value="Dj.Bigoreia|Ministro|Infraestrutura">Dj.Bigoreia (Min. Infraestrutura)</option>
+                        <option value="Fabio-Blunt-UK|Ministro|Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural">Fabio-Blunt-UK (Min. Agricultura)</option>
+                        <option value="Brenda.M|Ministra|Cultura e Esporte">Brenda.M (Min. Cultura e Esporte)</option>
+                        <option value="Stallley|Advogado-Geral|Advocacia-Geral da União">Stallley (AGU)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔐 Senha de acesso:</label>
+                <input type="password" id="password" placeholder="Digite sua senha" required>
+            </div>
+
+            <div style="margin-top: 2.5rem;">
+                <button type="submit" class="btn-login">Entrar no Sistema</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // SENHAS DO SISTEMA
+        const PASSWORDS = {
+            presidenta: 'GovChoco2025!',     // Presidenta Chocotone
+            vice: 'ViceGov2025#',             // Vice-Presidente Bryan
+            ministros: 'Ministro2025@'       // Todos os Ministros
+        };
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const select = document.getElementById('userSelect');
+            const password = document.getElementById('password').value;
+            
+            if (!select.value) {
+                showAlert('error', 'Selecione um usuário!');
+                return;
+            }
+            
+            if (!password) {
+                showAlert('error', 'Digite a senha!');
+                return;
+            }
+            
+            const [name, role, ministries] = select.value.split('|');
+            
+            // Validar senha baseada no cargo
+            let correctPassword = '';
+            if (name === 'Chocotone') {
+                correctPassword = PASSWORDS.presidenta;
+            } else if (name === 'Bryan dos Ouros') {
+                correctPassword = PASSWORDS.vice;
+            } else {
+                correctPassword = PASSWORDS.ministros;
+            }
+            
+            if (password !== correctPassword) {
+                showAlert('error', '🔒 Senha incorreta! Tente novamente.');
+                return;
+            }
+            
+            const userData = {
+                name: name,
+                role: role,
+                ministries: ministries === 'all' ? 'all' : [ministries],
+                loginTime: new Date().toISOString()
+            };
+            
+            localStorage.setItem('govUser', JSON.stringify(userData));
+            
+            // Mostrar mensagem de sucesso
+            showAlert('success', `✅ Bem-vindo(a), ${name}! Redirecionando...`);
+            
+            // Redirecionar para o dashboard
+            setTimeout(() => { 
+                window.location.href = 'index.html'; 
+            }, 1500);
+        }
+        
+        function showAlert(type, message) {
+            const alertError = document.getElementById('alertError');
+            const alertSuccess = document.getElementById('alertSuccess');
+            
+            if (type === 'error') {
+                alertError.textContent = message;
+                alertError.style.display = 'block';
+                alertSuccess.style.display = 'none';
+            } else {
+                alertSuccess.textContent = message;
+                alertSuccess.style.display = 'block';
+                alertError.style.display = 'none';
+            }
+        }
+        
+        // Verificar se já está logado
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('govUser');
+            if (storedUser) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
