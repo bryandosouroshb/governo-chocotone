@@ -877,19 +877,34 @@
             document.getElementById('btnSubmit').disabled = true;
 
             try {
-                // Enviar para Google Sheets (quando implementado)
-                // const response = await fetch(CONFIG.SHEETS_API_URL, {
-                //     method: 'POST',
-                //     body: JSON.stringify(formData)
-                // });
+                // Enviar para Google Sheets
+                const response = await fetch(CONFIG.SHEETS_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'submitProposal',
+                        data: formData
+                    })
+                });
 
-                // Simulação (remover quando integrar com Sheets)
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                // Salvar localmente temporariamente
+                // Salvar também localmente para backup
                 const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
                 proposals.push(formData);
                 localStorage.setItem('proposals', JSON.stringify(proposals));
+
+                // Criar notificação para Presidenta/Vice
+                createNotification({
+                    type: 'proposal_submitted',
+                    title: '📝 Nova Proposta Recebida',
+                    senderName: formData.requestorName,
+                    documentType: formData.documentType,
+                    estimatedCost: formData.estimatedCost,
+                    createdAt: new Date().toISOString(),
+                    isNew: true
+                });
 
                 // Mostrar sucesso
                 document.getElementById('loadingSubmit').classList.remove('active');
@@ -919,6 +934,12 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+        }
+
+        function createNotification(notificationData) {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            notifications.push(notificationData);
+            localStorage.setItem('notifications', JSON.stringify(notifications));
         }
 
         function formatCurrency(value) {

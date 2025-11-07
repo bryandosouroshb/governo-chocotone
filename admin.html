@@ -880,6 +880,17 @@
             
             localStorage.setItem('proposals', JSON.stringify(proposals));
             
+            // Criar notificação para o ministro
+            createNotification({
+                type: 'proposal_response',
+                title: '✅ Proposta Aprovada',
+                status: 'approved',
+                targetUser: proposal.requestorName,
+                feedback: notes,
+                createdAt: new Date().toISOString(),
+                isNew: true
+            });
+            
             closeModal('approveModal');
             loadProposals();
             loadHistory();
@@ -903,6 +914,17 @@
             
             localStorage.setItem('proposals', JSON.stringify(proposals));
             
+            // Criar notificação para o ministro
+            createNotification({
+                type: 'proposal_response',
+                title: '❌ Proposta Reprovada',
+                status: 'rejected',
+                targetUser: proposal.requestorName,
+                feedback: reason,
+                createdAt: new Date().toISOString(),
+                isNew: true
+            });
+            
             closeModal('rejectModal');
             loadProposals();
             loadHistory();
@@ -925,6 +947,17 @@
             proposal.adjustRequestedAt = new Date().toISOString();
             
             localStorage.setItem('proposals', JSON.stringify(proposals));
+            
+            // Criar notificação para o ministro
+            createNotification({
+                type: 'proposal_response',
+                title: '⚠️ Ajustes Necessários',
+                status: 'adjustments',
+                targetUser: proposal.requestorName,
+                feedback: adjustments,
+                createdAt: new Date().toISOString(),
+                isNew: true
+            });
             
             closeModal('adjustModal');
             loadProposals();
@@ -1008,6 +1041,12 @@ ${proposal.justification}
                 currency: 'BRL',
                 minimumFractionDigits: 2
             }).format(value);
+        }
+
+        function createNotification(notificationData) {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            notifications.push(notificationData);
+            localStorage.setItem('notifications', JSON.stringify(notifications));
         }
     </script>
 </body>
