@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChocoBot - Assistente Jurídico IA</title>
+    <link rel="icon" type="image/gif" href="https://www.habbo.com.br/habbo-imaging/badge/b11044s02014t21134s04064s3911450c22ff6b1fd8b46488a58028697ae6a.gif">
     <style>
         * {
             margin: 0;
@@ -16,20 +17,28 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
-            border: none;
+            border: 3px solid white;
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
             transition: all 0.3s;
             animation: pulse-glow 2s infinite;
+            overflow: hidden;
+            padding: 5px;
+        }
+
+        .chocobot-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
         }
 
         .chocobot-button:hover {
@@ -350,8 +359,8 @@
 </head>
 <body>
     <!-- Botão Flutuante -->
-    <button class="chocobot-button" id="chocobotButton" onclick="toggleChocobot()">
-        🤖
+    <button class="chocobot-button" id="chocobotButton" onclick="window.toggleChocobot()">
+        <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&action=std&direction=4&head_direction=3&img_format=png&gesture=sml&headonly=0&size=l" alt="ChocoBot">
         <span class="chocobot-badge" id="chocobotBadge" style="display: none;">IA</span>
     </button>
 
@@ -359,18 +368,18 @@
     <div class="chocobot-container" id="chocobotContainer">
         <div class="chocobot-header">
             <div class="chocobot-title">
-                <span>🤖</span>
+                <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&action=std&direction=4&head_direction=3&img_format=png&gesture=sml&headonly=1&size=s" alt="Chocotone" style="width: 40px; height: 40px; image-rendering: pixelated;">
                 <div>
                     <h3>ChocoBot</h3>
-                    <div class="chocobot-subtitle">Assistente Jurídico com IA</div>
+                    <div class="chocobot-subtitle" id="botStatus">Assistente Jurídico com IA</div>
                 </div>
             </div>
-            <button class="chocobot-close" onclick="toggleChocobot()">×</button>
+            <button class="chocobot-close" onclick="window.toggleChocobot()">×</button>
         </div>
 
         <div class="chocobot-messages" id="chocobotMessages">
             <div class="welcome-screen">
-                <div class="welcome-icon">⚖️</div>
+                <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&action=std&direction=4&head_direction=3&img_format=png&gesture=sml&headonly=0&size=l" alt="Chocotone" style="width: 100px; height: 140px; image-rendering: pixelated; margin-bottom: 1rem;">
                 <h4>Olá! Sou o ChocoBot</h4>
                 <p>Assistente jurídico especializado em:</p>
                 <p style="margin-top: 1rem;">
@@ -385,14 +394,14 @@
             </div>
         </div>
 
-        <div class="quick-actions">
-            <button class="quick-action" onclick="sendQuickMessage('Qual o processo para aprovar uma lei?')">
+        <div class="quick-actions" id="quickActions">
+            <button class="quick-action" onclick="window.sendQuickMessage('Qual o processo para aprovar uma lei?')">
                 📜 Processo legislativo
             </button>
-            <button class="quick-action" onclick="sendQuickMessage('Quais são os crimes de responsabilidade?')">
+            <button class="quick-action" onclick="window.sendQuickMessage('Quais são os crimes de responsabilidade?')">
                 ⚖️ Crimes de responsabilidade
             </button>
-            <button class="quick-action" onclick="sendQuickMessage('Como funciona o orçamento federal?')">
+            <button class="quick-action" onclick="window.sendQuickMessage('Como funciona o orçamento federal?')">
                 💰 Orçamento federal
             </button>
         </div>
@@ -414,22 +423,15 @@
 
     <script type="module">
         import { LEGAL_CONTEXT } from './chocobot-context.js';
+        import { OPENROUTER_CONFIG } from './chocobot-config.js';
         
         let conversationHistory = [];
         let isTyping = false;
 
-        // OpenRouter API Configuration
-        const OPENROUTER_CONFIG = {
-            apiKey: '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',
-            apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-            model: 'google/gemini-2.0-flash-exp:free',  // Gemini 2.0 Flash - 1M tokens de contexto
-            siteUrl: 'https://bryandosouroshb.github.io/governo-chocotone',
-            siteName: 'Governo Chocotone - ChocoBot Jurídico'
-        };
-
         // Contexto legal completo agora importado de chocobot-context.js
         // (Contém CF-RPG completa + Código Penal completo + Código Civil completo)
         console.log('✅ Contexto legal carregado:', LEGAL_CONTEXT.length, 'caracteres');
+        console.log('✅ Configuração OpenRouter carregada');
 
         window.toggleChocobot = function() {
             const container = document.getElementById('chocobotContainer');
@@ -541,7 +543,17 @@
             
             const avatar = document.createElement('div');
             avatar.className = `message-avatar ${sender}`;
-            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+            
+            if (sender === 'bot') {
+                const img = document.createElement('img');
+                img.src = 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&action=std&direction=4&head_direction=3&img_format=png&gesture=sml&headonly=1&size=s';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.imageRendering = 'pixelated';
+                avatar.appendChild(img);
+            } else {
+                avatar.textContent = '👤';
+            }
             
             const content = document.createElement('div');
             content.className = `message-content ${sender}`;
@@ -556,12 +568,21 @@
 
         function showTypingIndicator() {
             const messagesDiv = document.getElementById('chocobotMessages');
+            const statusDiv = document.getElementById('botStatus');
+            
+            // Atualizar status para "digitando..."
+            if (statusDiv) {
+                statusDiv.textContent = 'digitando...';
+            }
+            
             const typingDiv = document.createElement('div');
             typingDiv.className = 'chocobot-message bot';
             typingDiv.id = 'typingIndicator';
             
             typingDiv.innerHTML = `
-                <div class="message-avatar bot">🤖</div>
+                <div class="message-avatar bot">
+                    <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&action=std&direction=4&head_direction=3&img_format=png&gesture=sml&headonly=1&size=s" style="width: 100%; height: 100%; image-rendering: pixelated;">
+                </div>
                 <div class="message-content bot">
                     <div class="typing-indicator">
                         <div class="typing-dot"></div>
@@ -577,6 +598,13 @@
 
         function hideTypingIndicator() {
             const indicator = document.getElementById('typingIndicator');
+            const statusDiv = document.getElementById('botStatus');
+            
+            // Restaurar status
+            if (statusDiv) {
+                statusDiv.textContent = 'online';
+            }
+            
             if (indicator) {
                 indicator.remove();
             }
