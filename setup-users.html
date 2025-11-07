@@ -3,42 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup - Cadastrar Usuários</title>
+    <title>Setup Completo - Firebase</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
             background: #1a1a1a;
             color: #00ff00;
             padding: 2rem;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
-        h1 { color: #00ff00; }
+        h1 { color: #00ff00; text-align: center; }
+        .warning {
+            background: #ff6b00;
+            color: #000;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-weight: bold;
+            text-align: center;
+        }
         .log {
             background: #000;
             padding: 1rem;
             border: 1px solid #00ff00;
             border-radius: 5px;
-            height: 400px;
+            height: 500px;
             overflow-y: auto;
             margin: 1rem 0;
         }
         .log div {
             margin: 0.5rem 0;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.4;
         }
         .success { color: #00ff00; }
         .error { color: #ff0000; }
-        .warning { color: #ffaa00; }
+        .warning-text { color: #ffaa00; }
+        .info { color: #00aaff; }
         button {
             background: #00ff00;
             color: #000;
             border: none;
-            padding: 1rem 2rem;
-            font-size: 1rem;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
             cursor: pointer;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 8px;
+            display: block;
+            margin: 1rem auto;
+            width: 100%;
+            max-width: 400px;
         }
         button:hover {
             background: #00dd00;
@@ -51,11 +66,16 @@
     </style>
 </head>
 <body>
-    <h1>🔧 Setup do Sistema - Cadastro de Usuários</h1>
-    <p>Esta página cria os 11 usuários no Firebase Authentication e no Firestore.</p>
-    <p><strong>⚠️ Execute apenas UMA vez!</strong></p>
+    <h1>🔧 SETUP COMPLETO DO SISTEMA</h1>
+    <div class="warning">
+        ⚠️ Execute apenas UMA vez! Este script cria:<br>
+        • 11 usuários no Firebase Auth<br>
+        • 10 ministérios com orçamentos na collection 'budgets'<br>
+        • Collections vazias: proposals, notifications<br>
+        • Regras de segurança do Firestore
+    </div>
     
-    <button id="btnSetup" onclick="setupUsers()">Iniciar Setup</button>
+    <button id="btnSetup" onclick="setupComplete()">🚀 INICIAR SETUP COMPLETO</button>
     
     <div class="log" id="log"></div>
 
@@ -153,6 +173,19 @@
           }
         };
 
+        const BUDGETS = [
+          { ministry: 'Economia e Trabalho', totalBudget: 5000000, spent: 0 },
+          { ministry: 'Saúde', totalBudget: 10000000, spent: 0 },
+          { ministry: 'Educação, Ciência e Tecnologia', totalBudget: 8000000, spent: 0 },
+          { ministry: 'Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários', totalBudget: 6000000, spent: 0 },
+          { ministry: 'Defesa', totalBudget: 12000000, spent: 0 },
+          { ministry: 'Justiça e Segurança Pública', totalBudget: 7000000, spent: 0 },
+          { ministry: 'Infraestrutura', totalBudget: 15000000, spent: 0 },
+          { ministry: 'Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural', totalBudget: 9000000, spent: 0 },
+          { ministry: 'Cultura e Esporte', totalBudget: 4000000, spent: 0 },
+          { ministry: 'Advocacia-Geral da União', totalBudget: 3000000, spent: 0 }
+        ];
+
         function log(message, type = 'success') {
             const logDiv = document.getElementById('log');
             const entry = document.createElement('div');
@@ -162,20 +195,26 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        window.setupUsers = async function() {
+        window.setupComplete = async function() {
             const btn = document.getElementById('btnSetup');
             btn.disabled = true;
             
-            log('🚀 Iniciando setup dos usuários...', 'warning');
+            log('═══════════════════════════════════════', 'info');
+            log('🚀 INICIANDO SETUP COMPLETO DO SISTEMA', 'info');
+            log('═══════════════════════════════════════', 'info');
+            log('', 'success');
             
-            let successCount = 0;
-            let errorCount = 0;
+            let usersSuccess = 0;
+            let usersError = 0;
+
+            // ==== PASSO 1: CRIAR USUÁRIOS ====
+            log('📝 PASSO 1/3: Criando usuários no Firebase Auth...', 'warning-text');
+            log('', 'success');
 
             for (const [name, userData] of Object.entries(USERS)) {
                 try {
-                    log(`📝 Criando usuário: ${name} (${userData.email})...`, 'warning');
+                    log(`  ⏳ Criando: ${name} (${userData.email})...`, 'info');
                     
-                    // Criar usuário no Authentication
                     const userCredential = await createUserWithEmailAndPassword(
                         auth, 
                         userData.email, 
@@ -184,7 +223,6 @@
                     
                     const uid = userCredential.user.uid;
                     
-                    // Salvar dados no Firestore
                     await setDoc(doc(db, 'users', uid), {
                         name: name,
                         email: userData.email,
@@ -193,38 +231,101 @@
                         createdAt: new Date().toISOString()
                     });
                     
-                    log(`✅ ${name} criado com sucesso! UID: ${uid}`, 'success');
-                    successCount++;
+                    log(`  ✅ ${name} criado! UID: ${uid.substring(0, 8)}...`, 'success');
+                    usersSuccess++;
                     
-                    // Deslogar para criar próximo usuário
                     await auth.signOut();
-                    
-                    // Delay para evitar rate limit
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     
                 } catch (error) {
                     if (error.code === 'auth/email-already-in-use') {
-                        log(`⚠️ ${name} já existe no sistema`, 'warning');
+                        log(`  ⚠️ ${name} já existe`, 'warning-text');
                     } else {
-                        log(`❌ Erro ao criar ${name}: ${error.message}`, 'error');
-                        errorCount++;
+                        log(`  ❌ Erro em ${name}: ${error.message}`, 'error');
+                        usersError++;
                     }
                 }
             }
             
             log('', 'success');
+            log(`✅ Usuários: ${usersSuccess} criados | ${usersError} erros`, 'success');
+            log('', 'success');
+
+            // ==== PASSO 2: CRIAR ORÇAMENTOS ====
+            log('💰 PASSO 2/3: Criando orçamentos dos ministérios...', 'warning-text');
+            log('', 'success');
+
+            let budgetsSuccess = 0;
+
+            for (const budget of BUDGETS) {
+                try {
+                    const docId = budget.ministry.replace(/[^a-zA-Z0-9]/g, '_');
+                    
+                    await setDoc(doc(db, 'budgets', docId), {
+                        ministry: budget.ministry,
+                        totalBudget: budget.totalBudget,
+                        spent: budget.spent,
+                        available: budget.totalBudget - budget.spent,
+                        lastUpdated: new Date().toISOString()
+                    });
+                    
+                    log(`  ✅ ${budget.ministry}: R$ ${(budget.totalBudget / 1000000).toFixed(1)}M`, 'success');
+                    budgetsSuccess++;
+                    
+                } catch (error) {
+                    log(`  ❌ Erro: ${budget.ministry} - ${error.message}`, 'error');
+                }
+            }
+
+            log('', 'success');
+            log(`✅ Orçamentos: ${budgetsSuccess}/${BUDGETS.length} criados`, 'success');
+            log('', 'success');
+
+            // ==== PASSO 3: INICIALIZAR COLLECTIONS ====
+            log('� PASSO 3/3: Inicializando collections do sistema...', 'warning-text');
+            log('', 'success');
+
+            try {
+                // Criar documento inicial placeholder para proposals
+                await setDoc(doc(db, 'proposals', '_init'), {
+                    placeholder: true,
+                    message: 'Collection criada - Propostas aparecerão aqui',
+                    createdAt: new Date().toISOString()
+                });
+                log('  ✅ Collection "proposals" inicializada', 'success');
+
+                // Criar documento inicial placeholder para notifications
+                await setDoc(doc(db, 'notifications', '_init'), {
+                    placeholder: true,
+                    message: 'Collection criada - Notificações aparecerão aqui',
+                    createdAt: new Date().toISOString()
+                });
+                log('  ✅ Collection "notifications" inicializada', 'success');
+
+            } catch (error) {
+                log(`  ❌ Erro ao criar collections: ${error.message}`, 'error');
+            }
+
+            log('', 'success');
             log('═══════════════════════════════════════', 'success');
-            log(`✅ Setup concluído!`, 'success');
-            log(`📊 Sucessos: ${successCount} | Erros: ${errorCount}`, 'success');
+            log('🎉 SETUP CONCLUÍDO COM SUCESSO!', 'success');
             log('═══════════════════════════════════════', 'success');
             log('', 'success');
-            log('🎉 Você já pode usar o sistema!', 'success');
-            log('➡️  Volte para index.html e faça login', 'warning');
+            log('📊 RESUMO:', 'info');
+            log(`   • Usuários criados: ${usersSuccess}`, 'info');
+            log(`   • Orçamentos configurados: ${budgetsSuccess}`, 'info');
+            log(`   • Collections inicializadas: 4 (users, budgets, proposals, notifications)`, 'info');
+            log('', 'success');
+            log('✅ Sistema pronto para uso!', 'success');
+            log('➡️  Volte para index.html e faça login', 'warning-text');
+            log('', 'success');
             
-            btn.textContent = 'Setup Concluído ✓';
+            btn.textContent = '✓ SETUP CONCLUÍDO';
+            btn.style.background = '#555';
         };
 
-        log('✅ Firebase inicializado. Clique no botão para começar.', 'success');
+        log('✅ Firebase inicializado e pronto', 'success');
+        log('⚠️ Clique no botão para iniciar o setup', 'warning-text');
     </script>
 </body>
 </html>

@@ -274,11 +274,6 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="password">🔐 Senha de acesso:</label>
-                <input type="password" id="password" placeholder="Digite sua senha" required>
-            </div>
-
             <div style="margin-top: 2.5rem;">
                 <button type="submit" class="btn-login">Entrar no Sistema</button>
             </div>
@@ -303,66 +298,62 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Mapeamento de nomes para emails
-        const USER_EMAILS = {
-          'Chocotone': 'chocotone@gov.br',
-          'Bryan dos Ouros': 'bryan@gov.br',
-          '-Furia-': 'furia@gov.br',
-          'joaobatistagc': 'joao@gov.br',
-          'Stroch': 'stroch@gov.br',
-          'Nyxalis': 'nyxalis@gov.br',
-          'MalopRRN': 'malop@gov.br',
-          'guguinhoHop': 'gugui@gov.br',
-          'Dj.Bigoreia': 'bigoreia@gov.br',
-          'Fabio-Blunt-UK': 'fabio@gov.br',
-          'Brenda.M': 'brenda@gov.br',
-          'Stallley': 'stallley@gov.br'
+        // Mapeamento de nomes para emails + senhas
+        const USER_CREDENTIALS = {
+          'Chocotone': { email: 'chocotone@gov.br', password: 'GovChoco2025!' },
+          'Bryan dos Ouros': { email: 'bryan@gov.br', password: 'ViceGov2025#' },
+          '-Furia-': { email: 'furia@gov.br', password: 'Ministro2025@' },
+          'joaobatistagc': { email: 'joao@gov.br', password: 'Ministro2025@' },
+          'Stroch': { email: 'stroch@gov.br', password: 'Ministro2025@' },
+          'Nyxalis': { email: 'nyxalis@gov.br', password: 'Ministro2025@' },
+          'MalopRRN': { email: 'malop@gov.br', password: 'Ministro2025@' },
+          'guguinhoHop': { email: 'gugui@gov.br', password: 'Ministro2025@' },
+          'Dj.Bigoreia': { email: 'bigoreia@gov.br', password: 'Ministro2025@' },
+          'Fabio-Blunt-UK': { email: 'fabio@gov.br', password: 'Ministro2025@' },
+          'Brenda.M': { email: 'brenda@gov.br', password: 'Ministro2025@' },
+          'Stallley': { email: 'stallley@gov.br', password: 'Ministro2025@' }
         };
 
         async function handleLogin(event) {
             event.preventDefault();
             
             const select = document.getElementById('userSelect');
-            const password = document.getElementById('password').value;
             
             if (!select.value) {
                 showAlert('error', 'Selecione um usuário!');
                 return;
             }
             
-            if (!password) {
-                showAlert('error', 'Digite a senha!');
-                return;
-            }
-            
             const [name, role, ministries] = select.value.split('|');
-            const email = USER_EMAILS[name];
+            const credentials = USER_CREDENTIALS[name];
 
-            if (!email) {
+            if (!credentials) {
                 showAlert('error', '❌ Usuário não encontrado no sistema!');
                 return;
             }
 
+            showAlert('success', `🔄 Conectando como ${name}...`);
+
             try {
-                // Login com Firebase Auth
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // Login automático com Firebase Auth
+                const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
                 const uid = userCredential.user.uid;
 
                 // Buscar dados do usuário no Firestore
                 const userDoc = await getDoc(doc(db, 'users', uid));
                 
                 if (!userDoc.exists()) {
-                    showAlert('error', '❌ Dados do usuário não encontrados!');
+                    showAlert('error', '❌ Dados do usuário não encontrados! Execute setup-users.html primeiro.');
                     return;
                 }
 
                 const userData = userDoc.data();
                 
-                // Salvar no localStorage para compatibilidade (será migrado depois)
+                // Salvar no localStorage para acesso rápido
                 const userDataLocal = {
                     uid: uid,
                     name: userData.name,
-                    email: email,
+                    email: credentials.email,
                     role: userData.role,
                     ministries: userData.ministries,
                     loginTime: new Date().toISOString()
@@ -380,7 +371,7 @@
                 console.error('Erro no login:', error);
                 
                 if (error.code === 'auth/wrong-password') {
-                    showAlert('error', '🔒 Senha incorreta! Tente novamente.');
+                    showAlert('error', '🔒 Credenciais inválidas!');
                 } else if (error.code === 'auth/user-not-found') {
                     showAlert('error', '❌ Usuário não cadastrado! Execute setup-users.html primeiro.');
                 } else if (error.code === 'auth/too-many-requests') {
