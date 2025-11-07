@@ -491,23 +491,90 @@
 
             .tabs {
                 flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .tab {
+                padding: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .proposal-header {
                 flex-direction: column;
                 gap: 0.5rem;
+                align-items: flex-start;
             }
 
             .proposal-actions {
                 flex-direction: column;
+                width: 100%;
             }
 
             .btn {
                 width: 100%;
+                padding: 0.8rem;
+                font-size: 0.95rem;
+                touch-action: manipulation;
             }
 
             .control-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-width: 95vw;
+                padding: 1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .proposal-card {
+                padding: 1.25rem;
+            }
+
+            .proposal-detail {
+                font-size: 0.85rem;
+            }
+
+            table {
+                font-size: 0.8rem;
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo-badge {
+                width: 35px;
+                height: 35px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            .proposal-card {
+                padding: 1rem;
+            }
+
+            .tabs {
+                gap: 0.3rem;
+            }
+
+            .tab {
+                padding: 0.7rem;
+                font-size: 0.85rem;
             }
         }
     </style>

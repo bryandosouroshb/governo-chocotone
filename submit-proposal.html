@@ -455,6 +455,55 @@
 
             .modal-content {
                 padding: 2rem 1.5rem;
+                max-width: 95vw;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .btn-back {
+                width: 100%;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            input, select, textarea {
+                font-size: 16px; /* Previne zoom no iOS */
+            }
+
+            .btn {
+                padding: 1rem;
+                font-size: 1rem;
+                touch-action: manipulation;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1.5rem 1rem;
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            .logo-badge {
+                width: 35px;
+                height: 35px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
             }
         }
 

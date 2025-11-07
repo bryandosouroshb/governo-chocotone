@@ -448,16 +448,25 @@
 
             .btn {
                 width: 100%;
+                padding: 0.9rem;
+                font-size: 0.95rem;
+                touch-action: manipulation;
             }
 
             .transactions-header {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: flex-start;
             }
 
             .transaction-header {
                 flex-direction: column;
                 gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .transaction-amount {
+                font-size: 1.1rem;
             }
 
             .timeline {
@@ -470,6 +479,62 @@
 
             .timeline-item::before {
                 left: -1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .summary-card {
+                padding: 1.25rem;
+            }
+
+            .transaction-card {
+                padding: 1.25rem;
+            }
+
+            input, select {
+                font-size: 16px; /* Previne zoom no iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo-badge {
+                width: 35px;
+                height: 35px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            .summary-card {
+                padding: 1rem;
+            }
+
+            .summary-label {
+                font-size: 0.8rem;
+            }
+
+            .summary-value {
+                font-size: 1.3rem;
+            }
+
+            .transaction-card {
+                padding: 1rem;
+            }
+
+            .transaction-title {
+                font-size: 0.95rem;
             }
         }
     </style>
