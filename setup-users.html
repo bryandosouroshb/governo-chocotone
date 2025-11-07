@@ -206,6 +206,7 @@
             
             let usersSuccess = 0;
             let usersError = 0;
+            let adminUid = null;
 
             // ==== PASSO 1: CRIAR USUÁRIOS ====
             log('📝 PASSO 1/3: Criando usuários no Firebase Auth...', 'warning-text');
@@ -222,6 +223,11 @@
                     );
                     
                     const uid = userCredential.user.uid;
+                    
+                    // Salvar UID da Presidenta para usar depois
+                    if (name === 'Chocotone') {
+                        adminUid = uid;
+                    }
                     
                     await setDoc(doc(db, 'users', uid), {
                         name: name,
@@ -240,6 +246,16 @@
                 } catch (error) {
                     if (error.code === 'auth/email-already-in-use') {
                         log(`  ⚠️ ${name} já existe`, 'warning-text');
+                        // Se Chocotone já existe, pegar UID dela
+                        if (name === 'Chocotone') {
+                            try {
+                                const cred = await signInWithEmailAndPassword(auth, userData.email, userData.password);
+                                adminUid = cred.user.uid;
+                                log(`  ℹ️ UID da Presidenta obtido para criar orçamentos`, 'info');
+                            } catch (e) {
+                                log(`  ❌ Erro ao obter UID: ${e.message}`, 'error');
+                            }
+                        }
                     } else {
                         log(`  ❌ Erro em ${name}: ${error.message}`, 'error');
                         usersError++;
@@ -251,9 +267,23 @@
             log(`✅ Usuários: ${usersSuccess} criados | ${usersError} erros`, 'success');
             log('', 'success');
 
-            // ==== PASSO 2: CRIAR ORÇAMENTOS ====
+            // ==== PASSO 2: FAZER LOGIN E CRIAR ORÇAMENTOS ====
             log('💰 PASSO 2/3: Criando orçamentos dos ministérios...', 'warning-text');
+            log('  ℹ️ Fazendo login como Presidenta para ter permissões...', 'info');
             log('', 'success');
+
+            // Fazer login com a Presidenta
+            try {
+                await signInWithEmailAndPassword(auth, 'chocotone@gov.br', 'GovChoco2025!');
+                log('  ✅ Login como Presidenta realizado!', 'success');
+                log('', 'success');
+            } catch (error) {
+                log(`  ❌ Erro ao fazer login: ${error.message}`, 'error');
+                log('  ⚠️ Impossível criar orçamentos sem estar logado', 'warning-text');
+                btn.textContent = '✓ SETUP CONCLUÍDO (COM ERROS)';
+                btn.style.background = '#ff6b00';
+                return;
+            }
 
             let budgetsSuccess = 0;
 
