@@ -1888,25 +1888,6 @@
             updateNotificationBadge();
         }
 
-        function updateNotificationBadge() {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            const unreadCount = notifications.filter(n => {
-                if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
-                    return n.isNew && n.type === 'proposal_submitted';
-                } else {
-                    return n.isNew && n.type === 'proposal_response' && n.targetUser === userData.name;
-                }
-            }).length;
-
-            const badge = document.getElementById('notifBadge');
-            if (unreadCount > 0) {
-                badge.style.display = 'flex';
-                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
         function formatTimeAgo(dateString) {
             const date = new Date(dateString);
             const now = new Date();

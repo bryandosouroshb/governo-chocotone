@@ -274,6 +274,14 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label for="password">🔒 Senha:</label>
+                <input type="password" id="password" placeholder="Digite sua senha" required>
+                <small style="display: block; margin-top: 0.5rem; color: #666; font-size: 0.85rem;">
+                    💡 Dica: As senhas estão no documento de credenciais
+                </small>
+            </div>
+
             <div style="margin-top: 2.5rem;">
                 <button type="submit" class="btn-login">Entrar no Sistema</button>
             </div>
@@ -318,9 +326,15 @@
             event.preventDefault();
             
             const select = document.getElementById('userSelect');
+            const passwordInput = document.getElementById('password');
             
             if (!select.value) {
                 showAlert('error', 'Selecione um usuário!');
+                return;
+            }
+
+            if (!passwordInput.value) {
+                showAlert('error', 'Digite sua senha!');
                 return;
             }
             
@@ -335,8 +349,8 @@
             showAlert('success', `🔄 Conectando como ${name}...`);
 
             try {
-                // Login automático com Firebase Auth
-                const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+                // Login com Firebase Auth usando senha digitada
+                const userCredential = await signInWithEmailAndPassword(auth, credentials.email, passwordInput.value);
                 const uid = userCredential.user.uid;
 
                 // Buscar dados do usuário no Firestore
@@ -370,8 +384,8 @@
             } catch (error) {
                 console.error('Erro no login:', error);
                 
-                if (error.code === 'auth/wrong-password') {
-                    showAlert('error', '🔒 Credenciais inválidas!');
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    showAlert('error', '🔒 Senha incorreta!');
                 } else if (error.code === 'auth/user-not-found') {
                     showAlert('error', '❌ Usuário não cadastrado! Execute setup-users.html primeiro.');
                 } else if (error.code === 'auth/too-many-requests') {
