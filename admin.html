@@ -757,10 +757,31 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "829728497507",
+          appId: "1:829728497507:web:5689c0ad79c42dbe583d56"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
         // Estado global
         let proposals = [];
-        let currentProposalId = null;
+        let currentProposal = null;
+        let currentUser = null;
+        let unsubscribePending = null;
+        let unsubscribeHistory = null;
+        
         const MINISTRIES = [
             'Casa Civil',
             'Economia e Trabalho',
@@ -778,11 +799,19 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            checkAdminAccess();
-            loadProposals();
-            loadHistory();
+            checkAuth();
             populateMinistrySelect();
         });
+
+        function checkAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    checkAdminAccess();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
 
         function checkAdminAccess() {
             const storedUser = localStorage.getItem('govUser');
@@ -791,17 +820,38 @@
                 return;
             }
 
-            const user = JSON.parse(storedUser);
-            if (user.role !== 'Presidenta' && user.role !== 'Vice-Presidente') {
+            currentUser = JSON.parse(storedUser);
+            if (currentUser.role !== 'Presidenta' && currentUser.role !== 'Vice-Presidente') {
                 alert('⚠️ Acesso negado! Apenas Presidenta e Vice-Presidente podem acessar esta área.');
                 window.location.href = 'dashboard.html';
+                return;
             }
+
+            // Iniciar listeners em realtime
+            loadProposalsRealtime();
+            loadHistoryRealtime();
         }
 
-        function loadProposals() {
-            proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-            const pending = proposals.filter(p => p.status === 'pending');
-            
+        function loadProposalsRealtime() {
+            const q = query(
+                collection(db, 'proposals'),
+                where('status', '==', 'pending'),
+                orderBy('createdAt', 'desc')
+            );
+
+            unsubscribePending = onSnapshot(q, (snapshot) => {
+                const pending = [];
+                snapshot.forEach((doc) => {
+                    pending.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayProposals(pending);
+            }, (error) => {
+                console.error('Erro ao carregar propostas:', error);
+            });
+        }
+
+        function displayProposals(pending) {
             const list = document.getElementById('proposalsList');
             
             if (pending.length === 0) {
@@ -821,7 +871,7 @@
                             <div class="proposal-title">${proposal.documentType} - ${proposal.summary}</div>
                             <div class="proposal-meta">
                                 Por ${proposal.requestorName} (${proposal.position}) • 
-                                ${new Date(proposal.submittedAt).toLocaleString('pt-BR')}
+                                ${formatDate(proposal.createdAt)}
                             </div>
                         </div>
                         <span class="status-badge status-pending">Pendente</span>
@@ -837,27 +887,46 @@
                         </div>
                     </div>
                     <div class="proposal-actions">
-                        <button class="btn btn-approve" onclick="openApproveModal(${index})">
+                        <button class="btn btn-approve" onclick="window.openApproveModal('${proposal.id}')">
                             ✓ Aprovar
                         </button>
-                        <button class="btn btn-reject" onclick="openRejectModal(${index})">
+                        <button class="btn btn-reject" onclick="window.openRejectModal('${proposal.id}')">
                             ✗ Rejeitar
                         </button>
-                        <button class="btn btn-adjust" onclick="openAdjustModal(${index})">
+                        <button class="btn btn-adjust" onclick="window.openAdjustModal('${proposal.id}')">
                             ✏️ Solicitar Ajustes
                         </button>
-                        <button class="btn btn-view" onclick="viewProposal(${index})">
+                        <button class="btn btn-view" onclick="window.viewProposal('${proposal.id}')">
                             👁️ Ver Detalhes
                         </button>
                     </div>
                 </div>
             `).join('');
+            
+            // Guardar propostas para uso nas funções
+            proposals = pending;
         }
 
-        function loadHistory() {
-            const allProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-            const processed = allProposals.filter(p => p.status !== 'pending');
-            
+        function loadHistoryRealtime() {
+            const q = query(
+                collection(db, 'proposals'),
+                where('status', 'in', ['approved', 'rejected', 'needs_adjustment']),
+                orderBy('createdAt', 'desc')
+            );
+
+            unsubscribeHistory = onSnapshot(q, (snapshot) => {
+                const processed = [];
+                snapshot.forEach((doc) => {
+                    processed.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayHistory(processed);
+            }, (error) => {
+                console.error('Erro ao carregar histórico:', error);
+            });
+        }
+
+        function displayHistory(processed) {
             const list = document.getElementById('historyList');
             
             if (processed.length === 0) {
@@ -877,11 +946,11 @@
                             <div class="proposal-title">${proposal.documentType} - ${proposal.summary}</div>
                             <div class="proposal-meta">
                                 Por ${proposal.requestorName} • 
-                                ${new Date(proposal.submittedAt).toLocaleString('pt-BR')}
+                                ${formatDate(proposal.createdAt)}
                             </div>
                         </div>
                         <span class="status-badge status-${proposal.status}">
-                            ${proposal.status === 'approved' ? 'Aprovado' : 'Rejeitado'}
+                            ${proposal.status === 'approved' ? 'Aprovado' : proposal.status === 'rejected' ? 'Rejeitado' : 'Ajustes Solicitados'}
                         </span>
                     </div>
                     <div class="proposal-body">
@@ -889,10 +958,10 @@
                             <div class="proposal-label">Custo</div>
                             <div class="proposal-cost">${formatCurrency(proposal.estimatedCost)}</div>
                         </div>
-                        ${proposal.notes ? `
+                        ${proposal.feedback ? `
                             <div class="proposal-field">
-                                <div class="proposal-label">Observações</div>
-                                <div class="proposal-value">${proposal.notes}</div>
+                                <div class="proposal-label">Feedback</div>
+                                <div class="proposal-value">${proposal.feedback}</div>
                             </div>
                         ` : ''}
                     </div>
@@ -916,192 +985,169 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 
-        function openApproveModal(index) {
-            currentProposalId = index;
+        function openApproveModal(proposalId) {
+            currentProposal = proposals.find(p => p.id === proposalId);
             document.getElementById('approveModal').classList.add('active');
         }
 
-        function openRejectModal(index) {
-            currentProposalId = index;
+        function openRejectModal(proposalId) {
+            currentProposal = proposals.find(p => p.id === proposalId);
             document.getElementById('rejectModal').classList.add('active');
         }
 
-        function openAdjustModal(index) {
-            currentProposalId = index;
+        function openAdjustModal(proposalId) {
+            currentProposal = proposals.find(p => p.id === proposalId);
             document.getElementById('adjustModal').classList.add('active');
+        }
+
+        function viewProposal(proposalId) {
+            const proposal = proposals.find(p => p.id === proposalId);
+            if (!proposal) return;
+            
+            alert(`
+📄 ${proposal.documentType}
+
+👤 Solicitante: ${proposal.requestorName}
+💼 Cargo: ${proposal.position}
+
+📝 Resumo:
+${proposal.summary}
+
+💰 Custo: ${formatCurrency(proposal.estimatedCost)}
+
+📖 Corpo:
+${proposal.body}
+
+🔍 Justificativa:
+${proposal.justification}
+            `.trim());
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
-            currentProposalId = null;
+            currentProposal = null;
+            
+            // Limpar campos
+            document.getElementById('approveNotes').value = '';
+            document.getElementById('rejectReason').value = '';
+            document.getElementById('adjustComments').value = '';
         }
 
-        function confirmApprove() {
-            const notes = document.getElementById('approveNotes').value;
-            const pending = proposals.filter(p => p.status === 'pending');
-            const proposal = pending[currentProposalId];
+        async function confirmApprove() {
+            if (!currentProposal) return;
             
-            proposal.status = 'approved';
-            proposal.notes = notes;
-            proposal.approvedAt = new Date().toISOString();
+            const feedback = document.getElementById('approveNotes').value;
             
-            localStorage.setItem('proposals', JSON.stringify(proposals));
-            
-            // Criar notificação para o ministro
-            createNotification({
-                type: 'proposal_response',
-                title: '✅ Proposta Aprovada',
-                status: 'approved',
-                targetUser: proposal.requestorName,
-                feedback: notes,
-                createdAt: new Date().toISOString(),
-                isNew: true
-            });
-            
-            closeModal('approveModal');
-            loadProposals();
-            loadHistory();
-            
-            alert('✅ Proposta aprovada com sucesso!');
+            try {
+                // Atualizar proposta no Firestore
+                await updateDoc(doc(db, 'proposals', currentProposal.id), {
+                    status: 'approved',
+                    feedback: feedback || null,
+                    approvedAt: serverTimestamp(),
+                    approvedBy: currentUser.name
+                });
+
+                // Criar notificação para o solicitante
+                await addDoc(collection(db, 'notifications'), {
+                    type: 'proposal_approved',
+                    title: '✅ Proposta Aprovada',
+                    message: `Sua proposta "${currentProposal.summary}" foi aprovada!`,
+                    proposalId: currentProposal.id,
+                    targetUsers: [currentProposal.requestorName],
+                    senderName: currentUser.name,
+                    read: false,
+                    createdAt: serverTimestamp()
+                });
+
+                closeModal('approveModal');
+                alert('✅ Proposta aprovada com sucesso!');
+            } catch (error) {
+                console.error('Erro ao aprovar proposta:', error);
+                alert('❌ Erro ao aprovar proposta. Tente novamente.');
+            }
         }
 
-        function confirmReject() {
-            const reason = document.getElementById('rejectReason').value;
-            if (!reason.trim()) {
-                alert('⚠️ Por favor, informe o motivo da rejeição.');
+        async function confirmReject() {
+            if (!currentProposal) return;
+            
+            const feedback = document.getElementById('rejectReason').value.trim();
+            
+            if (!feedback) {
+                alert('Por favor, informe o motivo da rejeição.');
                 return;
             }
             
-            const pending = proposals.filter(p => p.status === 'pending');
-            const proposal = pending[currentProposalId];
-            
-            proposal.status = 'rejected';
-            proposal.notes = reason;
-            proposal.rejectedAt = new Date().toISOString();
-            
-            localStorage.setItem('proposals', JSON.stringify(proposals));
-            
-            // Criar notificação para o ministro
-            createNotification({
-                type: 'proposal_response',
-                title: '❌ Proposta Reprovada',
-                status: 'rejected',
-                targetUser: proposal.requestorName,
-                feedback: reason,
-                createdAt: new Date().toISOString(),
-                isNew: true
-            });
-            
-            closeModal('rejectModal');
-            loadProposals();
-            loadHistory();
-            
-            alert('❌ Proposta rejeitada.');
+            try {
+                // Atualizar proposta no Firestore
+                await updateDoc(doc(db, 'proposals', currentProposal.id), {
+                    status: 'rejected',
+                    feedback: feedback,
+                    rejectedAt: serverTimestamp(),
+                    rejectedBy: currentUser.name
+                });
+
+                // Criar notificação para o solicitante
+                await addDoc(collection(db, 'notifications'), {
+                    type: 'proposal_rejected',
+                    title: '❌ Proposta Rejeitada',
+                    message: `Sua proposta "${currentProposal.summary}" foi rejeitada.`,
+                    proposalId: currentProposal.id,
+                    feedback: feedback,
+                    targetUsers: [currentProposal.requestorName],
+                    senderName: currentUser.name,
+                    read: false,
+                    createdAt: serverTimestamp()
+                });
+
+                closeModal('rejectModal');
+                alert('❌ Proposta rejeitada.');
+            } catch (error) {
+                console.error('Erro ao rejeitar proposta:', error);
+                alert('❌ Erro ao rejeitar proposta. Tente novamente.');
+            }
         }
 
-        function confirmAdjust() {
-            const adjustments = document.getElementById('adjustNotes').value;
-            if (!adjustments.trim()) {
-                alert('⚠️ Por favor, descreva os ajustes necessários.');
+        async function confirmAdjust() {
+            if (!currentProposal) return;
+            
+            const feedback = document.getElementById('adjustComments').value.trim();
+            
+            if (!feedback) {
+                alert('Por favor, informe os ajustes necessários.');
                 return;
             }
             
-            const pending = proposals.filter(p => p.status === 'pending');
-            const proposal = pending[currentProposalId];
-            
-            proposal.status = 'adjustments_requested';
-            proposal.notes = adjustments;
-            proposal.adjustRequestedAt = new Date().toISOString();
-            
-            localStorage.setItem('proposals', JSON.stringify(proposals));
-            
-            // Criar notificação para o ministro
-            createNotification({
-                type: 'proposal_response',
-                title: '⚠️ Ajustes Necessários',
-                status: 'adjustments',
-                targetUser: proposal.requestorName,
-                feedback: adjustments,
-                createdAt: new Date().toISOString(),
-                isNew: true
-            });
-            
-            closeModal('adjustModal');
-            loadProposals();
-            
-            alert('✏️ Ajustes solicitados. O ministro será notificado.');
-        }
+            try {
+                // Atualizar proposta no Firestore
+                await updateDoc(doc(db, 'proposals', currentProposal.id), {
+                    status: 'needs_adjustment',
+                    feedback: feedback,
+                    adjustmentRequestedAt: serverTimestamp(),
+                    adjustmentRequestedBy: currentUser.name
+                });
 
-        function viewProposal(index) {
-            const pending = proposals.filter(p => p.status === 'pending');
-            const proposal = pending[index];
-            alert(`
-DETALHES DA PROPOSTA
+                // Criar notificação para o solicitante
+                await addDoc(collection(db, 'notifications'), {
+                    type: 'proposal_needs_adjustment',
+                    title: '✏️ Ajustes Solicitados',
+                    message: `Sua proposta "${currentProposal.summary}" precisa de ajustes.`,
+                    proposalId: currentProposal.id,
+                    feedback: feedback,
+                    targetUsers: [currentProposal.requestorName],
+                    senderName: currentUser.name,
+                    read: false,
+                    createdAt: serverTimestamp()
+                });
 
-Tipo: ${proposal.documentType}
-Solicitante: ${proposal.requestorName}
-Cargo: ${proposal.position}
-Custo: ${formatCurrency(proposal.estimatedCost)}
-
-Ementa:
-${proposal.summary}
-
-Corpo:
-${proposal.body}
-
-Justificativa:
-${proposal.justification}
-            `);
-        }
-
-        function adjustBudget() {
-            const ministry = document.getElementById('ministrySelect').value;
-            const newValue = parseFloat(document.getElementById('budgetAdjust').value);
-            
-            if (!ministry || !newValue || newValue < 0) {
-                alert('⚠️ Selecione um ministério e informe um valor válido.');
-                return;
-            }
-            
-            if (confirm(`Confirma o ajuste do orçamento de ${ministry} para ${formatCurrency(newValue)}?`)) {
-                // Aqui integraria com Google Sheets
-                alert('✅ Orçamento ajustado com sucesso!');
-                document.getElementById('budgetAdjust').value = '';
+                closeModal('adjustModal');
+                alert('✏️ Solicitação de ajustes enviada.');
+            } catch (error) {
+                console.error('Erro ao solicitar ajustes:', error);
+                alert('❌ Erro ao solicitar ajustes. Tente novamente.');
             }
         }
 
-        function forceUpdateIndicators() {
-            alert('🔄 Atualizando indicadores econômicos...');
-            window.location.href = 'index.html';
-        }
-
-        function resetSystem() {
-            if (confirm('⚠️ ATENÇÃO: Esta ação irá resetar TODOS os dados do sistema. Deseja continuar?')) {
-                if (confirm('Esta ação é IRREVERSÍVEL. Tem certeza absoluta?')) {
-                    localStorage.clear();
-                    alert('✅ Sistema resetado com sucesso!');
-                    window.location.href = 'index.html';
-                }
-            }
-        }
-
-        function exportData() {
-            const data = {
-                proposals: proposals,
-                exportedAt: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `governo-chocotone-backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            alert('💾 Dados exportados com sucesso!');
-        }
-
+        // Funções auxiliares
         function formatCurrency(value) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -1110,11 +1156,32 @@ ${proposal.justification}
             }).format(value);
         }
 
-        function createNotification(notificationData) {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            notifications.push(notificationData);
-            localStorage.setItem('notifications', JSON.stringify(notifications));
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Data não disponível';
+            
+            // Se é serverTimestamp do Firestore
+            if (timestamp && timestamp.toDate) {
+                return timestamp.toDate().toLocaleString('pt-BR');
+            }
+            
+            // Se é ISO string
+            if (typeof timestamp === 'string') {
+                return new Date(timestamp).toLocaleString('pt-BR');
+            }
+            
+            return 'Data inválida';
         }
+
+        // Tornar funções globais para onclick
+        window.openApproveModal = openApproveModal;
+        window.openRejectModal = openRejectModal;
+        window.openAdjustModal = openAdjustModal;
+        window.viewProposal = viewProposal;
+        window.closeModal = closeModal;
+        window.confirmApprove = confirmApprove;
+        window.confirmReject = confirmReject;
+        window.confirmAdjust = confirmAdjust;
+        window.switchTab = switchTab;
     </script>
 </body>
 </html>

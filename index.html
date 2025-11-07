@@ -397,14 +397,6 @@
             }
         }
         
-        // Verificar se já está logado
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Usuário já logado, redirecionar
-                window.location.href = 'dashboard.html';
-            }
-        });
-
         // Tornar handleLogin global
         window.handleLogin = handleLogin;
     </script>

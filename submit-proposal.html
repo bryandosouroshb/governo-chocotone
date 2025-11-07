@@ -730,10 +730,26 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "829728497507",
+          appId: "1:829728497507:web:5689c0ad79c42dbe583d56"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
         // Configurações
         const CONFIG = {
-            SHEETS_API_URL: 'https://script.google.com/macros/s/AKfycbz-gPC5CKQSlVqfVPsWAtKaA8hD7mnRxJz-pkztNClXjPb-gXM-2lwTdQfNbLvnqK68Vw/exec',
             NOTEBOOKLM_URL: 'https://notebooklm.google.com/notebook/68793eb3-1c33-41f5-a0b8-c2d54e7c4cb9'
         };
 
@@ -757,14 +773,26 @@
         let currentUser = null;
         let currentBudget = 0;
         let spentBudget = 0;
+        let firebaseUser = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            loadUserData();
+            checkAuth();
             setupEventListeners();
         });
 
-        function loadUserData() {
+        function checkAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    firebaseUser = user;
+                    loadUserData();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        async function loadUserData() {
             const storedUser = localStorage.getItem('govUser');
             if (storedUser) {
                 currentUser = JSON.parse(storedUser);
@@ -778,10 +806,37 @@
                     document.getElementById('requestorName').value = currentUser.name;
                     updatePosition({ target: { value: currentUser.name } });
                 }
+
+                // Carregar orçamento do Firestore
+                await loadBudgetFromFirestore();
                 
-                updateBudgetInfo();
+                displayUserInfo();
             } else {
                 window.location.href = 'index.html';
+            }
+        }
+
+        async function loadBudgetFromFirestore() {
+            try {
+                // Para Presidenta/Vice, pegar todos os orçamentos
+                if (currentUser.role === 'Presidenta' || currentUser.role === 'Vice-Presidente') {
+                    // Será atualizado quando selecionar um nome no dropdown
+                    return;
+                }
+
+                // Para ministros, buscar orçamento específico do ministério
+                const ministryName = currentUser.ministries;
+                const budgetDoc = await getDoc(doc(db, 'budgets', ministryName));
+                
+                if (budgetDoc.exists()) {
+                    const budgetData = budgetDoc.data();
+                    currentBudget = budgetData.totalBudget;
+                    spentBudget = budgetData.spent || 0;
+                } else {
+                    console.error('Orçamento não encontrado para:', ministryName);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar orçamento:', error);
             }
         }
 
@@ -790,6 +845,15 @@
             document.getElementById('documentType').addEventListener('change', validateDocumentType);
             document.getElementById('estimatedCost').addEventListener('input', formatCostInput);
             document.getElementById('proposalForm').addEventListener('submit', handleSubmit);
+        }
+
+        function displayUserInfo() {
+            if (!currentUser) return;
+            
+            const member = GOVERNMENT_MEMBERS[currentUser.name];
+            if (member) {
+                updateBudgetInfo();
+            }
         }
 
         function updatePosition(e) {
@@ -926,34 +990,42 @@
             document.getElementById('btnSubmit').disabled = true;
 
             try {
-                // Enviar para Google Sheets
-                const response = await fetch(CONFIG.SHEETS_API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'submitProposal',
-                        data: formData
-                    })
-                });
+                // Salvar proposta no Firestore
+                const proposalData = {
+                    ...formData,
+                    requestorUid: firebaseUser.uid,
+                    requestorEmail: currentUser.email,
+                    ministry: document.getElementById('position').value.includes('Ministro') 
+                        ? GOVERNMENT_MEMBERS[requestorName].ministry 
+                        : 'Gabinete da Presidência',
+                    createdAt: serverTimestamp(),
+                    publicationStatus: 'pending_approval',
+                    feedback: null,
+                    approvedAt: null,
+                    publishedAt: null,
+                    inForceAt: null
+                };
 
-                // Salvar também localmente para backup
-                const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-                proposals.push(formData);
-                localStorage.setItem('proposals', JSON.stringify(proposals));
+                const proposalRef = await addDoc(collection(db, 'proposals'), proposalData);
+                console.log('Proposta criada:', proposalRef.id);
 
-                // Criar notificação para Presidenta/Vice
-                createNotification({
+                // Criar notificação para Presidenta e Vice
+                const notificationData = {
                     type: 'proposal_submitted',
                     title: '📝 Nova Proposta Recebida',
+                    message: `${formData.requestorName} submeteu: ${formData.documentType}`,
                     senderName: formData.requestorName,
+                    senderUid: firebaseUser.uid,
+                    proposalId: proposalRef.id,
                     documentType: formData.documentType,
                     estimatedCost: formData.estimatedCost,
-                    createdAt: new Date().toISOString(),
-                    isNew: true
-                });
+                    targetUsers: ['Presidenta', 'Vice-Presidente'],
+                    read: false,
+                    createdAt: serverTimestamp()
+                };
+
+                await addDoc(collection(db, 'notifications'), notificationData);
+                console.log('Notificação criada para Presidenta/Vice');
 
                 // Mostrar sucesso
                 document.getElementById('loadingSubmit').classList.remove('active');
@@ -983,12 +1055,6 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
-        }
-
-        function createNotification(notificationData) {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            notifications.push(notificationData);
-            localStorage.setItem('notifications', JSON.stringify(notifications));
         }
 
         function formatCurrency(value) {
