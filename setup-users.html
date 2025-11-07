@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup - Cadastrar Usuários</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #00ff00; }
+        .log {
+            background: #000;
+            padding: 1rem;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            height: 400px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        .log div {
+            margin: 0.5rem 0;
+            font-size: 14px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffaa00; }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #00dd00;
+        }
+        button:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Setup do Sistema - Cadastro de Usuários</h1>
+    <p>Esta página cria os 11 usuários no Firebase Authentication e no Firestore.</p>
+    <p><strong>⚠️ Execute apenas UMA vez!</strong></p>
+    
+    <button id="btnSetup" onclick="setupUsers()">Iniciar Setup</button>
+    
+    <div class="log" id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "829728497507",
+          appId: "1:829728497507:web:5689c0ad79c42dbe583d56",
+          measurementId: "G-GR6CGD5WFP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const USERS = {
+          'Chocotone': {
+            email: 'chocotone@gov.br',
+            password: 'GovChoco2025!',
+            role: 'Presidenta',
+            ministries: ['all']
+          },
+          'Bryan dos Ouros': {
+            email: 'bryan@gov.br',
+            password: 'ViceGov2025#',
+            role: 'Vice-Presidente',
+            ministries: ['all']
+          },
+          '-Furia-': {
+            email: 'furia@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Economia e Trabalho']
+          },
+          'joaobatistagc': {
+            email: 'joao@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministra',
+            ministries: ['Saúde']
+          },
+          'Stroch': {
+            email: 'stroch@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Educação, Ciência e Tecnologia']
+          },
+          'Nyxalis': {
+            email: 'nyxalis@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministra',
+            ministries: ['Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários']
+          },
+          'MalopRRN': {
+            email: 'malop@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Defesa']
+          },
+          'guguinhoHop': {
+            email: 'gugui@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Justiça e Segurança Pública']
+          },
+          'Dj.Bigoreia': {
+            email: 'bigoreia@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Infraestrutura']
+          },
+          'Fabio-Blunt-UK': {
+            email: 'fabio@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministro',
+            ministries: ['Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural']
+          },
+          'Brenda.M': {
+            email: 'brenda@gov.br',
+            password: 'Ministro2025@',
+            role: 'Ministra',
+            ministries: ['Cultura e Esporte']
+          },
+          'Stallley': {
+            email: 'stallley@gov.br',
+            password: 'Ministro2025@',
+            role: 'Advogado-Geral',
+            ministries: ['Advocacia-Geral da União']
+          }
+        };
+
+        function log(message, type = 'success') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        window.setupUsers = async function() {
+            const btn = document.getElementById('btnSetup');
+            btn.disabled = true;
+            
+            log('🚀 Iniciando setup dos usuários...', 'warning');
+            
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const [name, userData] of Object.entries(USERS)) {
+                try {
+                    log(`📝 Criando usuário: ${name} (${userData.email})...`, 'warning');
+                    
+                    // Criar usuário no Authentication
+                    const userCredential = await createUserWithEmailAndPassword(
+                        auth, 
+                        userData.email, 
+                        userData.password
+                    );
+                    
+                    const uid = userCredential.user.uid;
+                    
+                    // Salvar dados no Firestore
+                    await setDoc(doc(db, 'users', uid), {
+                        name: name,
+                        email: userData.email,
+                        role: userData.role,
+                        ministries: userData.ministries,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    log(`✅ ${name} criado com sucesso! UID: ${uid}`, 'success');
+                    successCount++;
+                    
+                    // Deslogar para criar próximo usuário
+                    await auth.signOut();
+                    
+                    // Delay para evitar rate limit
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        log(`⚠️ ${name} já existe no sistema`, 'warning');
+                    } else {
+                        log(`❌ Erro ao criar ${name}: ${error.message}`, 'error');
+                        errorCount++;
+                    }
+                }
+            }
+            
+            log('', 'success');
+            log('═══════════════════════════════════════', 'success');
+            log(`✅ Setup concluído!`, 'success');
+            log(`📊 Sucessos: ${successCount} | Erros: ${errorCount}`, 'success');
+            log('═══════════════════════════════════════', 'success');
+            log('', 'success');
+            log('🎉 Você já pode usar o sistema!', 'success');
+            log('➡️  Volte para index.html e faça login', 'warning');
+            
+            btn.textContent = 'Setup Concluído ✓';
+        };
+
+        log('✅ Firebase inicializado. Clique no botão para começar.', 'success');
+    </script>
+</body>
+</html>
