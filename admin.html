@@ -522,7 +522,7 @@
                     <h1>⚙️ Painel Administrativo</h1>
                 </div>
             </div>
-            <a href="index.html" class="btn-back">← Voltar ao Dashboard</a>
+            <a href="dashboard.html" class="btn-back">← Voltar ao Dashboard</a>
         </div>
     </header>
 
@@ -720,14 +720,14 @@
         function checkAdminAccess() {
             const storedUser = localStorage.getItem('govUser');
             if (!storedUser) {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
                 return;
             }
 
             const user = JSON.parse(storedUser);
             if (user.role !== 'Presidenta' && user.role !== 'Vice-Presidente') {
                 alert('⚠️ Acesso negado! Apenas Presidenta e Vice-Presidente podem acessar esta área.');
-                window.location.href = 'index.html';
+                window.location.href = 'dashboard.html';
             }
         }
 

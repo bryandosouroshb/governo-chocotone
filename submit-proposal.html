@@ -494,7 +494,7 @@
                     <h1>📝 Submeter Proposta Orçamentária</h1>
                 </div>
             </div>
-            <a href="index.html" class="btn-back">← Voltar ao Dashboard</a>
+            <a href="dashboard.html" class="btn-back">← Voltar ao Dashboard</a>
         </div>
     </header>
 
@@ -530,30 +530,28 @@
 
             <!-- Form -->
             <form id="proposalForm">
-                <!-- Nome -->
-                <div class="form-group">
+                <!-- Nome (só aparece para Presidenta/Vice) -->
+                <div class="form-group" id="requestorNameGroup" style="display: none;">
                     <label class="form-label">
                         Nome do Solicitante <span class="required">*</span>
                     </label>
-                    <select class="form-select" id="requestorName" required>
+                    <select class="form-select" id="requestorName">
                         <option value="">Selecione...</option>
                         <optgroup label="Presidência">
                             <option value="Chocotone">Chocotone (Presidenta)</option>
                             <option value="Bryan dos Ouros">Bryan dos Ouros (Vice-Presidente)</option>
                         </optgroup>
                         <optgroup label="Ministros">
-                            <option value="Iasmin">Iasmin (Casa Civil)</option>
-                            <option value="Lucca">Lucca (Economia e Trabalho)</option>
-                            <option value="Rafael">Rafael (Saúde)</option>
-                            <option value="Sophia">Sophia (Educação, Ciência e Tecnologia)</option>
-                            <option value="Pedro">Pedro (Cultura e Esporte)</option>
-                            <option value="Beatriz">Beatriz (Defesa)</option>
-                            <option value="Gabriel">Gabriel (Justiça e Segurança Pública)</option>
-                            <option value="Julia">Julia (Infraestrutura)</option>
-                            <option value="Miguel">Miguel (Agricultura e Meio Ambiente)</option>
-                            <option value="Laura">Laura (Cidadania e Desenvolvimento Social)</option>
-                            <option value="Matheus">Matheus (Advocacia-Geral da União)</option>
-                            <option value="Isabella">Isabella (Gabinete da Presidência)</option>
+                            <option value="-Furia-">-Furia- (Economia e Trabalho)</option>
+                            <option value="joaobatistagc">joaobatistagc (Saúde)</option>
+                            <option value="Stroch">Stroch (Educação, Ciência e Tecnologia)</option>
+                            <option value="Nyxalis">Nyxalis (Cidadania)</option>
+                            <option value="MalopRRN">MalopRRN (Defesa)</option>
+                            <option value="guguinhoHop">guguinhoHop (Justiça e Segurança)</option>
+                            <option value="Dj.Bigoreia">Dj.Bigoreia (Infraestrutura)</option>
+                            <option value="Fabio-Blunt-UK">Fabio-Blunt-UK (Agricultura)</option>
+                            <option value="Brenda.M">Brenda.M (Cultura e Esporte)</option>
+                            <option value="Stallley">Stallley (AGU)</option>
                         </optgroup>
                     </select>
                 </div>
@@ -587,8 +585,9 @@
                     <label class="form-label">
                         Custo Estimado (R$) <span class="required">*</span>
                     </label>
-                    <input type="number" class="form-input" id="estimatedCost" min="0" step="0.01" required>
-                    <div class="helper-text" id="costHelper">Digite o valor em reais (ex: 1000000.00)</div>
+                    <input type="text" class="form-input" id="estimatedCost" placeholder="R$ 0,00" required>
+                    <input type="hidden" id="estimatedCostValue">
+                    <div class="helper-text" id="costHelper">Digite o valor (será formatado automaticamente em reais)</div>
                 </div>
 
                 <!-- Ementa -->
@@ -659,7 +658,7 @@
                 Você será notificado sobre o status.
             </div>
             <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="window.location.href='index.html'">
+                <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">
                     Voltar ao Dashboard
                 </button>
             </div>
@@ -720,16 +719,27 @@
             const storedUser = localStorage.getItem('govUser');
             if (storedUser) {
                 currentUser = JSON.parse(storedUser);
+                
+                // Se for Presidenta ou Vice, mostra dropdown de nomes
+                if (currentUser.role === 'Presidenta' || currentUser.role === 'Vice-Presidente') {
+                    document.getElementById('requestorNameGroup').style.display = 'block';
+                    document.getElementById('requestorName').required = true;
+                } else {
+                    // Para ministros, preenche automaticamente com seu nome
+                    document.getElementById('requestorName').value = currentUser.name;
+                    updatePosition({ target: { value: currentUser.name } });
+                }
+                
                 updateBudgetInfo();
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         }
 
         function setupEventListeners() {
             document.getElementById('requestorName').addEventListener('change', updatePosition);
             document.getElementById('documentType').addEventListener('change', validateDocumentType);
-            document.getElementById('estimatedCost').addEventListener('input', validateCost);
+            document.getElementById('estimatedCost').addEventListener('input', formatCostInput);
             document.getElementById('proposalForm').addEventListener('submit', handleSubmit);
         }
 
@@ -783,8 +793,30 @@
             }
         }
 
-        function validateCost(e) {
-            const cost = parseFloat(e.target.value) || 0;
+        function formatCostInput(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            
+            if (value === '') {
+                e.target.value = '';
+                document.getElementById('estimatedCostValue').value = '0';
+                return;
+            }
+            
+            // Converte para número e formata
+            const numValue = parseInt(value) / 100;
+            document.getElementById('estimatedCostValue').value = numValue;
+            
+            // Formata para exibição
+            e.target.value = 'R$ ' + numValue.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            // Valida orçamento
+            validateCost(numValue);
+        }
+
+        function validateCost(cost) {
             const available = currentBudget - spentBudget;
             const costHelper = document.getElementById('costHelper');
 
@@ -810,11 +842,16 @@
         async function handleSubmit(e) {
             e.preventDefault();
 
+            // Para ministros, usa o nome do usuário logado. Para Presidenta/Vice, usa o selecionado
+            const requestorName = (currentUser.role === 'Presidenta' || currentUser.role === 'Vice-Presidente') 
+                ? document.getElementById('requestorName').value 
+                : currentUser.name;
+
             const formData = {
-                requestorName: document.getElementById('requestorName').value,
+                requestorName: requestorName,
                 position: document.getElementById('position').value,
                 documentType: document.getElementById('documentType').value,
-                estimatedCost: parseFloat(document.getElementById('estimatedCost').value),
+                estimatedCost: parseFloat(document.getElementById('estimatedCostValue').value) || 0,
                 summary: document.getElementById('summary').value,
                 body: document.getElementById('body').value,
                 justification: document.getElementById('justification').value,
