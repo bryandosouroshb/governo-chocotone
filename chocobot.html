@@ -423,7 +423,10 @@
 
     <script type="module">
         import { LEGAL_CONTEXT } from './chocobot-context.js';
-        import { OPENROUTER_CONFIG } from './chocobot-config.js';
+        
+        // URL do proxy Vercel (protege a API key)
+        const PROXY_URL = 'https://governo-chocotone-czhpeb2of-bryandosouros-projects.vercel.app/api/chocobot';
+        const MODEL = 'google/gemini-2.0-flash-exp:free';
         
         let conversationHistory = [];
         let isTyping = false;
@@ -492,16 +495,13 @@
                 content: userMessage
             });
 
-            const response = await fetch(OPENROUTER_CONFIG.apiUrl, {
+            const response = await fetch(PROXY_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OPENROUTER_CONFIG.apiKey}`,
-                    'HTTP-Referer': OPENROUTER_CONFIG.siteUrl,
-                    'X-Title': OPENROUTER_CONFIG.siteName
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: OPENROUTER_CONFIG.model,
+                    model: MODEL,
                     messages: [
                         {
                             role: 'system',

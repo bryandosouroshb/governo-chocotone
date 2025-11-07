@@ -1,5 +1,13 @@
+# Arquivos com API Keys
 chocobot-config.js
+api/chocobot.js
 *.env
 .env.local
 config.js
 *-config.js
+
+# Vercel
+.vercel
+
+# Firebase (não usado)
+functions/
