@@ -2048,6 +2048,67 @@
         // Tornar funções globais
         window.markAsPublished = markAsPublished;
         window.markAsInForce = markAsInForce;
+
+        // Habilitar cliques no botão ChocoBot dentro do iframe
+        const chocobotFrame = document.getElementById('chocobotFrame');
+        
+        // Criar overlay clicável para o botão
+        const buttonOverlay = document.createElement('div');
+        buttonOverlay.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            z-index: 9998;
+            cursor: pointer;
+        `;
+        
+        buttonOverlay.addEventListener('click', () => {
+            // Habilitar pointer-events temporariamente no iframe
+            chocobotFrame.style.pointerEvents = 'auto';
+            
+            // Simular clique no botão dentro do iframe
+            try {
+                const iframeDoc = chocobotFrame.contentDocument || chocobotFrame.contentWindow.document;
+                const chocobotButton = iframeDoc.querySelector('.chocobot-button');
+                if (chocobotButton) {
+                    chocobotButton.click();
+                }
+            } catch (e) {
+                console.log('Erro ao acessar iframe:', e);
+            }
+            
+            // Desabilitar pointer-events após 100ms (dar tempo do clique)
+            setTimeout(() => {
+                // Verificar se o chat está aberto
+                try {
+                    const iframeDoc = chocobotFrame.contentDocument || chocobotFrame.contentWindow.document;
+                    const chatContainer = iframeDoc.querySelector('.chocobot-container');
+                    if (chatContainer && chatContainer.style.display !== 'none') {
+                        // Chat está aberto, manter pointer-events
+                        return;
+                    }
+                } catch (e) {}
+                
+                chocobotFrame.style.pointerEvents = 'none';
+            }, 100);
+        });
+        
+        document.body.appendChild(buttonOverlay);
+        
+        // Observar mudanças no iframe para ajustar pointer-events
+        setInterval(() => {
+            try {
+                const iframeDoc = chocobotFrame.contentDocument || chocobotFrame.contentWindow.document;
+                const chatContainer = iframeDoc.querySelector('.chocobot-container');
+                if (chatContainer && chatContainer.style.display !== 'none') {
+                    chocobotFrame.style.pointerEvents = 'auto';
+                } else {
+                    chocobotFrame.style.pointerEvents = 'none';
+                }
+            } catch (e) {}
+        }, 500);
     </script>
 </body>
 </html>
