@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Orçamentária - Governo Federal Chocotone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
+            --accent-color: #ffd700;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-badge {
+            width: 60px;
+            height: 60px;
+            background: url('https://www.habbo.com.br/habbo-imaging/badge/b11044s02014t21134s04064s3911450c22ff6b1fd8b46488a58028697ae6a.gif') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-badge {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-role {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            animation: fadeInUp 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--bg-gradient);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+            line-height: 1.2;
+            overflow-wrap: break-word;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+            word-wrap: break-word;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--bg-gradient);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        /* Big Budget Display */
+        .budget-showcase {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease 0.2s backwards;
+        }
+
+        .budget-showcase::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .budget-label {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .budget-amount {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            word-break: break-word;
+            line-height: 1.1;
+        }
+
+        .budget-date {
+            font-size: 1rem;
+            color: #999;
+            font-weight: 500;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.5rem 2rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: var(--primary-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Ministry Budget Table */
+        .ministry-table {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            overflow-x: auto;
+            animation: fadeInUp 0.5s ease 0.4s backwards;
+        }
+
+        .ministry-table h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 250px;
+        }
+
+        th {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        td {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-danger {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Indicators Section */
+        .indicators-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-top: 2rem;
+            animation: fadeInUp 0.5s ease 0.6s backwards;
+        }
+
+        .indicators-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .indicators-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .btn-update-indicators {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-update-indicators:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .indicator-card {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 4px solid;
+            transition: var(--transition);
+        }
+
+        .indicator-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .indicator-label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .indicator-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        .indicator-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .indicator-change.positive {
+            color: var(--success-color);
+        }
+
+        .indicator-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            color: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+
+        footer p {
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: 100%;
+            }
+
+            .budget-amount {
+                font-size: 2.5rem;
+            }
+            
+            .card-value {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                max-width: 150px;
+            }
+            
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
+            
+            .logo-text p {
+                font-size: 0.75rem;
+            }
+            
+            .user-badge {
+                font-size: 0.85rem;
+                padding: 0.4rem 1rem;
+            }
+            
+            .indicators-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .budget-amount {
+                font-size: 1.8rem;
+            }
+            
+            .card-value {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .budget-showcase {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-gradient);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text">Carregando Sistema...</div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-badge"></div>
+                <div class="logo-text">
+                    <h1>Governo Federal Chocotone</h1>
+                    <p>Sistema de Gestão Orçamentária</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-badge">
+                    <span id="userName">Visitante</span>
+                    <span class="user-role" id="userRole">Sem permissão</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Budget Showcase -->
+        <div class="budget-showcase">
+            <div class="budget-label">Orçamento Total Disponível</div>
+            <div class="budget-amount" id="totalBudget">R$ 0,00</div>
+            <div class="budget-date" id="currentDate">Atualizado em: --</div>
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #f0f0f0;">
+                <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; font-weight: 600;">
+                    ⚖️ Teto de Gastos Constitucional
+                </div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #f44336;" id="spendingCeiling">
+                    R$ 1,900 trilhão
+                </div>
+                <div style="font-size: 0.85rem; color: #999; margin-top: 0.5rem;">
+                    <span id="ceilingPercentage">0%</span> do teto utilizado
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Receita Total</span>
+                    <span class="card-icon">💰</span>
+                </div>
+                <div class="card-value" id="totalRevenue">R$ 0</div>
+                <div class="card-subtitle">Projetado para 2025</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Despesa Total</span>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="card-value" id="totalExpense">R$ 0</div>
+                <div class="card-subtitle">Gastos acumulados</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="expenseProgress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Superávit Primário</span>
+                    <span class="card-icon">📈</span>
+                </div>
+                <div class="card-value" id="surplus">R$ 0</div>
+                <div class="card-subtitle">Meta de amortização da dívida</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Dívida/PIB</span>
+                    <span class="card-icon">📉</span>
+                </div>
+                <div class="card-value" id="debtGDP">0%</div>
+                <div class="card-subtitle" id="debtStatus">Em redução</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 81.5%; background: linear-gradient(90deg, #f44336, #ff9800, #4caf50)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="openSubmitProposal()">
+                📝 Submeter Proposta
+            </button>
+            <button class="btn btn-secondary" onclick="openExtract()">
+                📄 Ver Extrato Completo
+            </button>
+            <button class="btn btn-admin" onclick="openAdminPanel()" id="btnAdmin" style="display: none;">
+                ⚙️ Painel Administrativo
+            </button>
+        </div>
+
+        <!-- Ministry Budget Table -->
+        <div class="ministry-table">
+            <h2>💼 Orçamento por Ministério</h2>
+            <table id="ministryTable">
+                <thead>
+                    <tr>
+                        <th>Ministério</th>
+                        <th>Orçamento Total</th>
+                        <th>Gasto</th>
+                        <th>Disponível</th>
+                        <th>% Executado</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="ministryTableBody">
+                    <!-- Será preenchido via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Economic Indicators -->
+        <div class="indicators-section">
+            <div class="indicators-header">
+                <h2>📊 Indicadores Econômicos</h2>
+                <button class="btn-update-indicators" onclick="updateIndicators()">
+                    🔄 Atualizar Agora
+                </button>
+            </div>
+            <div class="indicators-grid" id="indicatorsGrid">
+                <!-- Será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Governo Federal Chocotone | Sistema de Gestão Orçamentária v1.0</p>
+        <p>Desenvolvido com 💜 para o Congresso Nacional Habbo</p>
+    </footer>
+
+    <script>
+        // Configurações
+        const CONFIG = {
+            SHEETS_API_URL: 'https://script.google.com/macros/s/AKfycbz-gPC5CKQSlVqfVPsWAtKaA8hD7mnRxJz-pkztNClXjPb-gXM-2lwTdQfNbLvnqK68Vw/exec',
+            INDICATORS_API: 'https://congressohb.com.br/api/economic-ai/indicators?period=hour',
+            UPDATE_INTERVAL: 3600000, // 1 hora em ms
+            SPENDING_CEILING: 1900000000000, // Teto de gastos R$ 1.9 trilhão
+            LOA_DATA: {
+                totalRevenue: 4392000000000,
+                totalExpense: 1900000000000,
+                surplus: 2192000000000,
+                ministries: [
+                    { name: 'Casa Civil', budget: 15000000000, spent: 0 },
+                    { name: 'Economia e Trabalho', budget: 250000000000, spent: 0 },
+                    { name: 'Saúde', budget: 200000000000, spent: 0 },
+                    { name: 'Educação, Ciência e Tecnologia', budget: 260000000000, spent: 0 },
+                    { name: 'Cultura e Esporte', budget: 45000000000, spent: 0 },
+                    { name: 'Defesa', budget: 150000000000, spent: 0 },
+                    { name: 'Justiça e Segurança Pública', budget: 120000000000, spent: 0 },
+                    { name: 'Infraestrutura', budget: 300000000000, spent: 0 },
+                    { name: 'Agricultura e Meio Ambiente', budget: 130000000000, spent: 0 },
+                    { name: 'Cidadania e Desenvolvimento Social', budget: 250000000000, spent: 0 },
+                    { name: 'Advocacia-Geral da União', budget: 30000000000, spent: 0 },
+                    { name: 'Gabinete da Presidência', budget: 150000000000, spent: 0 }
+                ]
+            }
+        };
+
+        // Estado global
+        let userData = {
+            name: 'Visitante',
+            role: 'visitor',
+            ministries: []
+        };
+
+        let budgetData = JSON.parse(JSON.stringify(CONFIG.LOA_DATA));
+        let indicatorsData = null;
+
+        // Funções de inicialização
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                checkAuth();
+                loadBudgetData();
+                loadMinistryTable();
+                updateIndicators();
+                setInterval(updateIndicators, CONFIG.UPDATE_INTERVAL);
+            }, 1500);
+        });
+
+        function checkAuth() {
+            // Simulação de autenticação (será integrado com Google)
+            const storedUser = localStorage.getItem('govUser');
+            if (storedUser) {
+                userData = JSON.parse(storedUser);
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userRole').textContent = userData.role;
+                
+                if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
+                    document.getElementById('btnAdmin').style.display = 'block';
+                }
+            } else {
+                // Redirecionar para login
+                // window.location.href = 'login.html';
+            }
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2
+            }).format(value);
+        }
+
+        function loadBudgetData() {
+            const totalExpense = budgetData.ministries.reduce((sum, m) => sum + m.spent, 0);
+            const totalBudget = budgetData.totalRevenue - totalExpense;
+            
+            // Verificar se ultrapassou o teto de gastos
+            const ceilingPercentage = (totalExpense / CONFIG.SPENDING_CEILING) * 100;
+            
+            // Atualizar display principal
+            document.getElementById('totalBudget').textContent = formatCurrency(totalBudget);
+            document.getElementById('totalRevenue').textContent = formatCurrency(budgetData.totalRevenue).replace(',00', '');
+            
+            // Atualizar informação do teto
+            document.getElementById('ceilingPercentage').textContent = ceilingPercentage.toFixed(2) + '%';
+            const ceilingElement = document.getElementById('ceilingPercentage');
+            if (ceilingPercentage >= 100) {
+                ceilingElement.style.color = '#f44336';
+                ceilingElement.style.fontWeight = '800';
+            } else if (ceilingPercentage >= 90) {
+                ceilingElement.style.color = '#ff9800';
+                ceilingElement.style.fontWeight = '700';
+            } else {
+                ceilingElement.style.color = '#4caf50';
+                ceilingElement.style.fontWeight = '700';
+            }
+            
+            // Mostrar gasto total com indicador de teto
+            const expenseText = formatCurrency(totalExpense).replace(',00', '');
+            document.getElementById('totalExpense').textContent = expenseText;
+            
+            // Colorir barra de progresso baseado no teto
+            const expenseProgressBar = document.getElementById('expenseProgress');
+            const expensePercent = (totalExpense / CONFIG.SPENDING_CEILING) * 100;
+            expenseProgressBar.style.width = Math.min(expensePercent, 100) + '%';
+            
+            // Mudar cor baseado na proximidade do teto
+            if (expensePercent >= 100) {
+                expenseProgressBar.style.background = 'linear-gradient(90deg, #f44336, #c62828)';
+                document.getElementById('totalExpense').style.color = '#f44336';
+            } else if (expensePercent >= 90) {
+                expenseProgressBar.style.background = 'linear-gradient(90deg, #ff9800, #f57c00)';
+                document.getElementById('totalExpense').style.color = '#ff9800';
+            } else if (expensePercent >= 75) {
+                expenseProgressBar.style.background = 'linear-gradient(90deg, #ffc107, #ff9800)';
+            } else {
+                expenseProgressBar.style.background = 'var(--bg-gradient)';
+            }
+            
+            document.getElementById('surplus').textContent = formatCurrency(budgetData.surplus).replace(',00', '');
+            
+            const now = new Date();
+            document.getElementById('currentDate').textContent = `Atualizado em: ${now.toLocaleString('pt-BR')}`;
+            
+            // Mostrar alerta se próximo ou acima do teto
+            if (expensePercent >= 95) {
+                showCeilingWarning(expensePercent, totalExpense);
+            }
+        }
+        
+        function showCeilingWarning(percentage, totalExpense) {
+            const warningDiv = document.getElementById('ceilingWarning');
+            if (!warningDiv) {
+                const warning = document.createElement('div');
+                warning.id = 'ceilingWarning';
+                warning.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: ${percentage >= 100 ? '#f44336' : '#ff9800'};
+                    color: white;
+                    padding: 1.5rem;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    max-width: 400px;
+                    animation: slideInRight 0.5s ease;
+                    font-weight: 600;
+                `;
+                
+                const message = percentage >= 100 
+                    ? `🚨 ATENÇÃO: Teto de gastos ULTRAPASSADO! ${percentage.toFixed(1)}% do limite`
+                    : `⚠️ ALERTA: Aproximando do teto de gastos! ${percentage.toFixed(1)}% do limite`;
+                
+                warning.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">${message}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">
+                                Gastou: ${formatCurrency(totalExpense)}<br>
+                                Teto: ${formatCurrency(CONFIG.SPENDING_CEILING)}
+                            </div>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: rgba(255,255,255,0.3);
+                            border: none;
+                            color: white;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            border-radius: 50%;
+                            width: 30px;
+                            height: 30px;
+                            margin-left: 10px;
+                        ">×</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(warning);
+            }
+        }
+
+        function loadMinistryTable() {
+            const tbody = document.getElementById('ministryTableBody');
+            tbody.innerHTML = '';
+            
+            budgetData.ministries.forEach(ministry => {
+                const available = ministry.budget - ministry.spent;
+                const percent = ministry.budget > 0 ? ((ministry.spent / ministry.budget) * 100).toFixed(1) : 0;
+                
+                let statusClass = 'status-ok';
+                let statusText = 'OK';
+                
+                if (percent >= 100) {
+                    statusClass = 'status-danger';
+                    statusText = 'EXCEDIDO';
+                } else if (percent > 90) {
+                    statusClass = 'status-danger';
+                    statusText = 'CRÍTICO';
+                } else if (percent > 70) {
+                    statusClass = 'status-warning';
+                    statusText = 'ATENÇÃO';
+                }
+                
+                const row = `
+                    <tr>
+                        <td><strong>${ministry.name}</strong></td>
+                        <td>${formatCurrency(ministry.budget)}</td>
+                        <td style="color: ${percent > 90 ? '#f44336' : 'inherit'}">${formatCurrency(ministry.spent)}</td>
+                        <td style="color: ${available < 0 ? '#f44336' : 'inherit'}">${formatCurrency(available)}</td>
+                        <td><strong>${percent}%</strong></td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        async function updateIndicators() {
+            try {
+                const response = await fetch(CONFIG.INDICATORS_API);
+                indicatorsData = await response.json();
+                displayIndicators();
+            } catch (error) {
+                console.error('Erro ao atualizar indicadores:', error);
+            }
+        }
+
+        function displayIndicators() {
+            if (!indicatorsData) return;
+            
+            const grid = document.getElementById('indicatorsGrid');
+            const indicators = indicatorsData.indicators;
+            
+            // Atualizar Dívida/PIB no card principal
+            const debtGDP = indicators.gross_debt_pct_gdp.value.toFixed(2);
+            document.getElementById('debtGDP').textContent = debtGDP + '%';
+            document.getElementById('debtStatus').textContent = 
+                debtGDP < 50 ? 'Em forte redução ✅' : 'Em redução 📉';
+            
+            // Principais indicadores para exibir
+            const mainIndicators = [
+                { key: 'gdp_growth_pct', label: 'Crescimento PIB', color: '#4caf50' },
+                { key: 'inflation_yoy', label: 'Inflação (IPCA)', color: '#ff9800' },
+                { key: 'unemployment_rate', label: 'Desemprego', color: '#f44336' },
+                { key: 'government_approval', label: 'Aprovação Gov.', color: '#2196f3' },
+                { key: 'selic_rate', label: 'Taxa Selic', color: '#9c27b0' },
+                { key: 'stock_market_index', label: 'Bolsa de Valores', color: '#00bcd4' }
+            ];
+            
+            grid.innerHTML = '';
+            
+            mainIndicators.forEach(ind => {
+                const data = indicators[ind.key];
+                if (!data) return;
+                
+                const changePercent = data.changePercent || 0;
+                const changeClass = changePercent >= 0 ? 'positive' : 'negative';
+                const changeSymbol = changePercent >= 0 ? '↑' : '↓';
+                
+                const card = `
+                    <div class="indicator-card" style="border-left-color: ${ind.color}">
+                        <div class="indicator-label">${ind.label}</div>
+                        <div class="indicator-value">${data.formatted}${data.unit === 'percentage' ? '%' : ''}</div>
+                        <div class="indicator-change ${changeClass}">
+                            ${changeSymbol} ${Math.abs(changePercent).toFixed(2)}%
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        function openSubmitProposal() {
+            window.location.href = 'submit-proposal.html';
+        }
+
+        function openExtract() {
+            window.location.href = 'extract.html';
+        }
+
+        function openAdminPanel() {
+            window.location.href = 'admin.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('govUser');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato Orçamentário - Sistema Orçamentário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
+            --accent-color: #ffd700;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-badge {
+            width: 50px;
+            height: 50px;
+            background: url('https://www.habbo.com.br/habbo-imaging/badge/b11044s02014t21134s04064s3911450c22ff6b1fd8b46488a58028697ae6a.gif') no-repeat center;
+            background-size: contain;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .btn-back {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid;
+            transition: var(--transition);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card.revenue {
+            border-top-color: var(--success-color);
+        }
+
+        .summary-card.expense {
+            border-top-color: var(--danger-color);
+        }
+
+        .summary-card.balance {
+            border-top-color: var(--primary-color);
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .summary-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .summary-change.positive {
+            color: var(--success-color);
+        }
+
+        .summary-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Filters */
+        .filters-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .filters-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .btn-filter {
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        .btn-reset {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .btn-export {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Transactions */
+        .transactions-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .transactions-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .transactions-count {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0.5rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1);
+        }
+
+        .timeline-item.expense::before {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 4px rgba(244, 67, 54, 0.1);
+        }
+
+        .timeline-item.revenue::before {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+        }
+
+        .transaction-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .transaction-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .transaction-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .transaction-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .transaction-amount.expense {
+            color: var(--danger-color);
+        }
+
+        .transaction-amount.revenue {
+            color: var(--success-color);
+        }
+
+        .transaction-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        .transaction-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .transaction-description {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            header,
+            .btn-back,
+            .filter-actions {
+                display: none;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .transactions-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .transaction-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .timeline {
+                padding-left: 1rem;
+            }
+
+            .timeline-item {
+                padding-left: 1.5rem;
+            }
+
+            .timeline-item::before {
+                left: -1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-badge"></div>
+                <div class="logo-text">
+                    <h1>📄 Extrato Orçamentário Completo</h1>
+                </div>
+            </div>
+            <a href="index.html" class="btn-back">← Voltar ao Dashboard</a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card revenue">
+                <div class="summary-label">💰 Total de Receitas</div>
+                <div class="summary-value" id="totalRevenue">R$ 0,00</div>
+                <div class="summary-change positive" id="revenueChange">+0% no período</div>
+            </div>
+
+            <div class="summary-card expense">
+                <div class="summary-label">📊 Total de Despesas</div>
+                <div class="summary-value" id="totalExpense">R$ 0,00</div>
+                <div class="summary-change negative" id="expenseChange">-0% no período</div>
+            </div>
+
+            <div class="summary-card balance">
+                <div class="summary-label">💼 Saldo Atual</div>
+                <div class="summary-value" id="currentBalance">R$ 0,00</div>
+                <div class="summary-change" id="balanceChange">0% do orçamento</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">📈 Transações</div>
+                <div class="summary-value" id="transactionCount">0</div>
+                <div class="summary-change">no período selecionado</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="filters-title">🔍 Filtros</div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Ministério</label>
+                    <select class="filter-select" id="filterMinistry">
+                        <option value="">Todos os Ministérios</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Tipo de Documento</label>
+                    <select class="filter-select" id="filterType">
+                        <option value="">Todos os Tipos</option>
+                        <option value="Ofício">Ofício</option>
+                        <option value="Portaria">Portaria</option>
+                        <option value="Decreto">Decreto</option>
+                        <option value="Medida Provisória">Medida Provisória</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Data Inicial</label>
+                    <input type="date" class="filter-input" id="filterDateStart">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Data Final</label>
+                    <input type="date" class="filter-input" id="filterDateEnd">
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-filter" onclick="applyFilters()">
+                    🔍 Aplicar Filtros
+                </button>
+                <button class="btn btn-reset" onclick="resetFilters()">
+                    🔄 Limpar Filtros
+                </button>
+                <button class="btn btn-export" onclick="exportToPDF()">
+                    📥 Exportar PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions Timeline -->
+        <div class="transactions-card">
+            <div class="transactions-header">
+                <div class="transactions-title">📋 Histórico de Transações</div>
+                <div class="transactions-count" id="displayCount">Exibindo 0 transações</div>
+            </div>
+
+            <div class="timeline" id="transactionTimeline">
+                <!-- Será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados
+        const MINISTRIES = [
+            'Casa Civil',
+            'Economia e Trabalho',
+            'Saúde',
+            'Educação, Ciência e Tecnologia',
+            'Cultura e Esporte',
+            'Defesa',
+            'Justiça e Segurança Pública',
+            'Infraestrutura',
+            'Agricultura e Meio Ambiente',
+            'Cidadania e Desenvolvimento Social',
+            'Advocacia-Geral da União',
+            'Gabinete da Presidência'
+        ];
+
+        let allTransactions = [];
+        let filteredTransactions = [];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            populateMinistryFilter();
+            loadTransactions();
+            updateSummary();
+            displayTransactions();
+        });
+
+        function populateMinistryFilter() {
+            const select = document.getElementById('filterMinistry');
+            MINISTRIES.forEach(ministry => {
+                const option = document.createElement('option');
+                option.value = ministry;
+                option.textContent = ministry;
+                select.appendChild(option);
+            });
+        }
+
+        function loadTransactions() {
+            // Carregar propostas aprovadas
+            const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+            const approved = proposals.filter(p => p.status === 'approved');
+
+            allTransactions = approved.map(p => ({
+                id: Math.random().toString(36).substr(2, 9),
+                date: p.approvedAt || p.submittedAt,
+                type: 'expense',
+                ministry: getMinistryFromPosition(p.position),
+                documentType: p.documentType,
+                title: p.summary,
+                description: p.justification,
+                amount: p.estimatedCost,
+                requestor: p.requestorName,
+                notes: p.notes || ''
+            }));
+
+            // Adicionar receita inicial (exemplo)
+            allTransactions.unshift({
+                id: 'initial-revenue',
+                date: '2025-01-01T00:00:00',
+                type: 'revenue',
+                ministry: 'Receita Federal',
+                documentType: 'LOA 2025',
+                title: 'Receita Orçamentária Inicial',
+                description: 'Receita total aprovada pela Lei Orçamentária Anual 2025',
+                amount: 4392000000000,
+                requestor: 'Sistema',
+                notes: 'Aprovada pelo Congresso Nacional'
+            });
+
+            filteredTransactions = [...allTransactions];
+        }
+
+        function getMinistryFromPosition(position) {
+            const mapping = {
+                'Casa Civil': 'Casa Civil',
+                'Economia': 'Economia e Trabalho',
+                'Saúde': 'Saúde',
+                'Educação': 'Educação, Ciência e Tecnologia',
+                'Cultura': 'Cultura e Esporte',
+                'Defesa': 'Defesa',
+                'Justiça': 'Justiça e Segurança Pública',
+                'Infraestrutura': 'Infraestrutura',
+                'Agricultura': 'Agricultura e Meio Ambiente',
+                'Cidadania': 'Cidadania e Desenvolvimento Social',
+                'Advocacia': 'Advocacia-Geral da União',
+                'Gabinete': 'Gabinete da Presidência'
+            };
+
+            for (const key in mapping) {
+                if (position.includes(key)) {
+                    return mapping[key];
+                }
+            }
+
+            return 'Gabinete da Presidência';
+        }
+
+        function updateSummary() {
+            const totalRevenue = filteredTransactions
+                .filter(t => t.type === 'revenue')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const totalExpense = filteredTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const balance = totalRevenue - totalExpense;
+
+            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+            document.getElementById('currentBalance').textContent = formatCurrency(balance);
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
+
+            // Calcular percentual do orçamento
+            const balancePercent = ((balance / totalRevenue) * 100).toFixed(1);
+            document.getElementById('balanceChange').textContent = `${balancePercent}% do orçamento`;
+        }
+
+        function displayTransactions() {
+            const timeline = document.getElementById('transactionTimeline');
+            
+            if (filteredTransactions.length === 0) {
+                timeline.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">Nenhuma transação encontrada</div>
+                    </div>
+                `;
+                document.getElementById('displayCount').textContent = 'Exibindo 0 transações';
+                return;
+            }
+
+            // Ordenar por data (mais recente primeiro)
+            const sorted = [...filteredTransactions].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            );
+
+            timeline.innerHTML = sorted.map(transaction => `
+                <div class="timeline-item ${transaction.type}">
+                    <div class="transaction-card">
+                        <div class="transaction-header">
+                            <div>
+                                <div class="transaction-title">${transaction.title}</div>
+                            </div>
+                            <div class="transaction-amount ${transaction.type}">
+                                ${transaction.type === 'expense' ? '-' : '+'} ${formatCurrency(transaction.amount)}
+                            </div>
+                        </div>
+                        <div class="transaction-meta">
+                            <span>📅 ${formatDate(transaction.date)}</span>
+                            <span>🏛️ ${transaction.ministry}</span>
+                            <span>📄 ${transaction.documentType}</span>
+                            <span>👤 ${transaction.requestor}</span>
+                        </div>
+                        ${transaction.description ? `
+                            <div class="transaction-description">
+                                <strong>Descrição:</strong> ${transaction.description}
+                            </div>
+                        ` : ''}
+                        ${transaction.notes ? `
+                            <div class="transaction-description">
+                                <strong>Observações:</strong> ${transaction.notes}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('displayCount').textContent = 
+                `Exibindo ${sorted.length} transações`;
+        }
+
+        function applyFilters() {
+            const ministry = document.getElementById('filterMinistry').value;
+            const type = document.getElementById('filterType').value;
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
+
+            filteredTransactions = allTransactions.filter(transaction => {
+                // Filtro por ministério
+                if (ministry && transaction.ministry !== ministry) {
+                    return false;
+                }
+
+                // Filtro por tipo
+                if (type && transaction.documentType !== type) {
+                    return false;
+                }
+
+                // Filtro por data inicial
+                if (dateStart && new Date(transaction.date) < new Date(dateStart)) {
+                    return false;
+                }
+
+                // Filtro por data final
+                if (dateEnd && new Date(transaction.date) > new Date(dateEnd + 'T23:59:59')) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            updateSummary();
+            displayTransactions();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterMinistry').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterDateStart').value = '';
+            document.getElementById('filterDateEnd').value = '';
+
+            filteredTransactions = [...allTransactions];
+            updateSummary();
+            displayTransactions();
+        }
+
+        function exportToPDF() {
+            // Em produção, usar biblioteca como jsPDF ou html2pdf
+            alert('📥 Função de exportação para PDF será implementada com integração do Google Apps Script.');
+            window.print();
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
