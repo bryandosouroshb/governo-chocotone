@@ -32,6 +32,7 @@
             animation: pulse-glow 2s infinite;
             overflow: hidden;
             padding: 5px;
+            pointer-events: auto; /* SEMPRE clicável */
         }
 
         .chocobot-button img {
@@ -425,7 +426,7 @@
         import { LEGAL_CONTEXT } from './chocobot-context.js';
         
         // URL do proxy Vercel (protege a API key)
-        const PROXY_URL = 'https://governo-chocotone-aihl2vozi-bryandosouros-projects.vercel.app/api/chocobot';
+        const PROXY_URL = 'https://governo-chocotone-4sfcx236l-bryandosouros-projects.vercel.app/api/chocobot';
         const MODEL = 'google/gemini-2.0-flash-exp:free';
         
         let conversationHistory = [];
@@ -444,6 +445,11 @@
             
             if (container.classList.contains('active')) {
                 document.getElementById('chocobotInput').focus();
+                // Notificar pai que chat abriu
+                window.parent.postMessage({ type: 'chocobotOpen' }, '*');
+            } else {
+                // Notificar pai que chat fechou
+                window.parent.postMessage({ type: 'chocobotClose' }, '*');
             }
         };
 
