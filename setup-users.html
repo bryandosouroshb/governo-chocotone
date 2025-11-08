@@ -103,73 +103,85 @@
             email: 'chocotone@gov.br',
             password: 'GovChoco2025!',
             role: 'Presidenta',
-            ministries: ['all']
+            ministries: ['all'],
+            habboUsername: 'Chocotone'
           },
           'Bryan dos Ouros': {
             email: 'bryan@gov.br',
             password: 'ViceGov2025#',
             role: 'Vice-Presidente',
-            ministries: ['all']
+            ministries: ['all'],
+            habboUsername: 'bryandosouros'
           },
           '-Furia-': {
             email: 'furia@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Economia e Trabalho']
+            ministries: ['Economia e Trabalho'],
+            habboUsername: '-Furia-'
           },
           'joaobatistagc': {
             email: 'joao@gov.br',
             password: 'Ministro2025@',
             role: 'Ministra',
-            ministries: ['Saúde']
+            ministries: ['Saúde'],
+            habboUsername: 'joaobatistagc'
           },
           'Stroch': {
             email: 'stroch@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Educação, Ciência e Tecnologia']
+            ministries: ['Educação, Ciência e Tecnologia'],
+            habboUsername: 'Stroch'
           },
           'Nyxalis': {
             email: 'nyxalis@gov.br',
             password: 'Ministro2025@',
             role: 'Ministra',
-            ministries: ['Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários']
+            ministries: ['Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários'],
+            habboUsername: 'Nyxalis'
           },
           'MalopRRN': {
             email: 'malop@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Defesa']
+            ministries: ['Defesa'],
+            habboUsername: 'MalopRRN'
           },
           'guguinhoHop': {
             email: 'gugui@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Justiça e Segurança Pública']
+            ministries: ['Justiça e Segurança Pública'],
+            habboUsername: 'guguinhoHop'
           },
           'Dj.Bigoreia': {
             email: 'bigoreia@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Infraestrutura']
+            ministries: ['Infraestrutura'],
+            habboUsername: 'Dj.Bigoreia'
           },
           'Fabio-Blunt-UK': {
             email: 'fabio@gov.br',
             password: 'Ministro2025@',
             role: 'Ministro',
-            ministries: ['Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural']
+            ministries: ['Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural'],
+            habboUsername: 'Fabio-Blunt-UK'
           },
           'Brenda.M': {
             email: 'brenda@gov.br',
             password: 'Ministro2025@',
             role: 'Ministra',
-            ministries: ['Cultura e Esporte']
+            ministries: ['Cultura e Esporte'],
+            habboUsername: 'Brenda.M'
           },
           'Stallley': {
             email: 'stallley@gov.br',
             password: 'Ministro2025@',
             role: 'Advogado-Geral',
-            ministries: ['Advocacia-Geral da União']
+            ministries: [],
+            habboUsername: 'Stallley'
           }
         };
 
@@ -237,6 +249,7 @@
                         email: userData.email,
                         role: userData.role,
                         ministries: userData.ministries,
+                        habboUsername: userData.habboUsername,
                         createdAt: new Date().toISOString()
                     });
                     

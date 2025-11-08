@@ -365,16 +365,15 @@
                 const userData = userDoc.data();
                 
                 // Salvar no localStorage para acesso rápido
-                const userDataLocal = {
-                    uid: uid,
-                    name: userData.name,
-                    email: credentials.email,
-                    role: userData.role,
-                    ministries: userData.ministries,
-                    loginTime: new Date().toISOString()
-                };
-                
-                localStorage.setItem('govUser', JSON.stringify(userDataLocal));
+                    const userDataLocal = {
+                        uid: uid,
+                        name: userData.name,
+                        habboUsername: userData.habboUsername || userData.name,
+                        email: credentials.email,
+                        role: userData.role,
+                        ministries: userData.ministries,
+                        loginTime: new Date().toISOString()
+                    };                localStorage.setItem('govUser', JSON.stringify(userDataLocal));
                 
                 showAlert('success', `✅ Bem-vindo(a), ${userData.name}! Redirecionando...`);
                 
