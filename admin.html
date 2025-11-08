@@ -776,6 +776,15 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Declarar funções globais ANTES de usar (para onclick nos botões HTML)
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        };
+
         // Estado global
         let proposals = [];
         let currentProposal = null;
@@ -976,15 +985,7 @@
                 MINISTRIES.map(m => `<option value="${m}">${m}</option>`).join('');
         }
 
-        function switchTab(tabName) {
-            // Remove active de todas as tabs
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
-            // Ativa a tab selecionada
-            event.target.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-        }
+        // switchTab já está definida no início do script (linha ~780)
 
         function openApproveModal(proposalId) {
             currentProposal = proposals.find(p => p.id === proposalId);
@@ -1193,13 +1194,6 @@ ${proposal.justification}
             alert('📥 Exportação de dados em desenvolvimento.');
         }
 
-        function viewProposal(proposalId) {
-            const proposal = proposals.find(p => p.id === proposalId);
-            if (proposal) {
-                alert(`📄 Visualização detalhada:\n\n${JSON.stringify(proposal, null, 2)}`);
-            }
-        }
-
         // Tornar funções globais para onclick
         window.openApproveModal = openApproveModal;
         window.openRejectModal = openRejectModal;
@@ -1209,7 +1203,7 @@ ${proposal.justification}
         window.confirmApprove = confirmApprove;
         window.confirmReject = confirmReject;
         window.confirmAdjust = confirmAdjust;
-        window.switchTab = switchTab;
+        // window.switchTab já está definida no início
         window.adjustBudget = adjustBudget;
         window.forceUpdateIndicators = forceUpdateIndicators;
         window.resetSystem = resetSystem;

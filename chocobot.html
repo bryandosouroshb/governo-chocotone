@@ -621,6 +621,13 @@
         window.sendMessage = sendMessage;
         window.sendQuickMessage = sendQuickMessage;
         window.handleKeyPress = handleKeyPress;
+
+        // Escutar mensagens do pai (dashboard)
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'toggleChat') {
+                toggleChocobot();
+            }
+        });
     </script>
 </body>
 </html>

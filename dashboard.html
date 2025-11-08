@@ -1384,6 +1384,44 @@
         allow="clipboard-write"
     ></iframe>
 
+    <!-- Botão ChocoBot (clone fora do iframe para funcionar) -->
+    <button id="chocobotButtonClone" style="
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        border: 3px solid white;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        animation: pulse-glow 2s infinite;
+        overflow: hidden;
+        padding: 5px;
+        border: none;
+    ">
+        <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Chocotone&direction=2&head_direction=3&gesture=sml&size=l" 
+             alt="ChocoBot" 
+             style="width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated;">
+    </button>
+
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(102, 126, 234, 0.7); }
+        }
+        #chocobotButtonClone:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+        }
+    </style>
+
     <!-- Footer -->
     <footer>
         <p>© 2025 Governo Federal Chocotone | Sistema de Gestão Orçamentária v1.0</p>
@@ -2051,6 +2089,20 @@
 
         // Sistema de comunicação com ChocoBot iframe
         const chocobotFrame = document.getElementById('chocobotFrame');
+        const chocobotButtonClone = document.getElementById('chocobotButtonClone');
+        
+        // Botão clone controla o iframe
+        chocobotButtonClone.addEventListener('click', () => {
+            // Habilitar iframe temporariamente
+            chocobotFrame.style.pointerEvents = 'auto';
+            
+            // Enviar mensagem para o iframe abrir o chat
+            try {
+                chocobotFrame.contentWindow.postMessage({ type: 'toggleChat' }, '*');
+            } catch (e) {
+                console.error('Erro ao comunicar com iframe:', e);
+            }
+        });
         
         // Escutar mensagens do iframe
         window.addEventListener('message', (event) => {
@@ -2058,15 +2110,17 @@
             if (event.origin !== window.location.origin) return;
             
             if (event.data.type === 'chocobotOpen') {
-                // Chat abriu, permitir interação com iframe
+                // Chat abriu, esconder botão clone e permitir interação com iframe
+                chocobotButtonClone.style.display = 'none';
                 chocobotFrame.style.pointerEvents = 'auto';
             } else if (event.data.type === 'chocobotClose') {
-                // Chat fechou, desabilitar interação exceto no botão
+                // Chat fechou, mostrar botão clone e desabilitar interação com iframe
+                chocobotButtonClone.style.display = 'flex';
                 chocobotFrame.style.pointerEvents = 'none';
             }
         });
         
-        // Deixar iframe inicialmente sem pointer-events (exceto o botão que será tratado no iframe)
+        // Deixar iframe inicialmente sem pointer-events
         chocobotFrame.style.pointerEvents = 'none';
     </script>
 </body>
