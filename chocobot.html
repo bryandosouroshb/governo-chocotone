@@ -521,7 +521,10 @@
             });
 
             if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
+                // Log completo do erro para debug
+                const errorBody = await response.text();
+                console.error('OpenRouter Error:', response.status, errorBody);
+                throw new Error(`API Error: ${response.status} - ${errorBody}`);
             }
 
             const data = await response.json();
