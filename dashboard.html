@@ -156,6 +156,16 @@
             gap: 10px;
         }
 
+        .user-habbo-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            object-fit: cover;
+            image-rendering: pixelated;
+        }
+
         .user-role {
             background: var(--accent-color);
             color: var(--primary-color);
@@ -1228,8 +1238,11 @@
                     <span id="notificationBadge" class="notification-badge" style="display: none;"></span>
                 </button>
                 <div class="user-badge">
-                    <span id="userName">Visitante</span>
-                    <span class="user-role" id="userRole">Sem permissão</span>
+                    <img id="userHabboAvatar" class="user-habbo-avatar" src="" alt="Avatar" style="display: none;">
+                    <div>
+                        <span id="userName">Visitante</span>
+                        <span class="user-role" id="userRole">Sem permissão</span>
+                    </div>
                 </div>
                 <button class="btn-logout" onclick="logout()">Sair</button>
             </div>
@@ -1489,6 +1502,9 @@
                         userData = JSON.parse(storedUser);
                         document.getElementById('userName').textContent = userData.name;
                         document.getElementById('userRole').textContent = userData.role;
+                        
+                        // Carregar foto do Habbo
+                        loadHabboAvatar(userData.name);
                         
                         if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
                             document.getElementById('btnAdmin').style.display = 'block';
@@ -2086,6 +2102,27 @@
         // Tornar funções globais
         window.markAsPublished = markAsPublished;
         window.markAsInForce = markAsInForce;
+
+        // Função para carregar avatar do Habbo via API
+        async function loadHabboAvatar(habboName) {
+            try {
+                const response = await fetch(`https://www.habbo.com.br/api/public/users?name=${encodeURIComponent(habboName)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.figureString) {
+                        // Construir URL da imagem do Habbo
+                        const avatarUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?figure=${data.figureString}&size=m&direction=2&head_direction=3&gesture=sml`;
+                        const avatarImg = document.getElementById('userHabboAvatar');
+                        avatarImg.src = avatarUrl;
+                        avatarImg.style.display = 'block';
+                    }
+                } else {
+                    console.warn('Usuário Habbo não encontrado:', habboName);
+                }
+            } catch (error) {
+                console.error('Erro ao buscar avatar do Habbo:', error);
+            }
+        }
 
         // Sistema de comunicação com ChocoBot iframe
         const chocobotFrame = document.getElementById('chocobotFrame');
