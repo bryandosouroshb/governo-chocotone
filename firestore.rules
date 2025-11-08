@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Função helper para verificar se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Função helper para verificar se é admin (Presidenta ou Vice)
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['Presidenta', 'Vice-Presidente'];
+    }
+    
+    // Função helper para verificar se é o próprio usuário
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Collection: users
+    match /users/{userId} {
+      // Qualquer usuário autenticado pode ler qualquer usuário
+      allow read: if isAuthenticated();
+      
+      // Admin pode criar usuários
+      allow create: if isAdmin();
+      
+      // Admin OU o próprio usuário pode atualizar
+      allow update: if isAdmin() || isOwner(userId);
+      
+      // Apenas admin pode deletar
+      allow delete: if isAdmin();
+    }
+    
+    // Collection: budgets
+    match /budgets/{budgetId} {
+      // Qualquer usuário autenticado pode ler orçamentos
+      allow read: if isAuthenticated();
+      
+      // Apenas admin pode criar orçamentos
+      allow create: if isAdmin();
+      
+      // Admin OU ministro do ministério específico pode atualizar
+      allow update: if isAdmin() || 
+                      (isAuthenticated() && 
+                       resource.data.ministry in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ministries);
+      
+      // Apenas admin pode deletar
+      allow delete: if isAdmin();
+    }
+    
+    // Collection: proposals
+    match /proposals/{proposalId} {
+      // Qualquer usuário autenticado pode ler propostas
+      allow read: if isAuthenticated();
+      
+      // Qualquer usuário autenticado pode criar propostas
+      allow create: if isAuthenticated();
+      
+      // Admin OU o autor da proposta pode atualizar
+      allow update: if isAdmin() || 
+                      (isAuthenticated() && resource.data.submittedBy == request.auth.uid);
+      
+      // Apenas admin pode deletar
+      allow delete: if isAdmin();
+    }
+    
+    // Collection: notifications
+    match /notifications/{notificationId} {
+      // Qualquer usuário autenticado pode ler notificações
+      allow read: if isAuthenticated();
+      
+      // Sistema pode criar notificações (via admin)
+      allow create: if isAdmin();
+      
+      // Usuários podem marcar suas próprias notificações como lidas
+      allow update: if isAuthenticated();
+      
+      // Apenas admin pode deletar
+      allow delete: if isAdmin();
+    }
+    
+    // Regra padrão: negar acesso a qualquer outra collection
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
