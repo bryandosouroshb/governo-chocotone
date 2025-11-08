@@ -427,8 +427,8 @@
         
         // URL do proxy Vercel (protege a API key)
         const PROXY_URL = 'https://governo-chocotone-mfj24ziwc-bryandosouros-projects.vercel.app/api/chocobot';
-        // Modelo alternativo - Meta Llama 3.1 8B (mais estável que Gemini free)
-        const MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+        // Polaris Alpha - Modelo gratuito do OpenRouter (256K context, excelente para código/instruções)
+        const MODEL = 'openrouter/polaris-alpha';
         
         let conversationHistory = [];
         let isTyping = false;
