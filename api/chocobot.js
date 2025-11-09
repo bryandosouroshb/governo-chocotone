@@ -32,9 +32,10 @@ export default async function handler(req, res) {
   // Log mascarado para auxiliar debug sem vazar chave
   try {
     const masked = `${OPENROUTER_API_KEY.slice(0,6)}...${OPENROUTER_API_KEY.slice(-6)}`;
-    console.log('OPENROUTER_API_KEY present (masked):', masked);
+    // Use warn (visible in Vercel UI under warnings) to ensure it appears in filtered views
+    console.warn('OPENROUTER_API_KEY present (masked):', masked);
   } catch (e) {
-    console.log('OPENROUTER_API_KEY present (unable to mask)');
+    console.warn('OPENROUTER_API_KEY present (unable to mask)');
   }
 
   try {
