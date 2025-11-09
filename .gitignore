@@ -1,6 +1,5 @@
 # Arquivos com API Keys
 chocobot-config.js
-api/chocobot.js
 *.env
 .env.local
 config.js
