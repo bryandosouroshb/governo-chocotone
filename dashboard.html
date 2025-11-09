@@ -2287,6 +2287,20 @@ Diretrizes adicionais:
 - Sempre considere o conteúdo legal fornecido a seguir (Constituição, códigos e demais anexos).
 `;
 
+        const LEGAL_ASSISTANT_REPAIR_SYSTEM_PROMPT = `
+ Você é um especialista em normalizar respostas JSON do módulo "Atos Oficiais IA".
+ Corrija exclusivamente erros de sintaxe ou formatação, mantendo o sentido original e a estrutura obrigatória abaixo:
+ {
+   "recommendedInstrument": {...},
+   "constitutionalAnalysis": {...},
+   "budgetAssessment": {...},
+   "draft": {...},
+   "nextSteps": [...],
+   "htmlDocument": "..."
+ }
+ Retorne apenas o JSON válido, sem comentários, textos extras ou blocos de código.
+ `;
+
         const GOVERNMENT_MEMBERS = [
             {
                 id: 'Chocotone',
@@ -2987,7 +3001,7 @@ Diretrizes adicionais:
 
                 let parsed = null;
                 try {
-                    parsed = legalAssistantParseResponse(aiResponse);
+                    parsed = await legalAssistantParseResponse(aiResponse);
                 } catch (parseError) {
                     console.warn('Assistente IA: falha ao interpretar resposta JSON', parseError);
                 }
@@ -3289,28 +3303,129 @@ Diretrizes adicionais:
             return result;
         }
 
-        function legalAssistantParseResponse(text) {
+        async function legalAssistantParseResponse(text, options = {}) {
             if (!text) throw new Error('Resposta vazia.');
+
+            const { attemptRepair = true } = options;
 
             let trimmed = text.trim();
             if (trimmed.startsWith('```')) {
-                trimmed = trimmed.replace(/^```json/i, '')
+                trimmed = trimmed.replace(/^```jsonc?/i, '')
                     .replace(/^```/, '')
                     .replace(/```$/, '')
                     .trim();
             }
 
-            const payload = legalAssistantExtractJsonPayload(trimmed);
+            let payload;
+            try {
+                payload = legalAssistantExtractJsonPayload(trimmed);
+            } catch (extractError) {
+                if (attemptRepair) {
+                    try {
+                        return await legalAssistantFixJsonUsingAI(trimmed, extractError);
+                    } catch (repairError) {
+                        console.warn('Assistente IA: tentativa de extração assistida falhou.', repairError);
+                    }
+                }
+                throw extractError;
+            }
+
+            const candidates = [payload];
+            const repaired = legalAssistantRepairJsonString(payload);
+            if (repaired !== payload) {
+                candidates.push(repaired);
+            }
+
+            let lastError = null;
+            for (let index = 0; index < candidates.length; index += 1) {
+                const candidate = candidates[index];
+                try {
+                    return JSON.parse(candidate);
+                } catch (error) {
+                    lastError = error;
+                    if (index === 0 && candidates.length > 1) {
+                        console.warn('Assistente IA: resposta com formatação irregular, aplicando reparo automático.', error);
+                    }
+                }
+            }
+
+            if (attemptRepair) {
+                try {
+                    return await legalAssistantFixJsonUsingAI(candidates[candidates.length - 1], lastError);
+                } catch (repairError) {
+                    console.warn('Assistente IA: falha ao corrigir JSON com suporte adicional.', repairError);
+                }
+            }
+
+            if (lastError) {
+                throw lastError;
+            }
+            throw new Error('Falha ao interpretar JSON da IA.');
+        }
+
+        async function legalAssistantFixJsonUsingAI(rawContent, originalError) {
+            if (!rawContent) {
+                throw originalError || new Error('Conteúdo vazio para reparo.');
+            }
 
             try {
-                return JSON.parse(payload);
-            } catch (initialError) {
-                const repaired = legalAssistantRepairJsonString(payload);
-                if (repaired !== payload) {
-                    console.warn('Assistente IA: resposta com formatação irregular, aplicando reparo automático.', initialError);
-                    return JSON.parse(repaired);
+                const response = await fetch(AI_CONFIG.PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: AI_CONFIG.MODEL,
+                        messages: [
+                            { role: 'system', content: LEGAL_ASSISTANT_REPAIR_SYSTEM_PROMPT },
+                            {
+                                role: 'user',
+                                content: [
+                                    'O conteúdo abaixo deveria ser um JSON válido seguindo o esquema padronizado do Atos Oficiais IA.',
+                                    'Corrija apenas a formatação, mantendo o significado original e os mesmos campos.',
+                                    'Retorne exclusivamente o JSON corrigido, sem comentários adicionais.',
+                                    '',
+                                    `Erro reportado: ${originalError?.message || 'não informado'}`,
+                                    '',
+                                    rawContent
+                                ].join('\n')
+                            }
+                        ],
+                        temperature: 0,
+                        max_tokens: AI_CONFIG.MAX_TOKENS
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`API de reparo retornou ${response.status}: ${errorBody}`);
                 }
-                throw initialError;
+
+                const data = await response.json();
+                const content = data?.choices?.[0]?.message?.content?.trim();
+                if (!content) {
+                    throw new Error('Resposta vazia ao tentar reparar o JSON.');
+                }
+
+                let sanitized = content;
+                if (sanitized.startsWith('```')) {
+                    sanitized = sanitized.replace(/^```jsonc?/i, '')
+                        .replace(/^```/, '')
+                        .replace(/```$/, '')
+                        .trim();
+                }
+
+                const extracted = legalAssistantExtractJsonPayload(sanitized);
+                const cleaned = legalAssistantRepairJsonString(extracted);
+
+                try {
+                    return JSON.parse(extracted);
+                } catch (error) {
+                    if (cleaned !== extracted) {
+                        return JSON.parse(cleaned);
+                    }
+                    throw error;
+                }
+            } catch (repairError) {
+                throw repairError;
             }
         }
 
