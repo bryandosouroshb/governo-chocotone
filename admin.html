@@ -1050,7 +1050,34 @@ ${proposal.justification}
             const feedback = document.getElementById('approveNotes').value;
             
             try {
-                // Atualizar proposta no Firestore
+                // 1. Atualizar orçamento do ministério (consumir budget)
+                if (currentProposal.ministry && currentProposal.estimatedCost > 0) {
+                    const budgetQuery = query(
+                        collection(db, 'budgets'), 
+                        where('ministry', '==', currentProposal.ministry)
+                    );
+                    const budgetSnapshot = await getDocs(budgetQuery);
+                    
+                    if (!budgetSnapshot.empty) {
+                        const budgetDoc = budgetSnapshot.docs[0];
+                        const currentBudget = budgetDoc.data();
+                        
+                        // Verificar se há orçamento disponível
+                        if (currentBudget.available < currentProposal.estimatedCost) {
+                            alert(`❌ Orçamento insuficiente!\n\nDisponível: ${formatCurrency(currentBudget.available)}\nNecessário: ${formatCurrency(currentProposal.estimatedCost)}`);
+                            return;
+                        }
+                        
+                        // Atualizar orçamento: reduzir disponível e aumentar gasto
+                        await updateDoc(doc(db, 'budgets', budgetDoc.id), {
+                            available: currentBudget.available - currentProposal.estimatedCost,
+                            spent: currentBudget.spent + currentProposal.estimatedCost,
+                            lastUpdate: serverTimestamp()
+                        });
+                    }
+                }
+                
+                // 2. Atualizar proposta no Firestore
                 await updateDoc(doc(db, 'proposals', currentProposal.id), {
                     status: 'approved',
                     feedback: feedback || null,
@@ -1058,7 +1085,7 @@ ${proposal.justification}
                     approvedBy: currentUser.name
                 });
 
-                // Criar notificação para o solicitante
+                // 3. Criar notificação para o solicitante
                 await addDoc(collection(db, 'notifications'), {
                     type: 'proposal_approved',
                     title: '✅ Proposta Aprovada',
@@ -1071,10 +1098,10 @@ ${proposal.justification}
                 });
 
                 closeModal('approveModal');
-                alert('✅ Proposta aprovada com sucesso!');
+                alert('✅ Proposta aprovada com sucesso! Orçamento atualizado.');
             } catch (error) {
                 console.error('Erro ao aprovar proposta:', error);
-                alert('❌ Erro ao aprovar proposta. Tente novamente.');
+                alert('❌ Erro ao aprovar proposta: ' + error.message);
             }
         }
 
