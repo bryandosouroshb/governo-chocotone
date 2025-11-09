@@ -807,6 +807,23 @@
             'Gabinete da Presidência'
         ];
 
+        function buildNotificationTargets({ name, role, uid }) {
+            const tags = new Set(['all']);
+            if (name) {
+                tags.add(name);
+                tags.add(`name:${name}`);
+            }
+            if (role) {
+                tags.add(role);
+                tags.add(`role:${role}`);
+            }
+            if (uid) {
+                tags.add(uid);
+                tags.add(`uid:${uid}`);
+            }
+            return Array.from(tags);
+        }
+
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
@@ -1037,7 +1054,7 @@ ${proposal.justification}
             // Limpar campos (com verificação de existência)
             const approveNotes = document.getElementById('approveNotes');
             const rejectReason = document.getElementById('rejectReason');
-            const adjustComments = document.getElementById('adjustComments');
+            const adjustComments = document.getElementById('adjustNotes');
             
             if (approveNotes) approveNotes.value = '';
             if (rejectReason) rejectReason.value = '';
@@ -1095,9 +1112,18 @@ ${proposal.justification}
                     title: '✅ Proposta Aprovada',
                     message: `Sua proposta "${currentProposal.summary}" foi aprovada!`,
                     proposalId: currentProposal.id,
-                    targetUsers: [currentProposal.requestorName],
+                    summary: currentProposal.summary || null,
+                    ministry: currentProposal.ministry || null,
+                    status: 'approved',
+                    feedback: feedback || null,
+                    targetUsers: buildNotificationTargets({
+                        name: currentProposal.requestorName,
+                        role: currentProposal.position,
+                        uid: currentProposal.requestorUid
+                    }),
                     senderName: currentUser.name,
-                    read: false,
+                    senderRole: currentUser.role,
+                    readBy: [],
                     createdAt: serverTimestamp()
                 });
 
@@ -1134,10 +1160,18 @@ ${proposal.justification}
                     title: '❌ Proposta Rejeitada',
                     message: `Sua proposta "${currentProposal.summary}" foi rejeitada.`,
                     proposalId: currentProposal.id,
-                    feedback: feedback,
-                    targetUsers: [currentProposal.requestorName],
+                    summary: currentProposal.summary || null,
+                    ministry: currentProposal.ministry || null,
+                    status: 'rejected',
+                    feedback,
+                    targetUsers: buildNotificationTargets({
+                        name: currentProposal.requestorName,
+                        role: currentProposal.position,
+                        uid: currentProposal.requestorUid
+                    }),
                     senderName: currentUser.name,
-                    read: false,
+                    senderRole: currentUser.role,
+                    readBy: [],
                     createdAt: serverTimestamp()
                 });
 
@@ -1152,7 +1186,7 @@ ${proposal.justification}
         async function confirmAdjust() {
             if (!currentProposal) return;
             
-            const feedback = document.getElementById('adjustComments').value.trim();
+            const feedback = document.getElementById('adjustNotes').value.trim();
             
             if (!feedback) {
                 alert('Por favor, informe os ajustes necessários.');
@@ -1174,10 +1208,18 @@ ${proposal.justification}
                     title: '✏️ Ajustes Solicitados',
                     message: `Sua proposta "${currentProposal.summary}" precisa de ajustes.`,
                     proposalId: currentProposal.id,
-                    feedback: feedback,
-                    targetUsers: [currentProposal.requestorName],
+                    summary: currentProposal.summary || null,
+                    ministry: currentProposal.ministry || null,
+                    status: 'needs_adjustment',
+                    feedback,
+                    targetUsers: buildNotificationTargets({
+                        name: currentProposal.requestorName,
+                        role: currentProposal.position,
+                        uid: currentProposal.requestorUid
+                    }),
                     senderName: currentUser.name,
-                    read: false,
+                    senderRole: currentUser.role,
+                    readBy: [],
                     createdAt: serverTimestamp()
                 });
 

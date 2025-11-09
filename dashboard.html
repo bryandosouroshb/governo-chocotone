@@ -569,6 +569,37 @@
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
+        .btn-update-indicators:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .indicator-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .indicator-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .indicator-status.success {
+            color: #2e7d32;
+        }
+
+        .indicator-status.error {
+            color: #c62828;
+        }
+
+        .indicator-status.info {
+            color: #5c6bc0;
+        }
+
         .indicators-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -655,6 +686,134 @@
             position: relative;
         }
 
+        .modal-content.accent-success::before,
+        .modal-content.accent-warning::before,
+        .modal-content.accent-error::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-content.accent-success::before {
+            background: linear-gradient(90deg, #4caf50, #81c784);
+        }
+
+        .modal-content.accent-warning::before {
+            background: linear-gradient(90deg, #ff9800, #ffb74d);
+        }
+
+        .modal-content.accent-error::before {
+            background: linear-gradient(90deg, #f44336, #e57373);
+        }
+
+        .adjustment-modal-content {
+            max-width: 760px;
+        }
+
+        .adjustment-feedback {
+            background: rgba(255, 152, 0, 0.18);
+            border-left: 4px solid #ff9800;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            color: #8b5a13;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .adjustment-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .adjustment-meta-item {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            border: 1px solid #e0e7ff;
+        }
+
+        .adjustment-meta-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5c6bc0;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .adjustment-meta-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .adjustment-form-group {
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .adjustment-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .adjustment-input,
+        .adjustment-textarea {
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .adjustment-input:focus,
+        .adjustment-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .adjustment-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .adjustment-helper {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .adjustment-error {
+            background: rgba(244, 67, 54, 0.12);
+            border-left: 4px solid #f44336;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            color: #c62828;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .adjustment-actions .btn-modal {
+            flex: 1;
+        }
+
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -716,6 +875,11 @@
             box-shadow: var(--card-shadow);
             margin-bottom: 2rem;
             animation: fadeInUp 0.5s ease 0.5s backwards;
+        }
+
+        .proposals-tracking.highlighted {
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25), var(--card-shadow);
+            transition: box-shadow 0.4s ease;
         }
 
         .tracking-header {
@@ -1134,26 +1298,114 @@
 
         .notification-item {
             background: #f8f9ff;
+            border: none;
             border-left: 4px solid #667eea;
-            padding: 1rem;
-            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
             margin-bottom: 0.75rem;
             animation: fadeIn 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            text-align: left;
+            font-family: inherit;
         }
 
-        .notification-item.new {
-            background: #e8f5e9;
+        .notification-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.18);
+        }
+
+        .notification-item:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.35);
+        }
+
+        .notification-item.unread {
+            background: #eef2ff;
+            border-left-color: #3f51b5;
+            box-shadow: 0 10px 26px rgba(63, 81, 181, 0.18);
+        }
+
+        .notification-item.success {
             border-left-color: #4caf50;
         }
 
         .notification-item.warning {
-            background: #fff3e0;
+            background: #fff8e1;
             border-left-color: #ff9800;
         }
 
         .notification-item.error {
             background: #ffebee;
             border-left-color: #f44336;
+        }
+
+        .notification-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(102, 126, 234, 0.12);
+            flex-shrink: 0;
+        }
+
+        .notification-item.success .notification-icon {
+            background: rgba(76, 175, 80, 0.12);
+        }
+
+        .notification-item.warning .notification-icon {
+            background: rgba(255, 152, 0, 0.16);
+        }
+
+        .notification-item.error .notification-icon {
+            background: rgba(244, 67, 54, 0.14);
+        }
+
+        .notification-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.6rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #3f51b5;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .notification-action::after {
+            content: '→';
+            font-size: 0.8rem;
+        }
+
+        .notification-feedback {
+            margin-top: 0.6rem;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            background: rgba(102, 126, 234, 0.12);
+            color: #2f3c7e;
+            font-size: 0.82rem;
+            font-weight: 500;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .notification-item.warning .notification-feedback {
+            background: rgba(255, 152, 0, 0.18);
+            color: #8b5a13;
+        }
+
+        .notification-item.error .notification-feedback {
+            background: rgba(244, 67, 54, 0.16);
+            color: #b71c1c;
         }
 
         @keyframes fadeIn {
@@ -1262,6 +1514,79 @@
             <button onclick="markAllNotificationsAsRead()" class="btn" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
                 ✓ Marcar Todas como Lidas
             </button>
+        </div>
+    </div>
+
+    <div id="notificationModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <div class="modal-title" id="notificationModalTitle">Notificação</div>
+                <button class="btn-close" onclick="closeNotificationModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="notificationModalBody"></div>
+            <div class="modal-actions" id="notificationModalActions" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="adjustmentModal" class="modal" aria-hidden="true">
+        <div class="modal-content adjustment-modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Reenviar Proposta Ajustada</div>
+                <button class="btn-close" onclick="closeAdjustmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="adjustmentFeedbackMessage" class="adjustment-feedback" style="display: none;"></div>
+
+                <div class="adjustment-meta">
+                    <div class="adjustment-meta-item">
+                        <div class="adjustment-meta-label">Documento</div>
+                        <div class="adjustment-meta-value" id="adjustmentProposalTitle">-</div>
+                    </div>
+                    <div class="adjustment-meta-item">
+                        <div class="adjustment-meta-label">Ministério</div>
+                        <div class="adjustment-meta-value" id="adjustmentProposalMinistry">-</div>
+                    </div>
+                    <div class="adjustment-meta-item">
+                        <div class="adjustment-meta-label">Solicitante</div>
+                        <div class="adjustment-meta-value" id="adjustmentProposalOwner">-</div>
+                    </div>
+                    <div class="adjustment-meta-item">
+                        <div class="adjustment-meta-label">Valor Atual</div>
+                        <div class="adjustment-meta-value" id="adjustmentProposalCost">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div id="adjustmentErrorMessage" class="adjustment-error"></div>
+
+                <div class="adjustment-form-group">
+                    <label class="adjustment-label" for="adjustSummaryInput">Resumo Atualizado *</label>
+                    <textarea id="adjustSummaryInput" class="adjustment-textarea" placeholder="Descreva brevemente o objetivo da proposta" required></textarea>
+                </div>
+
+                <div class="adjustment-form-group">
+                    <label class="adjustment-label" for="adjustCostInput">Custo Estimado (R$) *</label>
+                    <input type="number" id="adjustCostInput" class="adjustment-input" min="0" step="0.01" required>
+                    <span class="adjustment-helper" id="adjustCostHelper">Informe o custo total previsto para execução.</span>
+                </div>
+
+                <div class="adjustment-form-group">
+                    <label class="adjustment-label" for="adjustJustificationInput">Justificativa *</label>
+                    <textarea id="adjustJustificationInput" class="adjustment-textarea" placeholder="Explique brevemente o impacto e necessidade da proposta" required></textarea>
+                </div>
+
+                <div class="adjustment-form-group">
+                    <label class="adjustment-label" for="adjustBodyInput">Descrição Completa *</label>
+                    <textarea id="adjustBodyInput" class="adjustment-textarea" style="min-height: 180px;" placeholder="Detalhe os principais pontos, etapas e responsáveis" required></textarea>
+                </div>
+            </div>
+            <div class="modal-actions adjustment-actions">
+                <button id="adjustmentSubmitButton" class="btn btn-modal btn-approve" onclick="submitProposalAdjustment()">
+                    🔁 Reenviar Proposta
+                </button>
+                <button class="btn btn-modal" style="background: #e0e0e0; color: #555;" onclick="closeAdjustmentModal()">
+                    Cancelar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1384,9 +1709,12 @@
         <div class="indicators-section">
             <div class="indicators-header">
                 <h2>📊 Indicadores Econômicos</h2>
-                <button class="btn-update-indicators" id="btnUpdateIndicators" onclick="updateIndicators()" style="display: none;">
-                    🔄 Atualizar Agora
-                </button>
+                <div class="indicator-actions">
+                    <button class="btn-update-indicators" id="btnUpdateIndicators" onclick="updateIndicators('manual')" style="display: none;">
+                        🔄 Atualizar Agora
+                    </button>
+                    <span id="indicatorsStatus" class="indicator-status" aria-live="polite"></span>
+                </div>
             </div>
             <div class="indicators-grid" id="indicatorsGrid">
                 <!-- Será preenchido via JavaScript -->
@@ -1449,7 +1777,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, getDocs, doc, updateDoc, serverTimestamp, orderBy, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, getDocs, getDoc, doc, updateDoc, addDoc, serverTimestamp, orderBy, writeBatch, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
@@ -1483,19 +1811,43 @@
             ministries: []
         };
 
-        let budgetData = [];
-        let proposalsData = [];
-        let notificationsData = [];
-        let indicatorsData = null;
-        let unsubscribeBudgets = null;
-        let unsubscribeProposals = null;
-        let unsubscribeNotifications = null;
+    let budgetData = [];
+    let proposalsData = [];
+    let notificationsData = [];
+    let indicatorsData = null;
+    let notificationRecipientTags = [];
+    let notificationReadKey = null;
+    let adjustmentState = {
+        notification: null,
+        proposal: null,
+        isSubmitting: false
+    };
+    let indicatorsLoading = false;
+    let unsubscribeBudgets = null;
+    let unsubscribeProposals = null;
+    let unsubscribeNotifications = null;
 
         // Funções de inicialização
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 checkAuth();
+                const notificationModal = document.getElementById('notificationModal');
+                if (notificationModal) {
+                    notificationModal.addEventListener('click', (event) => {
+                        if (event.target === notificationModal) {
+                            closeNotificationModal();
+                        }
+                    });
+                }
+                const adjustmentModalOverlay = document.getElementById('adjustmentModal');
+                if (adjustmentModalOverlay) {
+                    adjustmentModalOverlay.addEventListener('click', (event) => {
+                        if (event.target === adjustmentModalOverlay) {
+                            closeAdjustmentModal();
+                        }
+                    });
+                }
             }, 1500);
         });
 
@@ -1505,6 +1857,8 @@
                     const storedUser = localStorage.getItem('govUser');
                     if (storedUser) {
                         userData = JSON.parse(storedUser);
+                        notificationRecipientTags = buildRecipientTags(userData);
+                        notificationReadKey = null;
                         document.getElementById('userName').textContent = userData.name;
                         document.getElementById('userRole').textContent = userData.role;
                         
@@ -1520,8 +1874,8 @@
                         loadBudgetsRealtime();
                         loadProposalsRealtime();
                         loadNotificationsRealtime();
-                        updateIndicators();
-                        setInterval(updateIndicators, CONFIG.UPDATE_INTERVAL);
+                        updateIndicators('auto');
+                        setInterval(() => updateIndicators('auto'), CONFIG.UPDATE_INTERVAL);
                     } else {
                         window.location.href = 'index.html';
                     }
@@ -1535,10 +1889,35 @@
             const q = query(collection(db, 'budgets'));
             
             unsubscribeBudgets = onSnapshot(q, (snapshot) => {
-                budgetData = [];
-                snapshot.forEach((doc) => {
-                    budgetData.push({ id: doc.id, ...doc.data() });
+            const budgetsMap = new Map();
+
+            snapshot.forEach((docSnap) => {
+                const data = { id: docSnap.id, ...docSnap.data() };
+                if (data.placeholder) return;
+
+                const ministryName = (data.ministry || docSnap.id || '').toString().trim();
+                if (!ministryName) return;
+
+                const key = ministryName.toLowerCase();
+                const totalBudget = Number(data.totalBudget || 0);
+                const spent = Number(data.spent || 0);
+                const available = data.available !== undefined
+                    ? Number(data.available)
+                    : totalBudget - spent;
+
+                budgetsMap.set(key, {
+                    id: docSnap.id,
+                    ...data,
+                    ministry: ministryName,
+                    totalBudget,
+                    spent,
+                    available
                 });
+            });
+
+            budgetData = Array.from(budgetsMap.values()).sort((a, b) =>
+                a.ministry.localeCompare(b.ministry, 'pt-BR')
+            );
                 
                 loadBudgetData();
                 loadMinistryTable();
@@ -1547,7 +1926,120 @@
             });
         }
 
-        function loadProposalsRealtime() {
+    function buildRecipientTags(user) {
+        const tags = new Set(['all']);
+        if (!user) return Array.from(tags);
+        if (user.role) {
+            tags.add(user.role);
+            tags.add(`role:${user.role}`);
+        }
+        if (user.name) {
+            tags.add(user.name);
+            tags.add(`name:${user.name}`);
+        }
+        if (user.uid) {
+            tags.add(user.uid);
+            tags.add(`uid:${user.uid}`);
+        }
+        return Array.from(tags);
+    }
+
+    function getReadTrackingKey() {
+        if (notificationReadKey) return notificationReadKey;
+        if (userData?.uid) {
+            notificationReadKey = userData.uid;
+        } else if (userData?.name) {
+            notificationReadKey = userData.name;
+        } else if (userData?.role) {
+            notificationReadKey = userData.role;
+        }
+        return notificationReadKey;
+    }
+
+    function hasUserReadNotification(notification) {
+        if (!notification) return true;
+
+        const readField = notification.read;
+        const readByRaw = notification.readBy;
+        const readByArray = Array.isArray(readByRaw)
+            ? readByRaw
+            : readByRaw
+                ? [readByRaw]
+                : [];
+
+        const key = getReadTrackingKey();
+
+        if (!key) {
+            return Boolean(readField);
+        }
+
+        if (readByArray.includes(key)) return true;
+
+        // Fallbacks for previous schema versions
+        if (userData?.name && readByArray.includes(userData.name)) return true;
+        if (userData?.role && readByArray.includes(userData.role)) return true;
+
+        // For legacy single-recipient notifications using boolean read flag
+        if (readField === true && (!notification.targetUsers || notification.targetUsers.length <= 1)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function getNotificationSeverity(type) {
+        switch (type) {
+            case 'proposal_approved':
+            case 'budget_updated':
+            case 'proposal_resubmitted':
+                return 'success';
+            case 'proposal_needs_adjustment':
+                return 'warning';
+            case 'proposal_rejected':
+                return 'error';
+            default:
+                return '';
+        }
+    }
+
+    function buildNotificationMessage(notification) {
+        const safeMessage = notification.message || '';
+        const feedbackBlock = notification.feedback
+            ? `<div class="notification-feedback">${sanitizeHtml(notification.feedback)}</div>`
+            : '';
+
+        return `${sanitizeHtml(safeMessage)}${feedbackBlock}`;
+    }
+
+    function getNotificationActionLabel(notification) {
+        switch (notification.type) {
+            case 'proposal_submitted':
+                return 'Analisar proposta';
+            case 'proposal_needs_adjustment':
+                return notification.status === 'resubmitted' ? '' : 'Enviar ajustes';
+            case 'proposal_rejected':
+                return 'Ver detalhes';
+            case 'proposal_approved':
+                return 'Acompanhar execução';
+            case 'proposal_resubmitted':
+                return (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') ? 'Rever proposta' : '';
+            default:
+                return '';
+        }
+    }
+
+    function sanitizeHtml(value) {
+        if (value === null || value === undefined) return '';
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/\n/g, '<br>');
+    }
+
+    function loadProposalsRealtime() {
             const q = query(
                 collection(db, 'proposals'),
                 where('status', '==', 'approved'),
@@ -1566,28 +2058,40 @@
             });
         }
 
-        function loadNotificationsRealtime() {
-            const q = query(
-                collection(db, 'notifications'),
-                where('targetUsers', 'array-contains', userData.role),
-                orderBy('createdAt', 'desc')
-            );
+    function loadNotificationsRealtime() {
+        if (!notificationRecipientTags.length) {
+            console.warn('Sem destinatários configurados para notificações');
+            return;
+        }
+
+        if (unsubscribeNotifications) {
+            unsubscribeNotifications();
+        }
+
+        const notificationsQuery = query(
+            collection(db, 'notifications'),
+            where('targetUsers', 'array-contains-any', notificationRecipientTags),
+            orderBy('createdAt', 'desc')
+        );
+        
+        unsubscribeNotifications = onSnapshot(notificationsQuery, (snapshot) => {
+            notificationsData = [];
+            let unreadCount = 0;
             
-            unsubscribeNotifications = onSnapshot(q, (snapshot) => {
-                notificationsData = [];
-                let unreadCount = 0;
-                
-                snapshot.forEach((doc) => {
-                    const notification = { id: doc.id, ...doc.data() };
-                    notificationsData.push(notification);
-                    if (!notification.read) unreadCount++;
-                });
-                
-                updateNotificationBadge(unreadCount);
-                displayNotifications();
-            }, (error) => {
-                console.error('Erro ao carregar notificações:', error);
+            snapshot.forEach((docSnap) => {
+                if (docSnap.id === '_init') return;
+                const notification = { id: docSnap.id, ...docSnap.data() };
+                const isRead = hasUserReadNotification(notification);
+                notification._isRead = isRead;
+                notificationsData.push(notification);
+                if (!isRead) unreadCount++;
             });
+            
+            updateNotificationBadge(unreadCount);
+            displayNotifications();
+        }, (error) => {
+            console.error('Erro ao carregar notificações:', error);
+        });
         }
 
         function updateNotificationBadge(count) {
@@ -1602,49 +2106,471 @@
             }
         }
 
-        function displayNotifications() {
-            const container = document.getElementById('notificationsList');
-            if (!container) return;
-            
-            if (notificationsData.length === 0) {
-                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;">Nenhuma notificação</div>';
-                return;
-            }
-            
-            container.innerHTML = notificationsData.map(notif => `
-                <div class="notification-item ${notif.read ? '' : 'unread'}">
+    function displayNotifications() {
+        const container = document.getElementById('notificationsList');
+        if (!container) return;
+        
+        if (notificationsData.length === 0) {
+            container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;">Nenhuma notificação</div>';
+            return;
+        }
+
+        container.innerHTML = notificationsData.map((notif) => {
+            const severity = getNotificationSeverity(notif.type);
+            const classes = ['notification-item'];
+            if (severity) classes.push(severity);
+            if (!notif._isRead) classes.push('unread');
+
+            const actionLabel = getNotificationActionLabel(notif);
+
+            return `
+                <button type="button" class="${classes.join(' ')}" data-id="${notif.id}">
                     <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
                     <div class="notification-content">
-                        <div class="notification-title">${notif.title}</div>
-                        <div class="notification-message">${notif.message || ''}</div>
-                        <div class="notification-time">${formatDate(notif.createdAt)}</div>
+                        <div class="notification-title">${sanitizeHtml(notif.title || 'Notificação')}</div>
+                        <div class="notification-message">${buildNotificationMessage(notif)}</div>
+                        <div class="notification-time">${formatTimeAgo(notif.createdAt)}</div>
+                        ${actionLabel ? `<div class="notification-action">${actionLabel}</div>` : ''}
                     </div>
-                </div>
-            `).join('');
+                </button>
+            `;
+        }).join('');
+
+        container.querySelectorAll('.notification-item').forEach((item) => {
+            item.addEventListener('click', async () => {
+                const notificationId = item.dataset.id;
+                const notification = notificationsData.find((n) => n.id === notificationId);
+                if (!notification) return;
+
+                await markNotificationAsRead(notificationId);
+                item.classList.remove('unread');
+                notification._isRead = true;
+                updateNotificationBadge(notificationsData.filter((n) => !n._isRead).length);
+                handleNotificationClick(notification);
+            });
+        });
+    }
+
+    async function markAllNotificationsAsRead() {
+        const key = getReadTrackingKey();
+        if (!key) return;
+
+        const unreadNotifications = notificationsData.filter((notif) => !notif._isRead);
+        if (unreadNotifications.length === 0) {
+            updateNotificationBadge(0);
+            return;
         }
 
-        async function markAllNotificationsAsRead() {
-            try {
-                const batch = writeBatch(db);
-                notificationsData.forEach(notif => {
-                    if (!notif.read) {
-                        const notifRef = doc(db, 'notifications', notif.id);
-                        // Deletar notificação em vez de marcar como lida
-                        batch.delete(notifRef);
+        try {
+            const batch = writeBatch(db);
+            unreadNotifications.forEach((notif) => {
+                const notifRef = doc(db, 'notifications', notif.id);
+                batch.update(notifRef, {
+                    readBy: arrayUnion(key)
+                });
+                notif._isRead = true;
+            });
+
+            await batch.commit();
+            updateNotificationBadge(0);
+            displayNotifications();
+        } catch (error) {
+            console.error('Erro ao marcar notificações como lidas:', error);
+        }
+    }
+
+    async function markNotificationAsRead(notificationId) {
+        const key = getReadTrackingKey();
+        if (!key) return;
+
+        const notification = notificationsData.find((notif) => notif.id === notificationId);
+        if (!notification || notification._isRead) return;
+
+        try {
+            const notifRef = doc(db, 'notifications', notificationId);
+            await updateDoc(notifRef, {
+                readBy: arrayUnion(key)
+            });
+            notification._isRead = true;
+        } catch (error) {
+            console.error('Erro ao marcar notificação como lida:', error);
+        }
+    }
+
+    function handleNotificationClick(notification) {
+        switch (notification.type) {
+            case 'proposal_submitted':
+                openProposalForReview(notification);
+                break;
+            case 'proposal_needs_adjustment':
+                if (notification.status === 'resubmitted') {
+                    openNotificationInfoModal({
+                        title: 'Ajustes já enviados',
+                        body: 'Esta proposta já foi reenviada e aguarda uma nova análise da Presidência.',
+                        accent: 'success'
+                    });
+                } else {
+                    openProposalAdjustmentWorkflow(notification);
+                }
+                break;
+            case 'proposal_rejected':
+                showProposalRejectionDetails(notification);
+                break;
+            case 'proposal_approved':
+                highlightApprovedProposalsSection(notification);
+                break;
+            case 'proposal_resubmitted':
+                openProposalForReview(notification);
+                break;
+            default:
+                break;
+        }
+    }
+
+    function openProposalForReview(notification) {
+        const leadershipRoles = ['Presidenta', 'Vice-Presidente'];
+        if (!leadershipRoles.includes(userData.role)) return;
+
+        const targetUrl = notification.proposalId
+            ? `admin.html?proposalId=${encodeURIComponent(notification.proposalId)}&source=notification`
+            : 'admin.html';
+        window.location.href = targetUrl;
+    }
+
+    async function openProposalAdjustmentWorkflow(notification) {
+        if (!notification.proposalId) {
+            openNotificationInfoModal({
+                title: 'Não foi possível abrir os ajustes',
+                body: 'O identificador da proposta está ausente nesta notificação.',
+                accent: 'error'
+            });
+            return;
+        }
+
+        openNotificationInfoModal({
+            title: 'Carregando proposta',
+            body: 'Aguarde um instante enquanto resgatamos os dados para ajuste...'
+        });
+
+        try {
+            const proposalRef = doc(db, 'proposals', notification.proposalId);
+            const proposalSnap = await getDoc(proposalRef);
+
+            closeNotificationModal();
+
+            if (!proposalSnap.exists()) {
+                openNotificationInfoModal({
+                    title: 'Proposta não encontrada',
+                    body: 'Não localizamos a proposta vinculada a esta notificação. Ela pode ter sido removida.',
+                    accent: 'error'
+                });
+                return;
+            }
+
+            const proposal = { id: proposalSnap.id, ...proposalSnap.data() };
+            adjustmentState = {
+                notification,
+                proposal,
+                isSubmitting: false
+            };
+
+            populateAdjustmentModal(proposal, notification);
+
+            const modal = document.getElementById('adjustmentModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar proposta para ajustes:', error);
+            closeNotificationModal();
+            openNotificationInfoModal({
+                title: 'Erro ao carregar proposta',
+                body: sanitizeHtml(error.message || 'Tente novamente daqui a pouco.'),
+                accent: 'error'
+            });
+        }
+    }
+
+    function showProposalRejectionDetails(notification) {
+        const lines = [
+            notification.message ? sanitizeHtml(notification.message) : '',
+            notification.feedback ? `<strong>Motivo:</strong> ${sanitizeHtml(notification.feedback)}` : '',
+            notification.senderName ? `<strong>Avaliador(a):</strong> ${sanitizeHtml(notification.senderName)}` : ''
+        ].filter(Boolean);
+
+        openNotificationInfoModal({
+            title: 'Proposta Rejeitada',
+            body: lines.join('<br><br>'),
+            accent: 'error'
+        });
+    }
+
+    function highlightApprovedProposalsSection() {
+        const section = document.getElementById('proposalsTracking');
+        if (!section) return;
+
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        section.classList.add('highlighted');
+        setTimeout(() => section.classList.remove('highlighted'), 2000);
+    }
+
+    function openNotificationInfoModal({ title, body, accent = 'info', actions = [] }) {
+        const modal = document.getElementById('notificationModal');
+        if (!modal) return;
+
+        const content = modal.querySelector('.modal-content');
+        const titleEl = document.getElementById('notificationModalTitle');
+        const bodyEl = document.getElementById('notificationModalBody');
+        const actionsEl = document.getElementById('notificationModalActions');
+
+        ['accent-success', 'accent-warning', 'accent-error'].forEach(cls => content.classList.remove(cls));
+        if (accent === 'success') content.classList.add('accent-success');
+        if (accent === 'warning') content.classList.add('accent-warning');
+        if (accent === 'error') content.classList.add('accent-error');
+
+        titleEl.textContent = title || 'Notificação';
+        bodyEl.innerHTML = body || '';
+
+        actionsEl.innerHTML = '';
+        if (actions && actions.length > 0) {
+            actionsEl.style.display = 'flex';
+            actionsEl.style.gap = '0.75rem';
+            actions.forEach((action) => {
+                const button = document.createElement('button');
+                button.className = `btn btn-modal ${action.variant === 'secondary' ? '' : 'btn-approve'}`;
+                if (action.variant === 'secondary') {
+                    button.style.background = '#e0e0e0';
+                    button.style.color = '#333';
+                }
+                button.textContent = action.label;
+                button.addEventListener('click', () => {
+                    if (typeof action.handler === 'function') {
+                        action.handler();
                     }
                 });
-                await batch.commit();
-            } catch (error) {
-                console.error('Erro ao remover notificações:', error);
-            }
+                actionsEl.appendChild(button);
+            });
+        } else {
+            actionsEl.style.display = 'none';
         }
 
-        function getNotificationIcon(type) {
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeNotificationModal() {
+        const modal = document.getElementById('notificationModal');
+        if (!modal) return;
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function populateAdjustmentModal(proposal, notification) {
+        const titleEl = document.getElementById('adjustmentProposalTitle');
+        const ministryEl = document.getElementById('adjustmentProposalMinistry');
+        const ownerEl = document.getElementById('adjustmentProposalOwner');
+        const costEl = document.getElementById('adjustmentProposalCost');
+        const summaryInput = document.getElementById('adjustSummaryInput');
+        const costInput = document.getElementById('adjustCostInput');
+        const justificationInput = document.getElementById('adjustJustificationInput');
+        const bodyInput = document.getElementById('adjustBodyInput');
+        const feedbackEl = document.getElementById('adjustmentFeedbackMessage');
+        const submitButton = document.getElementById('adjustmentSubmitButton');
+
+        const docLabel = proposal.documentType || notification.documentType || 'Documento';
+        const summary = proposal.summary || notification.summary || '';
+
+        if (titleEl) {
+            titleEl.textContent = summary ? `${docLabel}: ${summary}` : docLabel;
+        }
+        if (ministryEl) {
+            ministryEl.textContent = proposal.ministry || 'Não informado';
+        }
+        if (ownerEl) {
+            ownerEl.textContent = proposal.requestorName || userData.name || 'Desconhecido';
+        }
+        if (costEl) {
+            costEl.textContent = formatCurrency(Number(proposal.estimatedCost || notification.estimatedCost || 0));
+        }
+        if (summaryInput) {
+            summaryInput.value = summary;
+        }
+        if (costInput) {
+            const numericValue = Number(proposal.estimatedCost || notification.estimatedCost || 0);
+            costInput.value = numericValue.toFixed(2);
+        }
+        if (justificationInput) {
+            justificationInput.value = proposal.justification || '';
+        }
+        if (bodyInput) {
+            bodyInput.value = proposal.body || '';
+        }
+        if (feedbackEl) {
+            if (notification.feedback) {
+                feedbackEl.innerHTML = sanitizeHtml(notification.feedback);
+                feedbackEl.style.display = 'block';
+            } else {
+                feedbackEl.innerHTML = '';
+                feedbackEl.style.display = 'none';
+            }
+        }
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = '🔁 Reenviar Proposta';
+        }
+
+        setAdjustmentError();
+    }
+
+    function closeAdjustmentModal() {
+        const modal = document.getElementById('adjustmentModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        adjustmentState = {
+            notification: null,
+            proposal: null,
+            isSubmitting: false
+        };
+        setAdjustmentError();
+    }
+
+    function setAdjustmentError(message = '') {
+        const errorEl = document.getElementById('adjustmentErrorMessage');
+        if (!errorEl) return;
+        if (message) {
+            errorEl.innerHTML = message;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.innerHTML = '';
+            errorEl.style.display = 'none';
+        }
+    }
+
+    async function submitProposalAdjustment() {
+        if (!adjustmentState.proposal || adjustmentState.isSubmitting) return;
+
+        const summary = document.getElementById('adjustSummaryInput')?.value.trim() || '';
+        const costValue = document.getElementById('adjustCostInput')?.value || '0';
+        const justification = document.getElementById('adjustJustificationInput')?.value.trim() || '';
+        const body = document.getElementById('adjustBodyInput')?.value.trim() || '';
+        const submitButton = document.getElementById('adjustmentSubmitButton');
+
+        if (!summary || !justification || !body) {
+            setAdjustmentError('Preencha todos os campos obrigatórios antes de reenviar.');
+            return;
+        }
+
+        const estimatedCost = Number(costValue);
+        if (Number.isNaN(estimatedCost) || estimatedCost < 0) {
+            setAdjustmentError('Informe um valor válido para o custo estimado.');
+            return;
+        }
+
+        setAdjustmentError();
+        adjustmentState.isSubmitting = true;
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Enviando ajustes...';
+        }
+
+        try {
+            const proposalRef = doc(db, 'proposals', adjustmentState.proposal.id);
+
+            await updateDoc(proposalRef, {
+                summary,
+                estimatedCost,
+                justification,
+                body,
+                status: 'pending',
+                feedback: null,
+                approvedAt: null,
+                rejectedAt: null,
+                adjustmentRespondedAt: serverTimestamp(),
+                adjustmentRespondedBy: userData.name,
+                updatedAt: serverTimestamp()
+            });
+
+            await addDoc(collection(db, 'notifications'), {
+                type: 'proposal_resubmitted',
+                title: '🔁 Proposta Reenviada',
+                message: `${userData.name} reenviou "${summary}" após ajustes.`,
+                proposalId: adjustmentState.proposal.id,
+                summary,
+                ministry: adjustmentState.proposal.ministry || null,
+                status: 'resubmitted',
+                estimatedCost,
+                targetUsers: Array.from(new Set([
+                    'all',
+                    'Presidenta',
+                    'Vice-Presidente',
+                    'role:Presidenta',
+                    'role:Vice-Presidente',
+                    'Chocotone',
+                    'Bryan dos Ouros',
+                    'name:Chocotone',
+                    'name:Bryan dos Ouros'
+                ])),
+                senderName: userData.name,
+                senderRole: userData.role,
+                readBy: [],
+                createdAt: serverTimestamp()
+            });
+
+            if (adjustmentState.notification?.id) {
+                try {
+                    await updateDoc(doc(db, 'notifications', adjustmentState.notification.id), {
+                        status: 'resubmitted',
+                        resolvedAt: serverTimestamp(),
+                        readBy: arrayUnion(getReadTrackingKey())
+                    });
+                } catch (innerError) {
+                    console.warn('Não foi possível atualizar notificação original:', innerError);
+                }
+
+                const localNotif = notificationsData.find((notif) => notif.id === adjustmentState.notification.id);
+                if (localNotif) {
+                    localNotif.status = 'resubmitted';
+                    localNotif._isRead = true;
+                    localNotif.message = 'Proposta reenviada. Aguardando nova análise.';
+                }
+            }
+
+            closeAdjustmentModal();
+            updateNotificationBadge(notificationsData.filter((n) => !n._isRead).length);
+            displayNotifications();
+
+            openNotificationInfoModal({
+                title: 'Proposta reenviada com sucesso',
+                body: 'A proposta foi reenviada e já está novamente na fila da Presidência.',
+                accent: 'success'
+            });
+        } catch (error) {
+            console.error('Erro ao reenviar proposta ajustada:', error);
+            setAdjustmentError('Erro ao reenviar proposta: ' + sanitizeHtml(error.message || 'Tente novamente.'));
+
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '🔁 Reenviar Proposta';
+            }
+
+            adjustmentState.isSubmitting = false;
+            return;
+        }
+
+        adjustmentState.isSubmitting = false;
+    }
+
+    function getNotificationIcon(type) {
             const icons = {
                 'proposal_submitted': '📝',
                 'proposal_approved': '✅',
                 'proposal_rejected': '❌',
                 'proposal_needs_adjustment': '✏️',
+                'proposal_resubmitted': '🔁',
                 'budget_updated': '💰',
                 'system_update': '🔔'
             };
@@ -1676,60 +2602,67 @@
         function loadBudgetData() {
             if (budgetData.length === 0) return;
             
-            const totalExpense = budgetData.reduce((sum, m) => sum + (m.spent || 0), 0);
-            const totalBudget = CONFIG.LOA_DATA.totalRevenue - totalExpense;
+            const totalSpent = budgetData.reduce((sum, m) => sum + Number(m.spent || 0), 0);
+            const totalAvailable = budgetData.reduce((sum, m) => {
+                const available = Number(m.totalBudget || 0) - Number(m.spent || 0);
+                return sum + Math.max(available, 0);
+            }, 0);
             
-            // Verificar se ultrapassou o teto de gastos
-            const ceilingPercentage = (totalExpense / CONFIG.SPENDING_CEILING) * 100;
+            const ceilingUsedPercent = CONFIG.SPENDING_CEILING > 0
+                ? (totalSpent / CONFIG.SPENDING_CEILING) * 100
+                : 0;
+            const remainingCeiling = CONFIG.SPENDING_CEILING - totalSpent;
             
-            // Atualizar display principal
-            document.getElementById('totalBudget').textContent = formatCurrency(totalBudget);
+            // Atualizar cards principais
+            document.getElementById('totalBudget').textContent = formatCurrency(totalAvailable);
             document.getElementById('totalRevenue').textContent = formatCurrency(CONFIG.LOA_DATA.totalRevenue).replace(',00', '');
+            document.getElementById('totalExpense').textContent = formatCurrency(totalSpent).replace(',00', '');
+            document.getElementById('surplus').textContent = formatCurrency(CONFIG.LOA_DATA.totalRevenue - totalSpent).replace(',00', '');
             
-            // Atualizar informação do teto
-            document.getElementById('ceilingPercentage').textContent = ceilingPercentage.toFixed(2) + '%';
+            // Atualizar teto de gastos
             const ceilingElement = document.getElementById('ceilingPercentage');
-            if (ceilingPercentage >= 100) {
-                ceilingElement.style.color = '#f44336';
-                ceilingElement.style.fontWeight = '800';
-            } else if (ceilingPercentage >= 90) {
-                ceilingElement.style.color = '#ff9800';
-                ceilingElement.style.fontWeight = '700';
-            } else {
-                ceilingElement.style.color = '#4caf50';
-                ceilingElement.style.fontWeight = '700';
+            const spendingCeilingEl = document.getElementById('spendingCeiling');
+            if (spendingCeilingEl) {
+                spendingCeilingEl.textContent = formatCurrency(Math.max(remainingCeiling, 0));
+            }
+            if (ceilingElement) {
+                ceilingElement.textContent = `${ceilingUsedPercent.toFixed(2)}%`;
+                if (ceilingUsedPercent >= 100) {
+                    ceilingElement.style.color = '#f44336';
+                    ceilingElement.style.fontWeight = '800';
+                } else if (ceilingUsedPercent >= 90) {
+                    ceilingElement.style.color = '#ff9800';
+                    ceilingElement.style.fontWeight = '700';
+                } else {
+                    ceilingElement.style.color = '#4caf50';
+                    ceilingElement.style.fontWeight = '700';
+                }
             }
             
-            // Mostrar gasto total com indicador de teto
-            const expenseText = formatCurrency(totalExpense).replace(',00', '');
-            document.getElementById('totalExpense').textContent = expenseText;
-            
-            // Colorir barra de progresso baseado no teto
+            // Atualizar barra de progresso
             const expenseProgressBar = document.getElementById('expenseProgress');
-            const expensePercent = (totalExpense / CONFIG.SPENDING_CEILING) * 100;
-            expenseProgressBar.style.width = Math.min(expensePercent, 100) + '%';
-            
-            // Mudar cor baseado na proximidade do teto
-            if (expensePercent >= 100) {
-                expenseProgressBar.style.background = 'linear-gradient(90deg, #f44336, #c62828)';
-                document.getElementById('totalExpense').style.color = '#f44336';
-            } else if (expensePercent >= 90) {
-                expenseProgressBar.style.background = 'linear-gradient(90deg, #ff9800, #f57c00)';
-                document.getElementById('totalExpense').style.color = '#ff9800';
-            } else if (expensePercent >= 75) {
-                expenseProgressBar.style.background = 'linear-gradient(90deg, #ffc107, #ff9800)';
-            } else {
-                expenseProgressBar.style.background = 'var(--bg-gradient)';
+            if (expenseProgressBar) {
+                expenseProgressBar.style.width = `${Math.min(ceilingUsedPercent, 100)}%`;
+                if (ceilingUsedPercent >= 100) {
+                    expenseProgressBar.style.background = 'linear-gradient(90deg, #f44336, #c62828)';
+                    document.getElementById('totalExpense').style.color = '#f44336';
+                } else if (ceilingUsedPercent >= 90) {
+                    expenseProgressBar.style.background = 'linear-gradient(90deg, #ff9800, #f57c00)';
+                    document.getElementById('totalExpense').style.color = '#ff9800';
+                } else if (ceilingUsedPercent >= 75) {
+                    expenseProgressBar.style.background = 'linear-gradient(90deg, #ffc107, #ff9800)';
+                    document.getElementById('totalExpense').style.color = 'inherit';
+                } else {
+                    expenseProgressBar.style.background = 'var(--bg-gradient)';
+                    document.getElementById('totalExpense').style.color = 'inherit';
+                }
             }
-            
-            document.getElementById('surplus').textContent = formatCurrency(CONFIG.LOA_DATA.surplus).replace(',00', '');
             
             const now = new Date();
             document.getElementById('currentDate').textContent = `Atualizado em: ${now.toLocaleString('pt-BR')}`;
             
-            // Mostrar alerta se próximo ou acima do teto
-            if (expensePercent >= 95) {
-                showCeilingWarning(expensePercent, totalExpense);
+            if (ceilingUsedPercent >= 95) {
+                showCeilingWarning(ceilingUsedPercent, totalSpent);
             }
         }
         
@@ -1795,9 +2728,11 @@
             // Limpar a tabela antes de reconstruir
             const rows = [];
             
-            budgetData.forEach(ministry => {
-                const available = ministry.totalBudget - (ministry.spent || 0);
-                const percent = ministry.totalBudget > 0 ? (((ministry.spent || 0) / ministry.totalBudget) * 100).toFixed(1) : 0;
+            budgetData.forEach((ministry) => {
+                const totalBudget = Number(ministry.totalBudget || 0);
+                const spent = Number(ministry.spent || 0);
+                const available = totalBudget - spent;
+                const percent = totalBudget > 0 ? (spent / totalBudget) * 100 : 0;
                 
                 let statusClass = 'status-ok';
                 let statusText = 'OK';
@@ -1816,10 +2751,10 @@
                 const row = `
                     <tr>
                         <td><strong>${ministry.ministry}</strong></td>
-                        <td>${formatCurrency(ministry.totalBudget)}</td>
-                        <td style="color: ${percent > 90 ? '#f44336' : 'inherit'}">${formatCurrency(ministry.spent || 0)}</td>
+                        <td>${formatCurrency(totalBudget)}</td>
+                        <td style="color: ${percent >= 90 ? '#f44336' : 'inherit'}">${formatCurrency(spent)}</td>
                         <td style="color: ${available < 0 ? '#f44336' : 'inherit'}">${formatCurrency(available)}</td>
-                        <td><strong>${percent}%</strong></td>
+                        <td><strong>${percent.toFixed(1)}%</strong></td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
@@ -1830,15 +2765,60 @@
             tbody.innerHTML = rows.join('');
         }
 
-        async function updateIndicators() {
-            try {
-                const response = await fetch(CONFIG.INDICATORS_API);
-                indicatorsData = await response.json();
-                displayIndicators();
-            } catch (error) {
-                console.error('Erro ao atualizar indicadores:', error);
+    function toggleIndicatorButton(isLoading, isManual = true) {
+        const button = document.getElementById('btnUpdateIndicators');
+        if (!button) return;
+        if (isLoading) {
+            button.disabled = true;
+            if (isManual) {
+                button.textContent = '⏳ Atualizando...';
             }
+        } else {
+            button.disabled = false;
+            button.textContent = '🔄 Atualizar Agora';
         }
+    }
+
+    function setIndicatorStatus(message, status = 'info') {
+        const statusEl = document.getElementById('indicatorsStatus');
+        if (!statusEl) return;
+        statusEl.textContent = message || '';
+        statusEl.classList.remove('success', 'error', 'info');
+        if (message) {
+            statusEl.classList.add(status);
+        }
+    }
+
+    async function updateIndicators(trigger = 'auto') {
+        if (indicatorsLoading) return;
+        indicatorsLoading = true;
+        const isManual = trigger === 'manual';
+        toggleIndicatorButton(true, isManual);
+        setIndicatorStatus(isManual ? 'Atualizando indicadores...' : 'Sincronizando indicadores automaticamente...', 'info');
+
+        try {
+            const response = await fetch(CONFIG.INDICATORS_API, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`API retornou ${response.status}`);
+            }
+
+            const data = await response.json();
+            indicatorsData = data;
+            displayIndicators();
+
+            const updatedAt = data?.timestamp ? new Date(data.timestamp) : new Date();
+            const label = isManual
+                ? `Atualizado em ${updatedAt.toLocaleString('pt-BR')}`
+                : `Atualizado automaticamente às ${updatedAt.toLocaleTimeString('pt-BR')}`;
+            setIndicatorStatus(label, 'success');
+        } catch (error) {
+            console.error('Erro ao atualizar indicadores:', error);
+            setIndicatorStatus('Falha ao atualizar indicadores.', 'error');
+        } finally {
+            indicatorsLoading = false;
+            toggleIndicatorButton(false);
+        }
+    }
 
         // Expor função para uso global (chamada via onclick)
         window.updateIndicators = updateIndicators;
@@ -1951,14 +2931,10 @@
         // ==== SISTEMA DE NOTIFICAÇÕES ====
         function toggleNotifications() {
             const panel = document.getElementById('notificationsPanel');
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                // Atualizar a exibição com os dados do Firebase que já foram carregados
+            const isHidden = panel.style.display === 'none' || panel.style.display === '';
+            panel.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
                 displayNotifications();
-                // Marcar todas como lidas no Firebase
-                markAllNotificationsAsRead();
-            } else {
-                panel.style.display = 'none';
             }
         }
 
@@ -1970,69 +2946,26 @@
         window.toggleNotifications = toggleNotifications;
         window.closeNotifications = closeNotifications;
         window.markAllNotificationsAsRead = markAllNotificationsAsRead;
+        window.closeNotificationModal = closeNotificationModal;
+        window.closeAdjustmentModal = closeAdjustmentModal;
+        window.submitProposalAdjustment = submitProposalAdjustment;
 
-        function loadNotifications() {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            const listContainer = document.getElementById('notificationsList');
-            
-            if (notifications.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;">Nenhuma notificação</div>';
-                return;
+        function formatTimeAgo(input) {
+            if (!input) return 'Agora mesmo';
+
+            let date;
+            if (input instanceof Date) {
+                date = input;
+            } else if (input && typeof input.toDate === 'function') {
+                date = input.toDate();
+            } else if (typeof input === 'string' || typeof input === 'number') {
+                date = new Date(input);
+            } else {
+                return 'Agora mesmo';
             }
 
-            // Filtrar notificações relevantes para o usuário atual
-            const relevantNotifications = notifications.filter(notif => {
-                if (userData.role === 'Presidenta' || userData.role === 'Vice-Presidente') {
-                    // Presidenta/Vice vêem propostas recebidas
-                    return notif.type === 'proposal_submitted';
-                } else {
-                    // Ministros vêem respostas às suas propostas
-                    return notif.type === 'proposal_response' && notif.targetUser === userData.name;
-                }
-            });
+            if (!date || isNaN(date.getTime())) return 'Agora mesmo';
 
-            if (relevantNotifications.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;">Nenhuma notificação</div>';
-                return;
-            }
-
-            // Ordenar por data (mais recentes primeiro)
-            relevantNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-            listContainer.innerHTML = relevantNotifications.map(notif => {
-                const statusClass = notif.isNew ? 'new' : '';
-                const statusColor = notif.status === 'approved' ? '#4caf50' : notif.status === 'rejected' ? '#f44336' : '#ff9800';
-                
-                let message = '';
-                if (notif.type === 'proposal_submitted') {
-                    message = `<strong>${notif.senderName}</strong> enviou uma proposta de <strong>${notif.documentType}</strong> no valor de <strong>${formatCurrency(notif.estimatedCost)}</strong>`;
-                } else {
-                    const statusText = notif.status === 'approved' ? 'APROVADA ✅' : notif.status === 'rejected' ? 'REPROVADA ❌' : 'PRECISA DE AJUSTES ⚠️';
-                    message = `Sua proposta foi <strong style="color: ${statusColor}">${statusText}</strong>`;
-                    if (notif.feedback) {
-                        message += `<br><small>Feedback: ${notif.feedback}</small>`;
-                    }
-                }
-
-                return `
-                    <div class="notification-item ${statusClass}">
-                        <div class="notification-title">${notif.title}</div>
-                        <div class="notification-message">${message}</div>
-                        <div class="notification-time">${formatTimeAgo(notif.createdAt)}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function markAllAsRead() {
-            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-            notifications.forEach(n => n.isNew = false);
-            localStorage.setItem('notifications', JSON.stringify(notifications));
-            updateNotificationBadge();
-        }
-
-        function formatTimeAgo(dateString) {
-            const date = new Date(dateString);
             const now = new Date();
             const seconds = Math.floor((now - date) / 1000);
 
