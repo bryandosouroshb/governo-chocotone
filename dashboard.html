@@ -1089,6 +1089,143 @@
             display: flex;
         }
 
+          .legal-assistant-draft-summary p {
+              margin-bottom: 0.5rem;
+          }
+
+          .legal-assistant-draft-actions {
+              margin-top: 1.25rem;
+          }
+
+          .legal-assistant-draft-actions .btn {
+              min-width: 180px;
+          }
+
+          .legal-assistant-draft-modal {
+              max-width: 940px;
+              width: min(95%, 940px);
+              padding: 2.5rem 2.75rem;
+          }
+
+          .legal-assistant-draft-body {
+              padding: 0 0 1.75rem;
+          }
+
+          .legal-assistant-draft-content {
+              display: flex;
+              flex-direction: column;
+              gap: 1.5rem;
+          }
+
+          .legal-assistant-draft-view {
+              background: #f8f9ff;
+              border-radius: 18px;
+              border: 1px solid #dfe4ff;
+              box-shadow: 0 18px 35px rgba(26, 35, 126, 0.08);
+              padding: 2rem 2.25rem;
+          }
+
+          .legal-assistant-draft-header {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.75rem;
+              margin-bottom: 1.75rem;
+              text-align: center;
+          }
+
+          .legal-assistant-draft-label {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0.45rem 0.95rem;
+              border-radius: 999px;
+              background: rgba(102, 126, 234, 0.18);
+              color: var(--primary-color);
+              font-weight: 700;
+              font-size: 0.75rem;
+              text-transform: uppercase;
+              letter-spacing: 0.6px;
+          }
+
+          .legal-assistant-draft-title {
+              margin: 0;
+              font-size: 1.35rem;
+              font-weight: 800;
+              color: #1a237e;
+              line-height: 1.35;
+          }
+
+          .legal-assistant-draft-ementa {
+              margin: 0;
+              font-size: 0.95rem;
+              color: #4a4a4a;
+              max-width: 80%;
+              line-height: 1.6;
+          }
+
+          .legal-assistant-draft-section {
+              background: white;
+              border-radius: 14px;
+              border: 1px solid #e0e7ff;
+              padding: 1.5rem;
+              box-shadow: 0 12px 24px rgba(26, 35, 126, 0.06);
+          }
+
+          .legal-assistant-draft-section + .legal-assistant-draft-section {
+              margin-top: 1.25rem;
+          }
+
+          .legal-assistant-draft-section h4 {
+              margin: 0 0 0.85rem;
+              font-size: 1rem;
+              color: #1a237e;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+          }
+
+          .legal-assistant-draft-list {
+              margin: 0;
+              padding-left: 1.25rem;
+              display: grid;
+              gap: 0.75rem;
+          }
+
+          .legal-assistant-draft-list li {
+              line-height: 1.6;
+              color: #333;
+          }
+
+          .legal-assistant-draft-article-number {
+              font-weight: 700;
+              color: #303f9f;
+              margin-right: 0.35rem;
+          }
+
+          .legal-assistant-draft-final {
+              margin-top: 1.25rem;
+              border-top: 1px dashed #c5cae9;
+              padding-top: 1rem;
+              font-weight: 600;
+              color: #1a237e;
+              line-height: 1.6;
+          }
+
+          .legal-assistant-draft-nick {
+              color: #5c6bc0;
+              font-size: 0.85rem;
+              margin-left: 0.25rem;
+          }
+
+          .legal-assistant-draft-empty {
+              background: rgba(236, 239, 253, 0.6);
+              border: 1px dashed #c5cae9;
+              border-radius: 14px;
+              padding: 1.75rem;
+              color: #5c6bc0;
+              font-weight: 600;
+          }
+
         .legal-assistant-preview-wrapper {
             margin-top: 1.5rem;
             border-radius: 16px;
@@ -1150,6 +1287,23 @@
             .legal-assistant-document-actions {
                 flex-direction: column;
             }
+
+              .legal-assistant-draft-modal {
+                  padding: 1.75rem;
+                  width: min(96%, 720px);
+              }
+
+              .legal-assistant-draft-view {
+                  padding: 1.5rem;
+              }
+
+              .legal-assistant-draft-ementa {
+                  max-width: 100%;
+              }
+
+              .legal-assistant-draft-actions .btn {
+                  width: 100%;
+              }
         }
 
         @keyframes slideUp {
@@ -2006,6 +2160,25 @@
         </div>
     </div>
 
+    <div id="legalAssistantDraftModal" class="modal" aria-hidden="true">
+        <div class="modal-content legal-assistant-draft-modal">
+            <div class="modal-header">
+                <div class="modal-title">Minuta do Ato</div>
+                <button class="btn-close" onclick="closeLegalAssistantDraftModal()">&times;</button>
+            </div>
+            <div class="modal-body legal-assistant-draft-body">
+                <div id="legalAssistantDraftContent" class="legal-assistant-draft-content">
+                    <div class="legal-assistant-draft-empty">
+                        <p>Gere uma minuta para visualizar o conteúdo detalhado aqui.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeLegalAssistantDraftModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="container">
         <!-- Budget Showcase -->
@@ -2280,7 +2453,8 @@ Regras obrigatórias de resposta:
 
 Diretrizes adicionais:
 - Estruture os artigos em ordem numérica crescente, sempre começando no artigo 1.º.
-- Se o ato for inviável ou inconstitucional, defina "status" como "inviavel" e deixe o objeto "draft" com campos vazios, mas mantenha o JSON válido e proponha alternativas em "nextSteps".
+- Mesmo que o ato seja considerado inviável ou inconstitucional, registre o risco em "constitutionalAnalysis.status" e "alerts", mas AINDA ASSIM elabore uma minuta completa e coerente com o contexto fornecido (nenhum campo do objeto "draft" deve ficar vazio).
+- Caso existam impedimentos materiais ou jurídicos, explique-os em "constitutionalAnalysis.alerts" e nas seções de justificativa, mas mantenha a minuta como proposta formal alternativa para apoio decisório.
 - Garanta que "htmlDocument" seja um documento HTML completo, pronto para impressão (estilos inline úteis, títulos, ementa, considerandos, artigos e assinaturas). Não inclua scripts.
 - Utilize linguagem formal, técnica e alinhada ao protocolo oficial brasileiro.
 - Utilize as assinaturas fornecidas pelo usuário; se faltar autoridade obrigatória, registre alerta em "constitutionalAnalysis.alerts".
@@ -2420,7 +2594,9 @@ Diretrizes adicionais:
             isGenerating: false,
             lastHtml: '',
             lastRaw: '',
-            lastResult: null
+            lastResult: null,
+            lastDraft: null,
+            lastContext: null
         };
 
         let legalAssistantInitialized = false;
@@ -2698,6 +2874,15 @@ Diretrizes adicionais:
                 }
             });
 
+            const draftModal = document.getElementById('legalAssistantDraftModal');
+            if (draftModal) {
+                draftModal.addEventListener('click', (event) => {
+                    if (event.target === draftModal) {
+                        closeLegalAssistantDraftModal();
+                    }
+                });
+            }
+
             if (userData && userData.name && GOVERNMENT_MEMBERS_MAP.has(userData.name)) {
                 if (authorSelect && !authorSelect.value) {
                     authorSelect.value = userData.name;
@@ -2846,7 +3031,10 @@ Diretrizes adicionais:
             LEGAL_ASSISTANT_STATE.lastHtml = '';
             LEGAL_ASSISTANT_STATE.lastRaw = '';
             LEGAL_ASSISTANT_STATE.lastResult = null;
+            LEGAL_ASSISTANT_STATE.lastDraft = null;
+            LEGAL_ASSISTANT_STATE.lastContext = null;
             legalAssistantUpdateDocActions(false);
+            legalAssistantUpdateDraftModalContent();
         }
 
         function legalAssistantRenderLoadingView() {
@@ -2867,6 +3055,9 @@ Diretrizes adicionais:
                 rawContainer.style.display = 'none';
                 rawContainer.textContent = '';
             }
+
+            LEGAL_ASSISTANT_STATE.lastDraft = null;
+            legalAssistantUpdateDraftModalContent();
         }
 
         function legalAssistantSetStatus(message, variant = 'info') {
@@ -2973,6 +3164,20 @@ Diretrizes adicionais:
             const budgetInfo = legalAssistantGetBudgetForMinistry(resolvedAuthor.ministry);
             const loa = legalAssistantBuildLoaContext();
             const indicatorsSummary = legalAssistantBuildIndicatorsSummary();
+
+            LEGAL_ASSISTANT_STATE.lastContext = {
+                input: {
+                    ...data,
+                    signerIds: [...signerIds]
+                },
+                author: resolvedAuthor,
+                signers,
+                manualSigners,
+                budgetInfo,
+                loa,
+                indicatorsSummary,
+                capturedAt: new Date().toISOString()
+            };
 
             legalAssistantSetStatus('Consultando a IA jurídica...', 'info');
             legalAssistantSetLoading(true);
@@ -3440,7 +3645,13 @@ Diretrizes adicionais:
             const recommended = result?.recommendedInstrument || {};
             const constitutional = result?.constitutionalAnalysis || {};
             const budget = result?.budgetAssessment || {};
-            const draft = result?.draft || {};
+            const normalizedDraft = legalAssistantNormalizeDraft(result?.draft, {
+                recommended,
+                constitutional,
+                budget
+            });
+            LEGAL_ASSISTANT_STATE.lastDraft = normalizedDraft;
+            LEGAL_ASSISTANT_STATE.lastResult = result;
             const nextSteps = Array.isArray(result?.nextSteps) ? result.nextSteps : [];
             const htmlDocument = typeof result?.htmlDocument === 'string' ? result.htmlDocument.trim() : '';
 
@@ -3487,10 +3698,11 @@ Diretrizes adicionais:
                 </div>
             `;
 
-            const draftHtml = renderAssistantDraftSection(draft);
+            const draftHtml = renderAssistantDraftSection(normalizedDraft);
             const nextStepsHtml = renderAssistantListSection('Próximos passos sugeridos', nextSteps);
 
             container.innerHTML = [summaryHtml, constitutionalHtml, budgetHtml, draftHtml, nextStepsHtml].join('');
+            legalAssistantUpdateDraftModalContent();
 
             if (htmlDocument && previewWrapper && previewFrame) {
                 previewFrame.srcdoc = htmlDocument;
@@ -3542,32 +3754,345 @@ Diretrizes adicionais:
             `;
         }
 
-        function renderAssistantDraftSection(draft) {
-            if (!draft || (!draft.title && !draft.ementa && (!Array.isArray(draft.articles) || !draft.articles.length))) {
-                return `
-                    <div class="legal-assistant-section">
-                        <h5>Minuta do Ato</h5>
-                        <p>Sem minuta gerada.</p>
-                    </div>
-                `;
+         function legalAssistantSummarize(text, limit = 220) {
+             if (!text) return '';
+             const trimmed = String(text).trim();
+             if (!trimmed) return '';
+             return trimmed.length > limit ? `${trimmed.slice(0, limit - 3).trim()}...` : trimmed;
+         }
+
+         function legalAssistantNormalizeParagraph(text) {
+             if (text === null || text === undefined) return '';
+             let normalized = String(text).trim();
+             if (!normalized) return '';
+             normalized = normalized.replace(/\s+/g, ' ');
+             if (!/[.!?]$/.test(normalized)) {
+                 normalized = `${normalized}.`;
+             }
+             return normalized;
+         }
+
+         function legalAssistantBuildSentence(prefix, fragment) {
+             const fragmentText = fragment === null || fragment === undefined ? '' : String(fragment).trim();
+             if (!fragmentText) return '';
+             const base = prefix ? `${prefix} ${fragmentText}` : fragmentText;
+             return legalAssistantNormalizeParagraph(base);
+         }
+
+         function legalAssistantDraftHasContent(draft) {
+             if (!draft || typeof draft !== 'object') return false;
+             const hasTitle = Boolean(draft.title && String(draft.title).trim());
+             const hasEmenta = Boolean(draft.ementa && String(draft.ementa).trim());
+             const hasConsiderandos = Array.isArray(draft.considerandos) && draft.considerandos.some((item) => String(item || '').trim());
+             const hasArticles = Array.isArray(draft.articles) && draft.articles.some((article) => article && String(article.text || article.content || '').trim());
+             const hasSignatures = Array.isArray(draft.signatures) && draft.signatures.some((signature) => signature && String(signature.name || signature.displayName || '').trim());
+             return hasTitle || hasEmenta || hasConsiderandos || hasArticles || hasSignatures;
+         }
+
+         function legalAssistantBuildFallbackTitle(recommendedType, author) {
+             const actor = author?.displayName || author?.signatureTitle || author?.role || 'Governo Federal Chocotone';
+             if (recommendedType) {
+                 return `${recommendedType} - ${actor}`;
+             }
+             return `Minuta de Ato Oficial - ${actor}`;
+         }
+
+         function legalAssistantBuildFallbackEmenta(summary, goal, context) {
+             const candidates = [summary, goal, context]
+                 .map((item) => (item ? String(item).trim() : ''))
+                 .filter(Boolean);
+             const chosen = candidates[0] || 'Minuta elaborada automaticamente com base nas informações fornecidas ao Assistente de Atos Oficiais.';
+             return chosen.length > 320 ? `${chosen.slice(0, 317).trim()}...` : chosen;
+         }
+
+         function legalAssistantBuildFallbackConsiderandos(contextText, notesText, recommendedType) {
+             const considerandos = [];
+             const contextPieces = (contextText || '')
+                 .split(/\n+/)
+                 .map((piece) => piece.trim())
+                 .filter(Boolean)
+                 .slice(0, 3);
+
+            contextPieces.forEach((piece) => {
+                const cleaned = piece.replace(/^considerando\s+/i, '').trim();
+                const sentence = legalAssistantNormalizeParagraph(cleaned);
+                if (sentence) {
+                    considerandos.push(`Considerando ${sentence}`);
+                }
+            });
+
+            if (notesText) {
+                const notesSentence = legalAssistantBuildSentence('as observações adicionais apresentadas, em especial', notesText);
+                if (notesSentence) {
+                    considerandos.push(`Considerando ${notesSentence}`);
+                }
             }
 
-            const considerandos = renderAssistantListSection('Considerandos', draft.considerandos);
-            const articles = renderAssistantArticles(draft.articles);
-            const signatures = renderAssistantSignatures(draft.signatures);
+            if (!considerandos.length && recommendedType) {
+                considerandos.push(`Considerando a necessidade de edição de ${recommendedType.toLowerCase()} para disciplinar a matéria apresentada.`);
+            }
 
-            return `
-                <div class="legal-assistant-section">
-                    <h5>Minuta do Ato</h5>
-                    ${draft.title ? `<p><strong>Título:</strong> ${sanitizeHtml(draft.title)}</p>` : ''}
-                    ${draft.ementa ? `<p><strong>Ementa:</strong> ${sanitizeHtml(draft.ementa)}</p>` : ''}
-                    ${considerandos}
-                    ${articles}
-                    ${draft.finalDisposition ? `<p><strong>Disposição final:</strong> ${sanitizeHtml(draft.finalDisposition)}</p>` : ''}
-                    ${signatures}
-                </div>
-            `;
+            if (!considerandos.length) {
+                considerandos.push('Considerando a necessidade de conferir tratamento formal à demanda submetida à avaliação do Poder Executivo.');
+            }
+
+            return considerandos;
         }
+
+         function legalAssistantEnsureArticles(rawArticles, input) {
+             const prepared = [];
+
+             if (Array.isArray(rawArticles)) {
+                 rawArticles.forEach((article) => {
+                     if (!article) return;
+                     const text = legalAssistantNormalizeParagraph(article.text || article.content || '');
+                     if (!text) return;
+                     prepared.push({
+                         number: prepared.length + 1,
+                         text
+                     });
+                 });
+             }
+
+             if (!prepared.length) {
+                 const goalSentence = legalAssistantBuildSentence('Fica estabelecido que', input.goal);
+                 if (goalSentence) {
+                     prepared.push({ number: prepared.length + 1, text: goalSentence });
+                 }
+
+                 const impactSentence = legalAssistantBuildSentence('Deverão ser observados os impactos orçamentários estimados em', input.impact);
+                 if (impactSentence) {
+                     prepared.push({ number: prepared.length + 1, text: impactSentence });
+                 }
+
+                 const notesSentence = legalAssistantBuildSentence('As unidades competentes adotarão as providências necessárias considerando', input.notes);
+                 if (notesSentence) {
+                     prepared.push({ number: prepared.length + 1, text: notesSentence });
+                 }
+
+                 prepared.push({
+                     number: prepared.length + 1,
+                     text: 'Os órgãos e entidades responsáveis adotarão todas as providências necessárias para o fiel cumprimento deste ato.'
+                 });
+             } else {
+                 prepared.forEach((article, index) => {
+                     article.number = index + 1;
+                 });
+             }
+
+             return prepared;
+         }
+
+         function legalAssistantMergeSignatures(draftSignatures, context) {
+             const signatureMap = new Map();
+
+             const pushSignature = (entry) => {
+                 if (!entry) return;
+                 const rawName = entry.name || entry.displayName || '';
+                 const name = String(rawName).trim();
+                 if (!name) return;
+                 const key = name.toLowerCase();
+                 if (signatureMap.has(key)) return;
+                 const role = String(entry.role || entry.signatureTitle || 'Autoridade signatária').trim() || 'Autoridade signatária';
+                 const habboNick = String(entry.habboNick || entry.habbo || entry.displayName || '').trim();
+                 signatureMap.set(key, {
+                     name,
+                     role,
+                     habboNick: habboNick || name
+                 });
+             };
+
+             if (Array.isArray(draftSignatures)) {
+                 draftSignatures.forEach((signature) => {
+                     if (!signature) return;
+                     pushSignature(signature);
+                 });
+             }
+
+             const author = context?.author;
+             if (author) {
+                 pushSignature({
+                     name: author.displayName || author.id || 'Autor',
+                     role: author.signatureTitle || author.role || 'Autor do ato',
+                     habboNick: author.habboNick || author.displayName || author.id || ''
+                 });
+             }
+
+             if (Array.isArray(context?.signers)) {
+                 context.signers.forEach((signer) => {
+                     pushSignature({
+                         name: signer?.displayName || signer?.id,
+                         role: signer?.signatureTitle || signer?.role,
+                         habboNick: signer?.habboNick || signer?.displayName || signer?.id
+                     });
+                 });
+             }
+
+             if (Array.isArray(context?.manualSigners)) {
+                 context.manualSigners.forEach((manual) => {
+                     const trimmed = String(manual || '').trim();
+                     if (!trimmed) return;
+                     pushSignature({
+                         name: trimmed,
+                         role: 'Assinatura adicional indicada',
+                         habboNick: trimmed
+                     });
+                 });
+             }
+
+             return Array.from(signatureMap.values());
+         }
+
+         function legalAssistantBuildJustification(existingJustification, metadata) {
+             const paragraphs = [];
+
+             const addParagraph = (text) => {
+                 const normalized = legalAssistantNormalizeParagraph(text);
+                 if (!normalized) return;
+                 const key = normalized.toLowerCase();
+                 if (!paragraphs.some((paragraph) => paragraph.toLowerCase() === key)) {
+                     paragraphs.push(normalized);
+                 }
+             };
+
+             if (Array.isArray(existingJustification)) {
+                 existingJustification.forEach((item) => addParagraph(item));
+             } else if (existingJustification) {
+                 addParagraph(existingJustification);
+             }
+
+             const recommended = metadata?.recommended || {};
+             const constitutional = metadata?.constitutional || {};
+             const budget = metadata?.budget || {};
+             const input = metadata?.input || {};
+
+             if (recommended.summary) {
+                 addParagraph(`Resumo da recomendação: ${recommended.summary}`);
+             }
+
+             if (constitutional.explanation) {
+                 addParagraph(constitutional.explanation);
+             }
+
+             if (Array.isArray(constitutional.alerts) && constitutional.alerts.length) {
+                 addParagraph(`Alertas identificados: ${constitutional.alerts.join('; ')}`);
+             }
+
+             if (budget.impactSummary) {
+                 addParagraph(`Impacto orçamentário: ${budget.impactSummary}`);
+             }
+
+             if (input.goal) {
+                 addParagraph(`Objetivo declarado pelo solicitante: ${input.goal}`);
+             }
+
+             if (input.notes) {
+                 addParagraph(`Observações adicionais do solicitante: ${input.notes}`);
+             }
+
+             if (!paragraphs.length && input.context) {
+                 addParagraph(input.context);
+             }
+
+             if (!paragraphs.length) {
+                 addParagraph('Justifica-se a presente minuta para orientar a tomada de decisão sobre a matéria descrita, garantindo registro formal das providências sugeridas.');
+             }
+
+             return paragraphs;
+         }
+
+         function legalAssistantNormalizeDraft(rawDraft, metadata = {}) {
+             const context = LEGAL_ASSISTANT_STATE.lastContext || {};
+             const input = context.input || {};
+             const draftObject = rawDraft && typeof rawDraft === 'object' ? rawDraft : {};
+             const recommended = metadata.recommended || {};
+             const normalized = {};
+
+             const title = (draftObject.title || '').trim();
+             normalized.title = title || legalAssistantBuildFallbackTitle(recommended.type, context.author);
+
+             const ementa = (draftObject.ementa || '').trim();
+             normalized.ementa = ementa || legalAssistantBuildFallbackEmenta(recommended.summary, input.goal, input.context);
+
+             const considerandosRaw = Array.isArray(draftObject.considerandos) ? draftObject.considerandos : [];
+             const considerandosClean = considerandosRaw
+                 .map((item) => legalAssistantNormalizeParagraph(item))
+                 .filter(Boolean);
+             normalized.considerandos = considerandosClean.length
+                 ? considerandosClean
+                 : legalAssistantBuildFallbackConsiderandos(input.context, input.notes, recommended.type);
+
+             const articlesRaw = Array.isArray(draftObject.articles) ? draftObject.articles : [];
+             normalized.articles = legalAssistantEnsureArticles(articlesRaw, input);
+
+             const finalDisposition = (draftObject.finalDisposition || '').trim();
+             normalized.finalDisposition = finalDisposition || 'Este ato entra em vigor na data de sua publicação.';
+
+             normalized.signatures = legalAssistantMergeSignatures(draftObject.signatures, context);
+
+             normalized.justification = legalAssistantBuildJustification(draftObject.justification, {
+                 recommended,
+                 constitutional: metadata.constitutional || {},
+                 budget: metadata.budget || {},
+                 input
+             });
+
+             return normalized;
+         }
+
+         function renderAssistantDraftSection(draft) {
+             if (!legalAssistantDraftHasContent(draft)) {
+                 return `
+                     <div class="legal-assistant-section">
+                         <h5>Minuta do Ato</h5>
+                         <p>Não foi possível montar a minuta com os dados atuais. Gere novamente para visualizar.</p>
+                     </div>
+                 `;
+             }
+
+             const firstConsidering = Array.isArray(draft.considerandos) && draft.considerandos.length
+                 ? legalAssistantSummarize(draft.considerandos[0], 180)
+                 : '';
+             const articlesCount = Array.isArray(draft.articles) ? draft.articles.length : 0;
+             const justificationPreview = Array.isArray(draft.justification) && draft.justification.length
+                 ? legalAssistantSummarize(draft.justification[0], 200)
+                 : '';
+             const signatureCount = Array.isArray(draft.signatures) ? draft.signatures.length : 0;
+
+             const details = [];
+             if (draft.title) {
+                 details.push(`<p><strong>Título:</strong> ${sanitizeHtml(legalAssistantSummarize(draft.title, 180))}</p>`);
+             }
+             if (draft.ementa) {
+                 details.push(`<p><strong>Ementa:</strong> ${sanitizeHtml(legalAssistantSummarize(draft.ementa, 220))}</p>`);
+             }
+             if (firstConsidering) {
+                 details.push(`<p><strong>Primeiro considerando:</strong> ${sanitizeHtml(firstConsidering)}</p>`);
+             }
+             if (articlesCount) {
+                 details.push(`<p><strong>Artigos preparados:</strong> ${articlesCount}</p>`);
+             }
+             if (justificationPreview) {
+                 details.push(`<p><strong>Justificativa:</strong> ${sanitizeHtml(justificationPreview)}</p>`);
+             }
+             if (signatureCount) {
+                 details.push(`<p><strong>Assinaturas previstas:</strong> ${signatureCount}</p>`);
+             }
+
+             const detailHtml = details.length
+                 ? details.join('')
+                 : '<p>Minuta completa disponível. Clique para visualizar os detalhes.</p>';
+
+             return `
+                 <div class="legal-assistant-section legal-assistant-draft-summary">
+                     <h5>Minuta do Ato</h5>
+                     ${detailHtml}
+                     <div class="legal-assistant-draft-actions">
+                         <button type="button" class="btn btn-secondary" onclick="openLegalAssistantDraftModal()">Abrir minuta</button>
+                     </div>
+                 </div>
+             `;
+         }
 
         function renderAssistantArticles(articles) {
             if (!Array.isArray(articles) || !articles.length) return '';
@@ -3632,6 +4157,9 @@ Diretrizes adicionais:
                 previewFrame.srcdoc = '';
                 previewWrapper.style.display = 'none';
             }
+
+            LEGAL_ASSISTANT_STATE.lastDraft = null;
+            legalAssistantUpdateDraftModalContent();
         }
 
         function resetLegalAssistantForm() {
@@ -3678,14 +4206,15 @@ Diretrizes adicionais:
             }
         }
 
-        function closeLegalAssistant() {
-            if (LEGAL_ASSISTANT_STATE.isGenerating) return;
-            const modal = document.getElementById('legalAssistantModal');
-            if (!modal) return;
-            modal.classList.remove('active');
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-        }
+          function closeLegalAssistant() {
+              if (LEGAL_ASSISTANT_STATE.isGenerating) return;
+              const modal = document.getElementById('legalAssistantModal');
+              if (!modal) return;
+              closeLegalAssistantDraftModal({ skipScrollUpdate: true });
+              modal.classList.remove('active');
+              modal.setAttribute('aria-hidden', 'true');
+              document.body.style.overflow = '';
+          }
 
         function downloadLegalAssistantDocument() {
             if (!LEGAL_ASSISTANT_STATE.lastHtml) {
@@ -3732,6 +4261,104 @@ Diretrizes adicionais:
                 console.error('Assistente IA: erro ao copiar HTML', error);
                 legalAssistantSetStatus('Não foi possível copiar o HTML. Verifique as permissões do navegador.', 'error');
             }
+        }
+
+        function legalAssistantUpdateDraftModalContent() {
+            const content = document.getElementById('legalAssistantDraftContent');
+            if (!content) return;
+
+            const draft = LEGAL_ASSISTANT_STATE.lastDraft;
+            const result = LEGAL_ASSISTANT_STATE.lastResult || {};
+            const recommended = result.recommendedInstrument || {};
+
+            if (!legalAssistantDraftHasContent(draft)) {
+                content.innerHTML = `
+                    <div class="legal-assistant-draft-empty">
+                        <p>Gere uma minuta para visualizar o conteúdo detalhado aqui.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const considerandos = Array.isArray(draft.considerandos) && draft.considerandos.length
+                ? `<ul class="legal-assistant-draft-list">${draft.considerandos.map((item) => `<li>${sanitizeHtml(item)}</li>`).join('')}</ul>`
+                : '<p>Sem considerandos registrados.</p>';
+
+            const articles = Array.isArray(draft.articles) && draft.articles.length
+                ? `<ol class="legal-assistant-draft-list">${draft.articles.map((article) => {
+                    const number = sanitizeHtml(String(article.number ?? ''));
+                    const text = sanitizeHtml(article.text || '');
+                    return `<li><span class="legal-assistant-draft-article-number">Art. ${number}º</span> ${text}</li>`;
+                }).join('')}</ol>`
+                : '<p>Sem dispositivos registrados.</p>';
+
+            const justification = Array.isArray(draft.justification) && draft.justification.length
+                ? draft.justification.map((paragraph) => `<p>${sanitizeHtml(paragraph)}</p>`).join('')
+                : '<p>Sem justificativa registrada.</p>';
+
+            const finalDisposition = draft.finalDisposition
+                ? `<p class="legal-assistant-draft-final">${sanitizeHtml(draft.finalDisposition)}</p>`
+                : '';
+
+            const signatures = Array.isArray(draft.signatures) && draft.signatures.length
+                ? `<ul class="legal-assistant-draft-list">${draft.signatures.map((signature) => {
+                    const name = sanitizeHtml(signature.name || signature.displayName || '');
+                    const role = sanitizeHtml(signature.role || signature.signatureTitle || 'Autoridade signatária');
+                    const habboNick = signature.habboNick ? `<span class="legal-assistant-draft-nick">(Habbo: ${sanitizeHtml(signature.habboNick)})</span>` : '';
+                    return `<li><strong>${name}</strong> – ${role} ${habboNick}</li>`;
+                }).join('')}</ul>`
+                : '<p>Sem assinaturas indicadas.</p>';
+
+            content.innerHTML = `
+                <div class="legal-assistant-draft-view">
+                    <header class="legal-assistant-draft-header">
+                        <span class="legal-assistant-draft-label">${sanitizeHtml(recommended.type || 'Instrumento sugerido')}</span>
+                        <h3 class="legal-assistant-draft-title">${sanitizeHtml(draft.title)}</h3>
+                        ${draft.ementa ? `<p class="legal-assistant-draft-ementa">${sanitizeHtml(draft.ementa)}</p>` : ''}
+                    </header>
+                    <section class="legal-assistant-draft-section">
+                        <h4>Considerandos</h4>
+                        ${considerandos}
+                    </section>
+                    <section class="legal-assistant-draft-section">
+                        <h4>Corpo do Ato</h4>
+                        ${articles}
+                        ${finalDisposition}
+                    </section>
+                    <section class="legal-assistant-draft-section">
+                        <h4>Justificativa</h4>
+                        ${justification}
+                    </section>
+                    <section class="legal-assistant-draft-section">
+                        <h4>Assinaturas</h4>
+                        ${signatures}
+                    </section>
+                </div>
+            `;
+        }
+
+        function openLegalAssistantDraftModal() {
+            if (!legalAssistantDraftHasContent(LEGAL_ASSISTANT_STATE.lastDraft)) {
+                legalAssistantSetStatus('Gere uma minuta antes de abrir o detalhamento.', 'error');
+                return;
+            }
+            const modal = document.getElementById('legalAssistantDraftModal');
+            if (!modal) return;
+            legalAssistantUpdateDraftModalContent();
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLegalAssistantDraftModal(options = {}) {
+            const modal = document.getElementById('legalAssistantDraftModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            if (options.skipScrollUpdate) return;
+            const mainModal = document.getElementById('legalAssistantModal');
+            const keepLocked = Boolean(mainModal && mainModal.classList.contains('active'));
+            document.body.style.overflow = keepLocked ? 'hidden' : '';
         }
 
     function loadProposalsRealtime() {
@@ -4621,13 +5248,15 @@ Diretrizes adicionais:
           window.openSubmitProposal = openSubmitProposal;
           window.openExtract = openExtract;
           window.openAdminPanel = openAdminPanel;
-          window.logout = logout;
-          window.openLegalAssistant = openLegalAssistant;
-          window.closeLegalAssistant = closeLegalAssistant;
-          window.resetLegalAssistantForm = resetLegalAssistantForm;
-          window.downloadLegalAssistantDocument = downloadLegalAssistantDocument;
-          window.openLegalAssistantDocument = openLegalAssistantDocument;
-          window.copyLegalAssistantHtml = copyLegalAssistantHtml;
+            window.logout = logout;
+            window.openLegalAssistant = openLegalAssistant;
+            window.closeLegalAssistant = closeLegalAssistant;
+            window.resetLegalAssistantForm = resetLegalAssistantForm;
+            window.downloadLegalAssistantDocument = downloadLegalAssistantDocument;
+            window.openLegalAssistantDocument = openLegalAssistantDocument;
+            window.copyLegalAssistantHtml = copyLegalAssistantHtml;
+            window.openLegalAssistantDraftModal = openLegalAssistantDraftModal;
+            window.closeLegalAssistantDraftModal = closeLegalAssistantDraftModal;
 
         // ==== SISTEMA DE NOTIFICAÇÕES ====
         function toggleNotifications() {
