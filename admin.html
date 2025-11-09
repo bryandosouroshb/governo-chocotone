@@ -1062,16 +1062,20 @@ ${proposal.justification}
                         const budgetDoc = budgetSnapshot.docs[0];
                         const currentBudget = budgetDoc.data();
                         
+                        // Garantir que spent existe (pode ser undefined no primeiro uso)
+                        const currentSpent = currentBudget.spent || 0;
+                        const currentAvailable = currentBudget.available || currentBudget.totalBudget;
+                        
                         // Verificar se há orçamento disponível
-                        if (currentBudget.available < currentProposal.estimatedCost) {
-                            alert(`❌ Orçamento insuficiente!\n\nDisponível: ${formatCurrency(currentBudget.available)}\nNecessário: ${formatCurrency(currentProposal.estimatedCost)}`);
+                        if (currentAvailable < currentProposal.estimatedCost) {
+                            alert(`❌ Orçamento insuficiente!\n\nDisponível: ${formatCurrency(currentAvailable)}\nNecessário: ${formatCurrency(currentProposal.estimatedCost)}`);
                             return;
                         }
                         
                         // Atualizar orçamento: reduzir disponível e aumentar gasto
                         await updateDoc(doc(db, 'budgets', budgetDoc.id), {
-                            available: currentBudget.available - currentProposal.estimatedCost,
-                            spent: currentBudget.spent + currentProposal.estimatedCost,
+                            available: currentAvailable - currentProposal.estimatedCost,
+                            spent: currentSpent + currentProposal.estimatedCost,
                             lastUpdate: serverTimestamp()
                         });
                     }
