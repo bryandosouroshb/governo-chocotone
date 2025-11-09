@@ -859,9 +859,393 @@
         }
 
         function exportToPDF() {
-            // Em produção, usar biblioteca como jsPDF ou html2pdf
-            alert('📥 Função de exportação para PDF será implementada com integração do Google Apps Script.');
-            window.print();
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
+            
+            // Formatar período
+            const periodText = dateStart && dateEnd 
+                ? `${formatDateShort(dateStart)} A ${formatDateShort(dateEnd)}`
+                : dateStart 
+                    ? `A PARTIR DE ${formatDateShort(dateStart)}`
+                    : dateEnd 
+                        ? `ATÉ ${formatDateShort(dateEnd)}`
+                        : 'TODO O PERÍODO';
+            
+            // Calcular totais do período filtrado
+            const totalReceitas = filteredTransactions
+                .filter(t => t.type === 'revenue')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalDespesas = filteredTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const saldo = totalReceitas - totalDespesas;
+            
+            // Data atual formatada
+            const today = new Date();
+            const dataCompleta = today.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Gerar HTML do ofício
+            const oficioHTML = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ofício Executivo - Prestação de Contas</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+            background: white;
+            padding: 40px;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+        }
+        
+        .brasao {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+        
+        .titulo {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        
+        .ementa {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-left: 4px solid #1a237e;
+        }
+        
+        .ementa-label {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .preambulo {
+            margin: 25px 0;
+            text-align: justify;
+        }
+        
+        .considerando {
+            margin: 20px 0;
+            text-align: justify;
+        }
+        
+        .considerando-item {
+            margin: 10px 0 10px 40px;
+            text-align: justify;
+        }
+        
+        .divulga {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            text-transform: uppercase;
+        }
+        
+        .corpo {
+            margin: 25px 0;
+        }
+        
+        .secao {
+            margin: 20px 0;
+        }
+        
+        .secao-titulo {
+            font-weight: bold;
+            font-size: 13pt;
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+        
+        .tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .tabela th,
+        .tabela td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .tabela th {
+            background: #e8eaf6;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .tabela-valor {
+            text-align: right !important;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .total-row {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .transacao-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #1a237e;
+            background: #fafafa;
+        }
+        
+        .transacao-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .transacao-body {
+            font-size: 11pt;
+            color: #333;
+        }
+        
+        .data-local {
+            margin: 40px 0 30px 0;
+            text-align: center;
+        }
+        
+        .assinaturas {
+            margin-top: 60px;
+            page-break-inside: avoid;
+        }
+        
+        .assinatura-bloco {
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .assinatura-linha {
+            border-top: 1px solid #000;
+            width: 300px;
+            margin: 0 auto 5px auto;
+        }
+        
+        .assinatura-nome {
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        
+        .assinatura-cargo {
+            font-size: 10pt;
+            color: #555;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="brasao">🇧🇷</div>
+        <div style="font-weight: bold; font-size: 11pt;">REPÚBLICA FEDERATIVA DO HABBO</div>
+        <div style="font-size: 10pt;">MINISTÉRIO DA ECONOMIA E TRABALHO</div>
+    </div>
+    
+    <div class="titulo">
+        OFÍCIO EXECUTIVO Nº ${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}/2025/ME<br>
+        PRESTAÇÃO DE CONTAS - ORÇAMENTO FEDERAL<br>
+        PERÍODO: ${periodText}
+    </div>
+    
+    <div class="ementa">
+        <span class="ementa-label">EMENTA:</span> Presta contas detalhadas da execução orçamentária e financeira do Governo Federal no período especificado, discriminando receitas arrecadadas, despesas realizadas e saldo remanescente, em cumprimento ao princípio constitucional da transparência e accountability fiscal.
+    </div>
+    
+    <div class="preambulo">
+        <strong>O MINISTRO DE ESTADO DA ECONOMIA E TRABALHO</strong>, no uso das atribuições que lhe confere o art. 80, caput, inciso I, da Constituição da República Federativa do Habbo,
+    </div>
+    
+    <div class="considerando">
+        <div><strong>CONSIDERANDO</strong> que a Lei de Responsabilidade Fiscal (Lei Complementar nº 101/2000) estabelece normas de finanças públicas voltadas para a responsabilidade na gestão fiscal;</div>
+        
+        <div class="considerando-item">
+            <strong>CONSIDERANDO</strong> o disposto no art. 70 da Constituição Federal, que determina a obrigatoriedade de prestação de contas por todos aqueles que utilizam, arrecadam, guardam, gerenciam ou administram dinheiros, bens e valores públicos;
+        </div>
+        
+        <div class="considerando-item">
+            <strong>CONSIDERANDO</strong> o princípio da transparência da gestão fiscal previsto no art. 1º, § 1º, da Lei Complementar nº 101/2000;
+        </div>
+        
+        <div class="considerando-item">
+            <strong>CONSIDERANDO</strong> a necessidade de divulgar periodicamente a execução orçamentária e financeira aos órgãos de controle e à sociedade;
+        </div>
+    </div>
+    
+    <div class="divulga">DIVULGA</div>
+    
+    <div class="corpo">
+        <div class="secao">
+            <div class="secao-titulo">I - RESUMO EXECUTIVO</div>
+            
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>CATEGORIA</th>
+                        <th>VALOR (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>💰 Total de Receitas Arrecadadas</td>
+                        <td class="tabela-valor">${formatCurrency(totalReceitas)}</td>
+                    </tr>
+                    <tr>
+                        <td>� Total de Despesas Realizadas</td>
+                        <td class="tabela-valor">${formatCurrency(totalDespesas)}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>💼 Saldo Orçamentário</td>
+                        <td class="tabela-valor" style="color: ${saldo >= 0 ? '#4caf50' : '#f44336'}">${formatCurrency(saldo)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="secao">
+            <div class="secao-titulo">II - DISCRIMINAÇÃO DAS TRANSAÇÕES</div>
+            
+            ${filteredTransactions.length === 0 ? `
+                <p style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+                    Não houve movimentações orçamentárias no período especificado.
+                </p>
+            ` : filteredTransactions.map((transaction, index) => `
+                <div class="transacao-item">
+                    <div class="transacao-header">
+                        <span>${index + 1}. ${transaction.type === 'revenue' ? '💰 RECEITA' : '📊 DESPESA'}</span>
+                        <span style="color: ${transaction.type === 'revenue' ? '#4caf50' : '#f44336'}">${formatCurrency(transaction.amount)}</span>
+                    </div>
+                    <div class="transacao-body">
+                        <div><strong>Ministério:</strong> ${transaction.ministry || 'N/A'}</div>
+                        <div><strong>Data:</strong> ${formatDate(transaction.date)}</div>
+                        ${transaction.documentType ? `<div><strong>Documento:</strong> ${transaction.documentType} ${transaction.documentNumber || ''}</div>` : ''}
+                        ${transaction.description ? `<div><strong>Descrição:</strong> ${transaction.description}</div>` : ''}
+                        ${transaction.notes ? `<div><strong>Observações:</strong> ${transaction.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="secao">
+            <div class="secao-titulo">III - CONSIDERAÇÕES FINAIS</div>
+            
+            <p style="text-align: justify;">
+                A presente prestação de contas demonstra a execução orçamentária e financeira do Governo Federal no período indicado, 
+                evidenciando ${filteredTransactions.length} transação(ões) realizadas, resultando em um saldo ${saldo >= 0 ? 'superavitário' : 'deficitário'} 
+                de <strong>${formatCurrency(Math.abs(saldo))}</strong>.
+            </p>
+            
+            <p style="text-align: justify; margin-top: 15px;">
+                Todas as operações foram realizadas em conformidade com a Lei Orçamentária Anual (LOA) e respeitando os limites 
+                constitucionais e legais aplicáveis à gestão fiscal responsável.
+            </p>
+            
+            <p style="text-align: justify; margin-top: 15px;">
+                Esta prestação de contas fica à disposição dos órgãos de controle interno e externo, bem como do Congresso Nacional 
+                e da sociedade, para fiscalização e acompanhamento.
+            </p>
+        </div>
+    </div>
+    
+    <div class="data-local">
+        Brasília-DF, ${dataCompleta}.
+    </div>
+    
+    <div class="assinaturas">
+        <div class="assinatura-bloco">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-nome">MINISTRO DA ECONOMIA E TRABALHO</div>
+            <div class="assinatura-cargo">Ministério da Economia e Trabalho</div>
+        </div>
+        
+        <div class="assinatura-bloco">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-nome">CHOCOTONE</div>
+            <div class="assinatura-cargo">Presidenta da República Federativa do Habbo</div>
+        </div>
+        
+        <div class="assinatura-bloco">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-nome">BRYANDOSOUROS</div>
+            <div class="assinatura-cargo">Vice-Presidente da República Federativa do Habbo</div>
+        </div>
+    </div>
+    
+    <div class="no-print" style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px dashed #ccc;">
+        <button onclick="window.print()" style="background: #667eea; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 14pt; font-weight: bold;">
+            🖨️ Imprimir / Salvar como PDF
+        </button>
+        <button onclick="window.close()" style="background: #f44336; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 14pt; font-weight: bold; margin-left: 10px;">
+            ✕ Fechar
+        </button>
+    </div>
+</body>
+</html>
+            `;
+            
+            // Abrir em nova janela
+            const printWindow = window.open('', '_blank', 'width=900,height=800');
+            printWindow.document.write(oficioHTML);
+            printWindow.document.close();
+            
+            // Focar na janela para impressão
+            printWindow.focus();
+        }
+        
+        function formatDateShort(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
         }
 
         function formatCurrency(value) {
