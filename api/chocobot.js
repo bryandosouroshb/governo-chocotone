@@ -29,6 +29,14 @@ export default async function handler(req, res) {
     });
   }
 
+  // Log mascarado para auxiliar debug sem vazar chave
+  try {
+    const masked = `${OPENROUTER_API_KEY.slice(0,6)}...${OPENROUTER_API_KEY.slice(-6)}`;
+    console.log('OPENROUTER_API_KEY present (masked):', masked);
+  } catch (e) {
+    console.log('OPENROUTER_API_KEY present (unable to mask)');
+  }
+
   try {
     // Fazer request para OpenRouter com a API key segura
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -44,13 +52,25 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Se houver erro, logar
+    // Se houver erro, logar e enriquecer resposta para debug
     if (!response.ok) {
       console.error('❌ Erro OpenRouter:', response.status, data);
+
+      // Se for 401, adicionar mensagem mais explícita (não expor chave)
+      if (response.status === 401) {
+        return res.status(401).json({
+          error: 'OpenRouter Unauthorized',
+          status: 401,
+          message: 'OpenRouter retornou 401 - verifique a chave OPENROUTER_API_KEY no painel da Vercel (possível chave inválida ou revogada).',
+          detail: data
+        });
+      }
+
+      return res.status(response.status).json(data);
     }
 
-    // Retornar resposta para o cliente
-    return res.status(response.status).json(data);
+    // Retornar resposta para o cliente quando OK
+    return res.status(200).json(data);
   } catch (error) {
     console.error('Erro no proxy:', error);
     return res.status(500).json({ 
