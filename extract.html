@@ -640,7 +640,27 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
+          authDomain: "governo-chocotone.firebaseapp.com",
+          projectId: "governo-chocotone",
+          storageBucket: "governo-chocotone.firebasestorage.app",
+          messagingSenderId: "347857308504",
+          appId: "1:347857308504:web:5c33e08ded1e4e4e98b49a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
         // Dados
         const MINISTRIES = [
             'Casa Civil',
@@ -659,13 +679,21 @@
 
         let allTransactions = [];
         let filteredTransactions = [];
+        let unsubscribe = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             populateMinistryFilter();
-            loadTransactions();
-            updateSummary();
-            displayTransactions();
+            
+            // Verificar autenticação e carregar dados
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadTransactionsRealtime();
+                } else {
+                    alert('❌ Você precisa estar logado para acessar o extrato.');
+                    window.location.href = 'index.html';
+                }
+            });
         });
 
         function populateMinistryFilter() {
@@ -678,16 +706,64 @@
             });
         }
 
-        function loadTransactions() {
-            // Carregar propostas aprovadas
-            const proposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-            const approved = proposals.filter(p => p.status === 'approved');
+        function loadTransactionsRealtime() {
+            // Query para propostas aprovadas em tempo real
+            const q = query(
+                collection(db, 'proposals'),
+                where('status', '==', 'approved'),
+                orderBy('approvedAt', 'desc')
+            );
+            
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                allTransactions = [];
+                
+                snapshot.forEach((doc) => {
+                    const p = doc.data();
+                    allTransactions.push({
+                        id: doc.id, // Usar ID do Firestore
+                        proposalId: doc.id, // Guardar ID da proposta para sincronização
+                        date: p.approvedAt?.toDate() || new Date(),
+                        type: 'expense',
+                        ministry: p.ministry || 'N/A',
+                        documentType: p.documentType,
+                        documentNumber: p.documentNumber,
+                        title: p.summary,
+                        description: p.justification,
+                        amount: p.estimatedCost,
+                        requestor: p.requestorName,
+                        approvedBy: p.approvedBy,
+                        notes: p.feedback || ''
+                    });
+                });
+                
+                // Adicionar receita inicial (LOA 2025)
+                allTransactions.unshift({
+                    id: 'initial-revenue',
+                    proposalId: null,
+                    date: new Date('2025-01-01T00:00:00'),
+                    type: 'revenue',
+                    ministry: 'Receita Federal',
+                    documentType: 'LOA 2025',
+                    title: 'Receita Orçamentária Inicial',
+                    description: 'Receita total aprovada pela Lei Orçamentária Anual 2025',
+                    amount: 4392000000000,
+                    requestor: 'Sistema',
+                    notes: 'Aprovada pelo Congresso Nacional'
+                });
 
-            allTransactions = approved.map(p => ({
-                id: Math.random().toString(36).substr(2, 9),
-                date: p.approvedAt || p.submittedAt,
-                type: 'expense',
-                ministry: getMinistryFromPosition(p.position),
+                filteredTransactions = [...allTransactions];
+                updateSummary();
+                displayTransactions();
+            }, (error) => {
+                console.error('Erro ao carregar transações:', error);
+                alert('❌ Erro ao carregar extrato. Verifique sua conexão.');
+            });
+        }
+
+        function loadTransactions() {
+            // Função legada - manter para compatibilidade mas não usar
+            console.warn('loadTransactions() is deprecated - use loadTransactionsRealtime()');
+        }
                 documentType: p.documentType,
                 title: p.summary,
                 description: p.justification,
@@ -713,30 +789,10 @@
             filteredTransactions = [...allTransactions];
         }
 
-        function getMinistryFromPosition(position) {
-            const mapping = {
-                'Casa Civil': 'Casa Civil',
-                'Economia': 'Economia e Trabalho',
-                'Saúde': 'Saúde',
-                'Educação': 'Educação, Ciência e Tecnologia',
-                'Cultura': 'Cultura e Esporte',
-                'Defesa': 'Defesa',
-                'Justiça': 'Justiça e Segurança Pública',
-                'Infraestrutura': 'Infraestrutura',
-                'Agricultura': 'Agricultura e Meio Ambiente',
-                'Cidadania': 'Cidadania e Desenvolvimento Social',
-                'Advocacia': 'Advocacia-Geral da União',
-                'Gabinete': 'Gabinete da Presidência'
-            };
-
-            for (const key in mapping) {
-                if (position.includes(key)) {
-                    return mapping[key];
-                }
-            }
-
-            return 'Gabinete da Presidência';
-        }
+        // Limpar listener ao sair da página
+        window.addEventListener('beforeunload', () => {
+            if (unsubscribe) unsubscribe();
+        });
 
         function updateSummary() {
             const totalRevenue = filteredTransactions
@@ -912,172 +968,289 @@
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
-            line-height: 1.6;
-            color: #000;
+            line-height: 1.8;
+            color: #1a1a1a;
             background: white;
             padding: 40px;
             max-width: 21cm;
             margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            border-bottom: 3px double #1a237e;
+            padding-bottom: 25px;
+            position: relative;
+            background: linear-gradient(to bottom, #f8f9fa 0%, white 100%);
+            padding-top: 20px;
         }
         
         .brasao {
-            font-size: 24pt;
+            font-size: 48pt;
             font-weight: bold;
-            color: #1a237e;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-subtitle {
+            font-weight: 700;
+            font-size: 12pt;
+            color: #1a237e;
+            margin: 5px 0;
+            letter-spacing: 1px;
+        }
+        
+        .header-ministry {
+            font-size: 11pt;
+            color: #555;
+            font-weight: 600;
+            margin-top: 5px;
         }
         
         .titulo {
             font-size: 14pt;
             font-weight: bold;
             text-transform: uppercase;
-            margin: 15px 0;
-            line-height: 1.4;
+            margin: 20px 0;
+            line-height: 1.6;
+            color: #1a237e;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(to right, #e8eaf6 0%, #c5cae9 50%, #e8eaf6 100%);
+            border-radius: 8px;
+            border: 2px solid #1a237e;
         }
         
         .ementa {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f5f5f5;
-            border-left: 4px solid #1a237e;
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-left: 6px solid #d4af37;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .ementa-label {
-            font-weight: bold;
+            font-weight: 800;
             text-transform: uppercase;
+            color: #1a237e;
+            font-size: 13pt;
         }
         
         .preambulo {
-            margin: 25px 0;
+            margin: 30px 0;
             text-align: justify;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #4caf50;
+            font-weight: 500;
         }
         
         .considerando {
-            margin: 20px 0;
+            margin: 25px 0;
             text-align: justify;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .considerando > div:first-child {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a237e;
         }
         
         .considerando-item {
-            margin: 10px 0 10px 40px;
+            margin: 12px 0 12px 40px;
             text-align: justify;
+            padding-left: 15px;
+            border-left: 3px solid #9fa8da;
+            line-height: 1.8;
         }
         
         .divulga {
             text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 30px 0 20px 0;
+            font-size: 16pt;
+            font-weight: 900;
+            margin: 40px 0 30px 0;
             text-transform: uppercase;
+            color: #1a237e;
+            padding: 15px;
+            background: linear-gradient(to right, transparent 0%, #e8eaf6 50%, transparent 100%);
+            letter-spacing: 3px;
+            border-top: 3px solid #1a237e;
+            border-bottom: 3px solid #1a237e;
         }
         
         .corpo {
-            margin: 25px 0;
+            margin: 30px 0;
         }
         
         .secao {
-            margin: 20px 0;
+            margin: 25px 0;
+            page-break-inside: avoid;
         }
         
         .secao-titulo {
             font-weight: bold;
-            font-size: 13pt;
-            margin-bottom: 10px;
-            color: #1a237e;
+            font-size: 14pt;
+            margin-bottom: 15px;
+            color: white;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(26, 35, 126, 0.3);
         }
         
         .tabela {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .tabela th,
         .tabela td {
-            border: 1px solid #000;
-            padding: 8px;
+            border: 1px solid #bdbdbd;
+            padding: 12px 15px;
             text-align: left;
         }
         
         .tabela th {
-            background: #e8eaf6;
-            font-weight: bold;
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            font-weight: 700;
             text-align: center;
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tabela td {
+            background: white;
+            font-size: 11pt;
+        }
+        
+        .tabela tr:nth-child(even) td {
+            background: #f5f5f5;
         }
         
         .tabela-valor {
             text-align: right !important;
             font-family: 'Courier New', monospace;
+            font-weight: 600;
         }
         
         .total-row {
-            background: #f5f5f5;
-            font-weight: bold;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+            font-weight: 800;
+            font-size: 12pt;
+        }
+        
+        .total-row td {
+            border-top: 3px double #1a237e;
+            border-bottom: 3px double #1a237e;
         }
         
         .transacao-item {
-            margin: 10px 0;
-            padding: 10px;
-            border-left: 3px solid #1a237e;
-            background: #fafafa;
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 5px solid #1a237e;
+            background: linear-gradient(to right, #e8eaf6 0%, white 5%);
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            page-break-inside: avoid;
         }
         
         .transacao-header {
             display: flex;
             justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 11pt;
         }
         
         .transacao-body {
-            font-size: 11pt;
-            color: #333;
+            font-size: 10.5pt;
+            color: #424242;
+            line-height: 1.7;
+        }
+        
+        .transacao-body > div {
+            margin: 5px 0;
         }
         
         .data-local {
-            margin: 40px 0 30px 0;
+            margin: 50px 0 40px 0;
             text-align: center;
+            font-size: 13pt;
+            font-weight: 600;
+            color: #1a237e;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
         
         .assinaturas {
-            margin-top: 60px;
+            margin-top: 70px;
             page-break-inside: avoid;
+            padding: 30px;
+            background: #fafafa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
         }
         
         .assinatura-bloco {
-            margin: 40px 0;
+            margin: 45px 0;
             text-align: center;
         }
         
         .assinatura-linha {
-            border-top: 1px solid #000;
-            width: 300px;
-            margin: 0 auto 5px auto;
+            border-top: 2px solid #1a237e;
+            width: 350px;
+            margin: 0 auto 10px auto;
         }
         
         .assinatura-nome {
-            font-weight: bold;
-            font-size: 11pt;
+            font-weight: 800;
+            font-size: 12pt;
+            color: #1a237e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .assinatura-cargo {
             font-size: 10pt;
-            color: #555;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
         }
         
         @media print {
             body {
                 padding: 0;
+                box-shadow: none;
             }
             
             .no-print {
                 display: none !important;
+            }
+            
+            .header {
+                background: white;
+            }
+            
+            .ementa {
+                background: #fffbef;
+            }
+            
+            .transacao-item {
+                background: white;
             }
         }
     </style>
@@ -1085,8 +1258,8 @@
 <body>
     <div class="header">
         <div class="brasao">🇧🇷</div>
-        <div style="font-weight: bold; font-size: 11pt;">REPÚBLICA FEDERATIVA DO HABBO</div>
-        <div style="font-size: 10pt;">MINISTÉRIO DA ECONOMIA E TRABALHO</div>
+        <div class="header-subtitle">REPÚBLICA FEDERATIVA DO HABBO</div>
+        <div class="header-ministry">MINISTÉRIO DA ECONOMIA E TRABALHO</div>
     </div>
     
     <div class="titulo">
@@ -1104,18 +1277,26 @@
     </div>
     
     <div class="considerando">
-        <div><strong>CONSIDERANDO</strong> que a Lei de Responsabilidade Fiscal (Lei Complementar nº 101/2000) estabelece normas de finanças públicas voltadas para a responsabilidade na gestão fiscal;</div>
+        <div><strong>CONSIDERANDO</strong> o disposto no <strong>art. 70 da Constituição da República Federativa do Habbo</strong>, que estabelece: "A fiscalização contábil, financeira, orçamentária, operacional e patrimonial da União e das entidades da administração direta e indireta será exercida pelo Congresso Nacional, mediante controle externo, e pelo sistema de controle interno de cada Poder";</div>
         
         <div class="considerando-item">
-            <strong>CONSIDERANDO</strong> o disposto no art. 70 da Constituição Federal, que determina a obrigatoriedade de prestação de contas por todos aqueles que utilizam, arrecadam, guardam, gerenciam ou administram dinheiros, bens e valores públicos;
+            <strong>CONSIDERANDO</strong> a competência privativa do Presidente da República, conforme <strong>art. 80, inciso XXIII, da CF-RPG</strong>, de "enviar ao Congresso Nacional o plano plurianual, o projeto de lei de diretrizes orçamentárias e as propostas de orçamento";
         </div>
         
         <div class="considerando-item">
-            <strong>CONSIDERANDO</strong> o princípio da transparência da gestão fiscal previsto no art. 1º, § 1º, da Lei Complementar nº 101/2000;
+            <strong>CONSIDERANDO</strong> o dever constitucional previsto no <strong>art. 80, inciso XXIV, da CF-RPG</strong>, de "prestar, anualmente, ao Congresso Nacional, as contas referentes ao exercício anterior";
         </div>
         
         <div class="considerando-item">
-            <strong>CONSIDERANDO</strong> a necessidade de divulgar periodicamente a execução orçamentária e financeira aos órgãos de controle e à sociedade;
+            <strong>CONSIDERANDO</strong> que constitui crime de responsabilidade do Presidente da República atentar contra a <strong>lei orçamentária</strong>, conforme art. 81, inciso VI, da CF-RPG, exigindo rigoroso controle e transparência na execução orçamentária;
+        </div>
+        
+        <div class="considerando-item">
+            <strong>CONSIDERANDO</strong> o princípio constitucional da <strong>prestação de contas da administração pública, direta e indireta</strong>, previsto no art. 33, inciso VII, alínea "d", da CF-RPG;
+        </div>
+        
+        <div class="considerando-item">
+            <strong>CONSIDERANDO</strong> a necessidade de divulgar periodicamente a execução orçamentária e financeira aos órgãos de controle, ao Congresso Nacional e à sociedade, em observância aos princípios da publicidade, transparência e accountability fiscal;
         </div>
     </div>
     
