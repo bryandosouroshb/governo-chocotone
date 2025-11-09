@@ -3194,13 +3194,124 @@ Diretrizes adicionais:
             return content;
         }
 
+        function legalAssistantExtractJsonPayload(rawText) {
+            const start = rawText.indexOf('{');
+            const end = rawText.lastIndexOf('}');
+            if (start === -1 || end === -1 || end <= start) {
+                throw new Error('Não foi possível localizar um objeto JSON na resposta da IA.');
+            }
+            return rawText.slice(start, end + 1);
+        }
+
+        function legalAssistantRepairJsonString(jsonString) {
+            let result = '';
+            let inString = false;
+            let escaped = false;
+
+            for (let i = 0; i < jsonString.length; i++) {
+                const char = jsonString[i];
+
+                if (inString) {
+                    if (escaped) {
+                        escaped = false;
+                        result += char;
+                        continue;
+                    }
+
+                    if (char === '\\') {
+                        escaped = true;
+                        result += char;
+                        continue;
+                    }
+
+                    if (char === '"') {
+                        inString = false;
+                        result += char;
+                        continue;
+                    }
+
+                    if (char === '\r') {
+                        if (jsonString[i + 1] === '\n') {
+                            i += 1;
+                        }
+                        result += '\\n';
+                        continue;
+                    }
+
+                    if (char === '\n') {
+                        result += '\\n';
+                        continue;
+                    }
+
+                    if (char === '\t') {
+                        result += '\\t';
+                        continue;
+                    }
+
+                    if (char === '\f') {
+                        result += '\\f';
+                        continue;
+                    }
+
+                    if (char === '\b') {
+                        result += '\\b';
+                        continue;
+                    }
+
+                    if (char === '\u2028') {
+                        result += '\\u2028';
+                        continue;
+                    }
+
+                    if (char === '\u2029') {
+                        result += '\\u2029';
+                        continue;
+                    }
+
+                    result += char;
+                    continue;
+                }
+
+                result += char;
+
+                if (char === '"') {
+                    let backslashCount = 0;
+                    for (let j = i - 1; j >= 0 && jsonString[j] === '\\'; j--) {
+                        backslashCount += 1;
+                    }
+                    if (backslashCount % 2 === 0) {
+                        inString = true;
+                        escaped = false;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         function legalAssistantParseResponse(text) {
             if (!text) throw new Error('Resposta vazia.');
+
             let trimmed = text.trim();
             if (trimmed.startsWith('```')) {
-                trimmed = trimmed.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+                trimmed = trimmed.replace(/^```json/i, '')
+                    .replace(/^```/, '')
+                    .replace(/```$/, '')
+                    .trim();
             }
-            return JSON.parse(trimmed);
+
+            const payload = legalAssistantExtractJsonPayload(trimmed);
+
+            try {
+                return JSON.parse(payload);
+            } catch (initialError) {
+                const repaired = legalAssistantRepairJsonString(payload);
+                if (repaired !== payload) {
+                    console.warn('Assistente IA: resposta com formatação irregular, aplicando reparo automático.', initialError);
+                    return JSON.parse(repaired);
+                }
+                throw initialError;
+            }
         }
 
         function legalAssistantDisplayResult(result, rawText) {
