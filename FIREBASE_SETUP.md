@@ -31,7 +31,7 @@ cd ..
 
 ### 4. Configurar API Key do OpenRouter (IMPORTANTE!)
 ```bash
-firebase functions:config:set openrouter.key="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"
+firebase functions:config:set openrouter.key="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"
 ```
 
 ### 5. Deploy da função

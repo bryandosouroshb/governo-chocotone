@@ -761,7 +761,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
@@ -975,6 +975,11 @@
                             </div>
                         ` : ''}
                     </div>
+                    <div class="proposal-actions">
+                        <button class="btn btn-reject" onclick="deleteProposal('${proposal.id}', ${proposal.status === 'approved' ? proposal.estimatedCost : 0}, '${proposal.ministry || ''}')">
+                            🗑️ Deletar ${proposal.status === 'approved' ? '(Reverte Orçamento)' : ''}
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -1153,6 +1158,55 @@ ${proposal.justification}
             }
         }
 
+        // Função para deletar proposta (e reverter orçamento se aprovada)
+        async function deleteProposal(proposalId, estimatedCost, ministry) {
+            const confirmMsg = estimatedCost > 0 
+                ? `⚠️ ATENÇÃO: Esta proposta foi APROVADA com custo de ${formatCurrency(estimatedCost)}.\n\n` +
+                  `Ao deletar, o orçamento do ministério "${ministry}" será REVERTIDO (valor retorna disponível).\n\n` +
+                  `Deseja realmente deletar esta proposta?`
+                : `Deseja deletar esta proposta?`;
+            
+            if (!confirm(confirmMsg)) return;
+            
+            try {
+                // Se a proposta foi aprovada, reverter o orçamento
+                if (estimatedCost > 0 && ministry) {
+                    // Buscar orçamento do ministério
+                    const budgetQuery = query(
+                        collection(db, 'budgets'),
+                        where('ministry', '==', ministry)
+                    );
+                    
+                    const budgetSnapshot = await getDocs(budgetQuery);
+                    
+                    if (!budgetSnapshot.empty) {
+                        const budgetDoc = budgetSnapshot.docs[0];
+                        const currentBudget = budgetDoc.data();
+                        
+                        // Reverter: adicionar o valor de volta ao disponível
+                        await updateDoc(doc(db, 'budgets', budgetDoc.id), {
+                            available: currentBudget.available + estimatedCost,
+                            spent: Math.max(0, currentBudget.spent - estimatedCost), // Não deixar negativo
+                            lastUpdate: serverTimestamp()
+                        });
+                        
+                        console.log(`✅ Orçamento revertido: +${formatCurrency(estimatedCost)} para ${ministry}`);
+                    }
+                }
+                
+                // Deletar a proposta
+                await deleteDoc(doc(db, 'proposals', proposalId));
+                
+                alert(estimatedCost > 0 
+                    ? '✅ Proposta deletada e orçamento revertido com sucesso!'
+                    : '✅ Proposta deletada com sucesso!');
+                    
+            } catch (error) {
+                console.error('Erro ao deletar proposta:', error);
+                alert('❌ Erro ao deletar proposta: ' + error.message);
+            }
+        }
+
         // Funções auxiliares
         function formatCurrency(value) {
             return new Intl.NumberFormat('pt-BR', {
@@ -1183,9 +1237,26 @@ ${proposal.justification}
             alert('⚙️ Função de ajuste de orçamento ainda não implementada.');
         }
 
-        function forceUpdateIndicators() {
-            alert('🔄 Forçando atualização de indicadores...');
-            window.location.href = 'dashboard.html';
+        async function forceUpdateIndicators() {
+            try {
+                const response = await fetch('https://congressohb.com.br/api/economic-ai/indicators?period=hour');
+                if (!response.ok) throw new Error('Erro na API');
+                
+                const data = await response.json();
+                
+                // Mostrar resumo dos dados atualizados
+                const totalIndicators = Object.keys(data.indicators || {}).length;
+                alert(`🔄 Indicadores atualizados com sucesso!\n\n` +
+                      `📊 Total de indicadores: ${totalIndicators}\n` +
+                      `🕐 Última atualização: ${new Date(data.timestamp).toLocaleString('pt-BR')}\n` +
+                      `🔢 Ciclo: ${data.cycle_count}\n\n` +
+                      `Redirecionando para o dashboard...`);
+                
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                console.error('Erro ao atualizar indicadores:', error);
+                alert('❌ Erro ao atualizar indicadores: ' + error.message);
+            }
         }
 
         function resetSystem() {
@@ -1207,6 +1278,7 @@ ${proposal.justification}
         window.confirmApprove = confirmApprove;
         window.confirmReject = confirmReject;
         window.confirmAdjust = confirmAdjust;
+        window.deleteProposal = deleteProposal; // NOVA: permitir deletar propostas
         // window.switchTab já está definida no início
         window.adjustBudget = adjustBudget;
         window.forceUpdateIndicators = forceUpdateIndicators;

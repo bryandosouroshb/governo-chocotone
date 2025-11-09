@@ -1780,12 +1780,14 @@
 
         function loadMinistryTable() {
             const tbody = document.getElementById('ministryTableBody');
-            tbody.innerHTML = '';
             
             if (budgetData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Carregando orçamentos...</td></tr>';
                 return;
             }
+            
+            // Limpar a tabela antes de reconstruir
+            const rows = [];
             
             budgetData.forEach(ministry => {
                 const available = ministry.totalBudget - (ministry.spent || 0);
@@ -1815,8 +1817,11 @@
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
+                rows.push(row);
             });
+            
+            // Substituir todo o conteúdo de uma vez
+            tbody.innerHTML = rows.join('');
         }
 
         async function updateIndicators() {
@@ -1839,35 +1844,72 @@
             const indicators = indicatorsData.indicators;
             
             // Atualizar Dívida/PIB no card principal
-            const debtGDP = indicators.gross_debt_pct_gdp.value.toFixed(2);
-            document.getElementById('debtGDP').textContent = debtGDP + '%';
-            document.getElementById('debtStatus').textContent = 
-                debtGDP < 50 ? 'Em forte redução ✅' : 'Em redução 📉';
+            if (indicators.gross_debt_pct_gdp) {
+                const debtGDP = indicators.gross_debt_pct_gdp.value.toFixed(2);
+                document.getElementById('debtGDP').textContent = debtGDP + '%';
+                document.getElementById('debtStatus').textContent = 
+                    debtGDP < 50 ? 'Em forte redução ✅' : 'Em redução 📉';
+            }
             
-            // Principais indicadores para exibir
-            const mainIndicators = [
-                { key: 'gdp_growth_pct', label: 'Crescimento PIB', color: '#4caf50' },
-                { key: 'inflation_yoy', label: 'Inflação (IPCA)', color: '#ff9800' },
-                { key: 'unemployment_rate', label: 'Desemprego', color: '#f44336' },
-                { key: 'government_approval', label: 'Aprovação Gov.', color: '#2196f3' },
-                { key: 'selic_rate', label: 'Taxa Selic', color: '#9c27b0' },
-                { key: 'stock_market_index', label: 'Bolsa de Valores', color: '#00bcd4' }
-            ];
+            // Cores para diferentes tipos de indicadores
+            const colorMap = {
+                'gdp': '#4caf50',
+                'inflation': '#ff9800',
+                'unemployment': '#f44336',
+                'government': '#2196f3',
+                'selic': '#9c27b0',
+                'stock': '#00bcd4',
+                'exchange': '#ff5722',
+                'exports': '#8bc34a',
+                'imports': '#e91e63',
+                'debt': '#673ab7',
+                'revenue': '#009688',
+                'spending': '#ff9800',
+                'default': '#607d8b'
+            };
+            
+            // Função para determinar cor baseada no nome do indicador
+            function getIndicatorColor(key) {
+                if (key.includes('gdp')) return colorMap.gdp;
+                if (key.includes('inflation')) return colorMap.inflation;
+                if (key.includes('unemployment')) return colorMap.unemployment;
+                if (key.includes('approval')) return colorMap.government;
+                if (key.includes('selic')) return colorMap.selic;
+                if (key.includes('stock')) return colorMap.stock;
+                if (key.includes('exchange')) return colorMap.exchange;
+                if (key.includes('export')) return colorMap.exports;
+                if (key.includes('import')) return colorMap.imports;
+                if (key.includes('debt')) return colorMap.debt;
+                if (key.includes('revenue')) return colorMap.revenue;
+                if (key.includes('spending')) return colorMap.spending;
+                return colorMap.default;
+            }
             
             grid.innerHTML = '';
             
-            mainIndicators.forEach(ind => {
-                const data = indicators[ind.key];
-                if (!data) return;
+            // Exibir TODOS os indicadores retornados pela API
+            Object.entries(indicators).forEach(([key, data]) => {
+                if (!data || !data.label) return;
                 
                 const changePercent = data.changePercent || 0;
                 const changeClass = changePercent >= 0 ? 'positive' : 'negative';
                 const changeSymbol = changePercent >= 0 ? '↑' : '↓';
+                const color = getIndicatorColor(key);
+                
+                // Formatar valor com unidade apropriada
+                let displayValue = data.formatted || data.value.toFixed(2);
+                if (data.unit === 'percentage') {
+                    displayValue += '%';
+                } else if (data.unit === 'currency_brl') {
+                    displayValue = 'R$ ' + displayValue;
+                } else if (data.unit === 'currency_usd') {
+                    displayValue = 'US$ ' + displayValue;
+                }
                 
                 const card = `
-                    <div class="indicator-card" style="border-left-color: ${ind.color}">
-                        <div class="indicator-label">${ind.label}</div>
-                        <div class="indicator-value">${data.formatted}${data.unit === 'percentage' ? '%' : ''}</div>
+                    <div class="indicator-card" style="border-left-color: ${color}">
+                        <div class="indicator-label">${data.label}</div>
+                        <div class="indicator-value">${displayValue}</div>
                         <div class="indicator-change ${changeClass}">
                             ${changeSymbol} ${Math.abs(changePercent).toFixed(2)}%
                         </div>
