@@ -1029,10 +1029,14 @@ ${proposal.justification}
             document.getElementById(modalId).classList.remove('active');
             currentProposal = null;
             
-            // Limpar campos
-            document.getElementById('approveNotes').value = '';
-            document.getElementById('rejectReason').value = '';
-            document.getElementById('adjustComments').value = '';
+            // Limpar campos (com verificação de existência)
+            const approveNotes = document.getElementById('approveNotes');
+            const rejectReason = document.getElementById('rejectReason');
+            const adjustComments = document.getElementById('adjustComments');
+            
+            if (approveNotes) approveNotes.value = '';
+            if (rejectReason) rejectReason.value = '';
+            if (adjustComments) adjustComments.value = '';
         }
 
         async function confirmApprove() {
