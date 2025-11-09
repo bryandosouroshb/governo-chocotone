@@ -1125,6 +1125,106 @@
               padding: 2rem 2.25rem;
           }
 
+          .legal-assistant-standard-view .legal-assistant-draft-header {
+              margin-bottom: 1.25rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document {
+              background: #ffffff;
+              border-radius: 16px;
+              border: 1px solid rgba(26, 35, 126, 0.12);
+              box-shadow: 0 18px 32px rgba(26, 35, 126, 0.08);
+              padding: 2rem 2.25rem;
+              font-family: 'Times New Roman', 'Times', serif;
+              color: #1a1a1a;
+              line-height: 1.65;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document h1 {
+              font-size: 1.9rem;
+              text-transform: uppercase;
+              letter-spacing: 0.045em;
+              text-align: center;
+              margin-bottom: 1.5rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-ementa {
+              font-size: 1.05rem;
+              margin-bottom: 1.5rem;
+              text-align: justify;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-section {
+              margin-top: 1.75rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-section h2 {
+              font-size: 1.1rem;
+              letter-spacing: 0.08em;
+              text-transform: uppercase;
+              margin-bottom: 0.9rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-introduction,
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-considerandos p,
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-body li,
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-body p {
+              font-size: 1.05rem;
+              text-align: justify;
+              margin-bottom: 0.85rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-body ol {
+              padding-left: 1.75rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-body .document-article-number {
+              font-weight: 600;
+              margin-right: 0.35rem;
+              min-width: 4.5rem;
+              display: inline-block;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-shout {
+              text-align: center;
+              font-weight: 700;
+              letter-spacing: 0.55rem;
+              margin: 2rem 0 1.75rem;
+              font-size: 1.05rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-final {
+              font-weight: 600;
+              margin-top: 1.25rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-closing {
+              margin-top: 2.25rem;
+              font-size: 1.05rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-signatures {
+              list-style: none;
+              margin: 1.2rem 0 0;
+              padding: 0;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-signatures li {
+              margin-bottom: 1rem;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-signature-role {
+              display: block;
+              font-size: 0.95rem;
+              color: #3a3a3a;
+          }
+
+          .legal-assistant-standard-view .legal-assistant-standard-document .document-signature-nick {
+              display: block;
+              font-size: 0.9rem;
+              color: #656565;
+          }
+
           .legal-assistant-draft-header {
               display: flex;
               flex-direction: column;
@@ -2596,6 +2696,7 @@ Diretrizes adicionais:
             lastRaw: '',
             lastResult: null,
             lastDraft: null,
+            lastComposedDocument: null,
             lastContext: null
         };
 
@@ -2837,6 +2938,16 @@ Diretrizes adicionais:
             .replace(/\n/g, '<br>');
     }
 
+    function escapeHtml(value) {
+        if (value === null || value === undefined) return '';
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
         // ==== ASSISTENTE DE ATOS OFICIAIS COM IA ====
         function legalAssistantInitialize() {
             if (legalAssistantInitialized) return;
@@ -3032,6 +3143,7 @@ Diretrizes adicionais:
             LEGAL_ASSISTANT_STATE.lastRaw = '';
             LEGAL_ASSISTANT_STATE.lastResult = null;
             LEGAL_ASSISTANT_STATE.lastDraft = null;
+            LEGAL_ASSISTANT_STATE.lastComposedDocument = null;
             LEGAL_ASSISTANT_STATE.lastContext = null;
             legalAssistantUpdateDocActions(false);
             legalAssistantUpdateDraftModalContent();
@@ -3057,6 +3169,7 @@ Diretrizes adicionais:
             }
 
             LEGAL_ASSISTANT_STATE.lastDraft = null;
+            LEGAL_ASSISTANT_STATE.lastComposedDocument = null;
             legalAssistantUpdateDraftModalContent();
         }
 
@@ -3213,7 +3326,7 @@ Diretrizes adicionais:
 
                 if (parsed) {
                     LEGAL_ASSISTANT_STATE.lastResult = parsed;
-                    LEGAL_ASSISTANT_STATE.lastHtml = typeof parsed.htmlDocument === 'string' ? parsed.htmlDocument.trim() : '';
+                    LEGAL_ASSISTANT_STATE.lastHtml = '';
                     legalAssistantDisplayResult(parsed, aiResponse);
                     legalAssistantUpdateDocActions(Boolean(LEGAL_ASSISTANT_STATE.lastHtml));
                     legalAssistantSetStatus('Minuta gerada com sucesso.', 'success');
@@ -3653,7 +3766,21 @@ Diretrizes adicionais:
             LEGAL_ASSISTANT_STATE.lastDraft = normalizedDraft;
             LEGAL_ASSISTANT_STATE.lastResult = result;
             const nextSteps = Array.isArray(result?.nextSteps) ? result.nextSteps : [];
-            const htmlDocument = typeof result?.htmlDocument === 'string' ? result.htmlDocument.trim() : '';
+            const composedDocument = legalAssistantComposeStandardDocument(
+                normalizedDraft,
+                recommended.type,
+                LEGAL_ASSISTANT_STATE.lastContext
+            );
+            LEGAL_ASSISTANT_STATE.lastComposedDocument = composedDocument;
+
+            let htmlDocument = '';
+            if (composedDocument) {
+                htmlDocument = legalAssistantGenerateStandardHtmlDocument(composedDocument);
+            }
+            if (!htmlDocument) {
+                htmlDocument = typeof result?.htmlDocument === 'string' ? result.htmlDocument.trim() : '';
+            }
+            LEGAL_ASSISTANT_STATE.lastHtml = htmlDocument;
 
             const alternatives = Array.isArray(recommended.alternatives) ? recommended.alternatives : [];
 
@@ -4040,6 +4167,320 @@ Diretrizes adicionais:
              return normalized;
          }
 
+          function legalAssistantNormalizeInstrumentType(type) {
+              if (!type) return '';
+              const normalized = String(type).toLowerCase();
+              if (normalized.includes('medida')) return 'medida_provisoria';
+              if (normalized.includes('decreto')) return 'decreto';
+              if (normalized.includes('portaria')) return 'portaria';
+              return '';
+          }
+
+          function legalAssistantEnsureTrailingColon(text) {
+              if (!text) return '';
+              const trimmed = String(text).trim();
+              return /[:：]$/.test(trimmed) ? trimmed : `${trimmed}:`;
+          }
+
+          function legalAssistantFormatConsidering(text) {
+              if (text === null || text === undefined) return '';
+              let formatted = String(text).trim();
+              if (!formatted) return '';
+              if (!/^considerando\b/i.test(formatted)) {
+                  formatted = `Considerando ${formatted}`;
+              }
+              if (!/[.;:]$/.test(formatted)) {
+                  formatted = `${formatted}.`;
+              }
+              return formatted;
+          }
+
+          function legalAssistantFormatDocumentDate(source) {
+              let date = null;
+              if (source instanceof Date) {
+                  date = source;
+              } else if (typeof source === 'string' || typeof source === 'number') {
+                  const parsed = new Date(source);
+                  if (!Number.isNaN(parsed.getTime())) {
+                      date = parsed;
+                  }
+              }
+              if (!date) {
+                  date = new Date();
+              }
+              const months = [
+                  'janeiro',
+                  'fevereiro',
+                  'março',
+                  'abril',
+                  'maio',
+                  'junho',
+                  'julho',
+                  'agosto',
+                  'setembro',
+                  'outubro',
+                  'novembro',
+                  'dezembro'
+              ];
+              const day = date.getDate();
+              const month = months[date.getMonth()] || '';
+              const year = date.getFullYear();
+              return `${day} de ${month} de ${year}`;
+          }
+
+          function legalAssistantBuildPortariaIntro(author) {
+              const signatureTitle = (author?.signatureTitle || author?.role || '').trim();
+              const habboNick = (author?.habboNick || author?.displayName || author?.id || '').trim();
+              const isFemale = /^ministra\b/i.test(signatureTitle);
+              const pronoun = isFemale ? 'A MINISTRA DE ESTADO' : 'O MINISTRO DE ESTADO';
+              let remainder = '';
+              if (signatureTitle) {
+                  remainder = signatureTitle.replace(/^Ministr[oa]\s*/i, '').trim();
+              }
+              if (remainder) {
+                  if (/^de\s+estado\b/i.test(remainder)) {
+                      remainder = remainder.replace(/^de\s+estado\s*/i, '');
+                  }
+                  if (remainder && !/^(de|da|do|das|dos)\b/i.test(remainder)) {
+                      remainder = `de ${remainder}`;
+                  }
+              }
+              const authority = remainder ? `${pronoun} ${remainder}` : pronoun;
+              let intro = `${authority},`;
+              if (habboNick) {
+                  intro += ` ${habboNick},`;
+              }
+              intro += ' no uso da atribuição que lhe confere o art. 80, caput, inciso I, da Constituição da República Federativa do Habbo, e considerando:';
+              return intro;
+          }
+
+          function legalAssistantComposeStandardDocument(draft, instrumentType, context) {
+              if (!draft || typeof draft !== 'object') return null;
+              const instrumentKey = legalAssistantNormalizeInstrumentType(instrumentType);
+              if (!instrumentKey) return null;
+
+              let heading = String(draft.title || '').trim();
+              if (!heading) {
+                  switch (instrumentKey) {
+                      case 'medida_provisoria':
+                          heading = 'Medida Provisória nº ___, de ___ de ______ de 20__';
+                          break;
+                      case 'decreto':
+                          heading = 'Decreto nº ___, de ___ de ______ de 20__';
+                          break;
+                      case 'portaria':
+                          heading = 'Portaria nº ___, de ___ de ______ de 20__';
+                          break;
+                      default:
+                          heading = 'Minuta Oficial';
+                  }
+              }
+              heading = legalAssistantEnsureTrailingColon(heading);
+
+              const ementaText = String(draft.ementa || '').trim();
+
+              const considerandosSource = Array.isArray(draft.considerandos) ? draft.considerandos : [];
+              const considerandosList = considerandosSource
+                  .map((item) => legalAssistantFormatConsidering(item))
+                  .filter(Boolean);
+              if (!considerandosList.length) {
+                  considerandosList.push('Considerando a necessidade de disciplinar a matéria constante desta minuta.');
+              }
+              const considerandosHtml = considerandosList.map((item) => `<p>${escapeHtml(item)}</p>`).join('');
+
+              const articlesList = Array.isArray(draft.articles) ? draft.articles : [];
+              const articlesHtml = articlesList.map((article) => {
+                  const number = article?.number !== undefined ? article.number : '?';
+                  const prefix = `Art. ${number}º`;
+                  const text = escapeHtml(article?.text || '');
+                  return `<li><span class="document-article-number">${escapeHtml(prefix)}</span> ${text}</li>`;
+              }).join('') || '<li><span class="document-article-number">Art. 1º</span> Conteúdo a ser definido.</li>';
+
+              const finalDisposition = draft.finalDisposition
+                  ? `<p class="document-final">${escapeHtml(draft.finalDisposition)}</p>`
+                  : '';
+
+              const referenceDate = draft.publicationDate || draft.date || context?.capturedAt;
+              const closingLine = `<p class="document-closing">Brasília, ${escapeHtml(legalAssistantFormatDocumentDate(referenceDate))}</p>`;
+
+              const signaturesSource = Array.isArray(draft.signatures) ? draft.signatures : [];
+              const signatureItems = signaturesSource.map((signature) => {
+                  const name = signature?.name || signature?.displayName || '';
+                  if (!name) return '';
+                  const role = signature?.role || signature?.signatureTitle || '';
+                  const nick = signature?.habboNick || '';
+                  const roleHtml = role ? `<span class="document-signature-role">${escapeHtml(role)}</span>` : '';
+                  const nickHtml = nick ? `<span class="document-signature-nick">Habbo: ${escapeHtml(nick)}</span>` : '';
+                  return `<li><strong>${escapeHtml(name)}</strong>${roleHtml}${nickHtml}</li>`;
+              }).filter(Boolean).join('');
+
+              const signaturesSection = signatureItems
+                  ? `<div class="document-section document-signatures-wrapper"><h2>Assinaturas</h2><ul class="document-signatures">${signatureItems}</ul></div>`
+                  : `<div class="document-section document-signatures-wrapper"><h2>Assinaturas</h2><p>Assinaturas pendentes de indicação.</p></div>`;
+
+              const ementaSection = `<p class="document-ementa"><strong>Ementa:</strong> ${escapeHtml(ementaText)}</p>`;
+              const considerandosSection = `<div class="document-section document-considerandos"><h2>Considerandos:</h2>${considerandosHtml}</div>`;
+              const bodySection = `<div class="document-section document-body"><h2>Corpo</h2><ol>${articlesHtml}</ol>${finalDisposition}</div>`;
+
+              let preConsiderandosHtml = '';
+              let postConsiderandosHtml = '';
+
+              switch (instrumentKey) {
+                  case 'medida_provisoria':
+                      postConsiderandosHtml = '<p class="document-introduction">A PRESIDENTA DA REPÚBLICA DO CN-RPG, no uso das atribuições que lhe confere a Constituição, e considerando a necessidade de aprimorar a coordenação de políticas públicas, a eficiência administrativa e a unidade de governo, adota a seguinte Medida Provisória, com força de lei:</p>';
+                      break;
+                  case 'decreto':
+                      preConsiderandosHtml = '<p class="document-introduction">A PRESIDENTA DA REPÚBLICA FEDERATIVA DO HABBO, no uso das atribuições que lhe confere o art. 80, inciso X, da Constituição Federal, e tendo em vista o disposto nos arts. 33, inciso III, e 35 da Constituição Federal</p>';
+                      postConsiderandosHtml = '<p class="document-shout">D E C R E T A:</p>';
+                      break;
+                  case 'portaria':
+                      preConsiderandosHtml = `<p class="document-introduction">${escapeHtml(legalAssistantBuildPortariaIntro(context?.author))}</p>`;
+                      postConsiderandosHtml = '<p class="document-shout">R E S O L V E:</p>';
+                      break;
+                  default:
+                      break;
+              }
+
+              const content = `
+                  <div class="legal-assistant-standard-document">
+                      <h1>${escapeHtml(heading)}</h1>
+                      ${ementaSection}
+                      ${preConsiderandosHtml}
+                      ${considerandosSection}
+                      ${postConsiderandosHtml}
+                      ${bodySection}
+                      ${closingLine}
+                      ${signaturesSection}
+                  </div>
+              `;
+
+              return {
+                  key: instrumentKey,
+                  heading,
+                  title: heading.replace(/[:：]\s*$/, ''),
+                  content
+              };
+          }
+
+          function legalAssistantGenerateStandardHtmlDocument(composedDocument) {
+              if (!composedDocument || !composedDocument.content) return '';
+              const titleText = composedDocument.title || composedDocument.heading || 'Minuta Oficial';
+              const styles = `
+                  :root { color-scheme: light; }
+                  body {
+                      font-family: 'Times New Roman', Times, serif;
+                      color: #1a1a1a;
+                      background: #ffffff;
+                      margin: 0;
+                  }
+                  .document-container {
+                      max-width: 800px;
+                      margin: 0 auto;
+                      padding: 3rem 2.75rem;
+                  }
+                  .legal-assistant-standard-document {
+                      line-height: 1.65;
+                  }
+                  .legal-assistant-standard-document h1 {
+                      font-size: 2rem;
+                      text-transform: uppercase;
+                      letter-spacing: 0.045em;
+                      text-align: center;
+                      margin-bottom: 1.75rem;
+                  }
+                  .legal-assistant-standard-document .document-ementa {
+                      font-size: 1.05rem;
+                      margin-bottom: 1.5rem;
+                      text-align: justify;
+                  }
+                  .legal-assistant-standard-document .document-section {
+                      margin-top: 1.75rem;
+                  }
+                  .legal-assistant-standard-document .document-section h2 {
+                      font-size: 1.1rem;
+                      letter-spacing: 0.08em;
+                      text-transform: uppercase;
+                      margin-bottom: 0.9rem;
+                  }
+                  .legal-assistant-standard-document .document-introduction,
+                  .legal-assistant-standard-document .document-considerandos p,
+                  .legal-assistant-standard-document .document-body li,
+                  .legal-assistant-standard-document .document-body p {
+                      font-size: 1.05rem;
+                      text-align: justify;
+                      margin-bottom: 0.85rem;
+                  }
+                  .legal-assistant-standard-document .document-body ol {
+                      padding-left: 1.75rem;
+                  }
+                  .legal-assistant-standard-document .document-body .document-article-number {
+                      font-weight: 600;
+                      margin-right: 0.35rem;
+                      min-width: 4.5rem;
+                      display: inline-block;
+                  }
+                  .legal-assistant-standard-document .document-shout {
+                      text-align: center;
+                      font-weight: 700;
+                      letter-spacing: 0.55rem;
+                      margin: 2rem 0 1.75rem;
+                      font-size: 1.05rem;
+                  }
+                  .legal-assistant-standard-document .document-final {
+                      font-weight: 600;
+                      margin-top: 1.25rem;
+                  }
+                  .legal-assistant-standard-document .document-closing {
+                      margin-top: 2.25rem;
+                      font-size: 1.05rem;
+                  }
+                  .legal-assistant-standard-document .document-signatures {
+                      list-style: none;
+                      padding: 0;
+                      margin: 1.2rem 0 0;
+                  }
+                  .legal-assistant-standard-document .document-signatures li {
+                      margin-bottom: 1.25rem;
+                  }
+                  .legal-assistant-standard-document .document-signature-role {
+                      display: block;
+                      font-size: 0.95rem;
+                      color: #3a3a3a;
+                  }
+                  .legal-assistant-standard-document .document-signature-nick {
+                      display: block;
+                      font-size: 0.9rem;
+                      color: #656565;
+                  }
+                  @page {
+                      margin: 2.5cm 2cm;
+                  }
+                  @media print {
+                      body {
+                          background: #ffffff;
+                      }
+                      .document-container {
+                          box-shadow: none;
+                      }
+                  }
+              `;
+              return `
+                  <!DOCTYPE html>
+                  <html lang="pt-BR">
+                      <head>
+                          <meta charset="utf-8">
+                          <title>${escapeHtml(titleText)}</title>
+                          <style>${styles}</style>
+                      </head>
+                      <body>
+                          <div class="document-container">
+                              ${composedDocument.content}
+                          </div>
+                      </body>
+                  </html>
+              `.trim();
+          }
+
          function renderAssistantDraftSection(draft) {
              if (!legalAssistantDraftHasContent(draft)) {
                  return `
@@ -4159,6 +4600,7 @@ Diretrizes adicionais:
             }
 
             LEGAL_ASSISTANT_STATE.lastDraft = null;
+            LEGAL_ASSISTANT_STATE.lastComposedDocument = null;
             legalAssistantUpdateDraftModalContent();
         }
 
@@ -4275,6 +4717,28 @@ Diretrizes adicionais:
                 content.innerHTML = `
                     <div class="legal-assistant-draft-empty">
                         <p>Gere uma minuta para visualizar o conteúdo detalhado aqui.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const composed = LEGAL_ASSISTANT_STATE.lastComposedDocument
+                || legalAssistantComposeStandardDocument(draft, recommended.type, LEGAL_ASSISTANT_STATE.lastContext);
+
+            if (composed) {
+                const justificationSection = Array.isArray(draft.justification) && draft.justification.length
+                    ? `<section class="legal-assistant-draft-section"><h4>Justificativa (uso interno)</h4>${draft.justification.map((paragraph) => `<p>${sanitizeHtml(paragraph)}</p>`).join('')}</section>`
+                    : '';
+
+                const labelBlock = recommended.type
+                    ? `<header class="legal-assistant-draft-header"><span class="legal-assistant-draft-label">${sanitizeHtml(recommended.type)}</span></header>`
+                    : '';
+
+                content.innerHTML = `
+                    <div class="legal-assistant-draft-view legal-assistant-standard-view">
+                        ${labelBlock}
+                        ${composed.content}
+                        ${justificationSection}
                     </div>
                 `;
                 return;
