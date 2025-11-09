@@ -1017,11 +1017,25 @@
                     message: `${formData.requestorName} submeteu: ${formData.documentType}`,
                     senderName: formData.requestorName,
                     senderUid: firebaseUser.uid,
+                    senderRole: currentUser.role,
                     proposalId: proposalRef.id,
                     documentType: formData.documentType,
+                    summary: formData.summary,
+                    ministry: proposalData.ministry,
                     estimatedCost: formData.estimatedCost,
-                    targetUsers: ['Presidenta', 'Vice-Presidente'],
-                    read: false,
+                    status: 'submitted',
+                    targetUsers: Array.from(new Set([
+                        'all',
+                        'Presidenta',
+                        'Vice-Presidente',
+                        'role:Presidenta',
+                        'role:Vice-Presidente',
+                        'Chocotone',
+                        'Bryan dos Ouros',
+                        'name:Chocotone',
+                        'name:Bryan dos Ouros'
+                    ])),
+                    readBy: [],
                     createdAt: serverTimestamp()
                 };
 
