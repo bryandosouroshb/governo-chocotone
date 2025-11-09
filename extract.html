@@ -764,30 +764,6 @@
             // Função legada - manter para compatibilidade mas não usar
             console.warn('loadTransactions() is deprecated - use loadTransactionsRealtime()');
         }
-                documentType: p.documentType,
-                title: p.summary,
-                description: p.justification,
-                amount: p.estimatedCost,
-                requestor: p.requestorName,
-                notes: p.notes || ''
-            }));
-
-            // Adicionar receita inicial (exemplo)
-            allTransactions.unshift({
-                id: 'initial-revenue',
-                date: '2025-01-01T00:00:00',
-                type: 'revenue',
-                ministry: 'Receita Federal',
-                documentType: 'LOA 2025',
-                title: 'Receita Orçamentária Inicial',
-                description: 'Receita total aprovada pela Lei Orçamentária Anual 2025',
-                amount: 4392000000000,
-                requestor: 'Sistema',
-                notes: 'Aprovada pelo Congresso Nacional'
-            });
-
-            filteredTransactions = [...allTransactions];
-        }
 
         // Limpar listener ao sair da página
         window.addEventListener('beforeunload', () => {
@@ -1447,6 +1423,11 @@
                 minute: '2-digit'
             });
         }
+
+        // Expor funções para uso global (onclick, etc)
+        window.applyFilters = applyFilters;
+        window.resetFilters = resetFilters;
+        window.exportToPDF = exportToPDF;
     </script>
 </body>
 </html>
