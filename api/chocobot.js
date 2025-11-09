@@ -1,93 +1,98 @@
 // Vercel Serverless Function - ChocoBot Proxy
 // Protege a API key do OpenRouter
+// Versão Corrigida: 2025-11-09 - Sintaxe validada
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 export default async function handler(req, res) {
-  // CORS Headers - SEMPRE primeiro (mesmo com headers no vercel.json, adicionar aqui também)
+  // CORS Headers - SEMPRE primeiro
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 
-  // Responder OPTIONS (preflight) - CRITICAL!
+  // Responder à requisição preflight OPTIONS
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Só aceita POST
-  // Debug endpoint: retorna a chave mascarada quando chamado com ?debug=1
-  // e com o header X-Debug-Secret igual ao valor da env DEBUG_SECRET.
-  try {
-    const reqUrl = new URL(req.url, `https://${req.headers.host}`);
-    const debugFlag = reqUrl.searchParams.get('debug');
+  // --- Início do Bloco de Debug Corrigido ---
+  // Usa req.query, que é a forma correta da Vercel para ler parâmetros de URL (?debug=1).
+  const { debug } = req.query;
+
+  if (debug === '1') {
     const providedSecret = req.headers['x-debug-secret'] || req.headers['X-Debug-Secret'];
     const expectedSecret = process.env.DEBUG_SECRET;
 
-    if (debugFlag === '1') {
-      if (!expectedSecret) {
-        return res.status(400).json({ error: 'DEBUG_SECRET not configured on server. Set DEBUG_SECRET in Vercel env vars to use debug endpoint.' });
-      }
-
-      if (!providedSecret || providedSecret !== expectedSecret) {
-        return res.status(403).json({ error: 'Forbidden - invalid debug secret' });
-      }
-
-      const masked = `${OPENROUTER_API_KEY.slice(0,6)}...${OPENROUTER_API_KEY.slice(-6)}`;
-      return res.status(200).json({ masked });
+    if (!expectedSecret) {
+      return res.status(400).json({ error: 'DEBUG_SECRET not configured on server.' });
     }
-  } catch (e) {
-    // Se algo falhar na análise da URL, continuamos com o fluxo normal
-    console.warn('Debug URL parse failed:', e.message);
-  }
 
+    if (providedSecret !== expectedSecret) {
+      return res.status(403).json({ error: 'Forbidden - invalid debug secret.' });
+    }
+    
+    // Se a requisição for de debug, verificamos e retornamos a chave mascarada.
+    if (!OPENROUTER_API_KEY) {
+       return res.status(500).json({ error: 'Server check: OPENROUTER_API_KEY is NOT DEFINED.' });
+    }
+
+    try {
+      const masked = `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-6)}`;
+      return res.status(200).json({ masked_key: masked, message: 'Server check: OPENROUTER_API_KEY is present.' });
+    } catch (e) {
+      return res.status(500).json({ error: 'Server check: OPENROUTER_API_KEY is present but invalid (cannot be masked).' });
+    }
+  }
+  // --- Fim do Bloco de Debug Corrigido ---
+
+  // A partir daqui, o fluxo é apenas para requisições de API normais.
+  // Rejeita qualquer método que não seja POST.
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed. Use POST for API calls.' });
   }
 
-  // Verificar se API key está configurada
+  // Verificar se a API key está configurada no ambiente
   if (!OPENROUTER_API_KEY) {
-    console.error('❌ OPENROUTER_API_KEY não está configurada!');
+    console.error('❌ FATAL: OPENROUTER_API_KEY não está configurada!');
     return res.status(500).json({ 
-      error: 'API key não configurada no servidor',
-      message: 'Configure OPENROUTER_API_KEY nas variáveis de ambiente da Vercel'
+      error: 'API key não configurada no servidor.',
+      message: 'Configure a variável de ambiente OPENROUTER_API_KEY no painel da Vercel.'
     });
   }
 
-  // Log mascarado para auxiliar debug sem vazar chave
+  // Loga a chave mascarada em toda chamada para confirmar que está sendo lida
   try {
-    const masked = `${OPENROUTER_API_KEY.slice(0,6)}...${OPENROUTER_API_KEY.slice(-6)}`;
-    // Use warn (visible in Vercel UI under warnings) to ensure it appears in filtered views
-    console.warn('OPENROUTER_API_KEY present (masked):', masked);
+    const masked = `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-6)}`;
+    console.warn('API Key Loaded (masked):', masked);
   } catch (e) {
-    console.warn('OPENROUTER_API_KEY present (unable to mask)');
+    console.warn('API Key Loaded (unable to mask)');
   }
 
   try {
-    // Fazer request para OpenRouter com a API key segura
+    // Faz a chamada real para a API do OpenRouter
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://bryandosouroshb.github.io/governo-chocotone/',
-        'X-Title': 'ChocoBot - Governo Chocotone'
+        'HTTP-Referer': 'https://bryandosouroshb.github.io/governo-chocotone/', // Opcional, mas boa prática
+        'X-Title': 'ChocoBot - Governo Chocotone' // Opcional
       },
       body: JSON.stringify(req.body)
     });
 
     const data = await response.json();
 
-    // Se houver erro, logar e enriquecer resposta para debug
+    // Se a resposta do OpenRouter não for OK, enriquece o erro
     if (!response.ok) {
-      console.error('❌ Erro OpenRouter:', response.status, data);
+      console.error('❌ Erro retornado pelo OpenRouter:', response.status, data);
 
-      // Se for 401, adicionar mensagem mais explícita (não expor chave)
       if (response.status === 401) {
         return res.status(401).json({
           error: 'OpenRouter Unauthorized',
           status: 401,
-          message: 'OpenRouter retornou 401 - verifique a chave OPENROUTER_API_KEY no painel da Vercel (possível chave inválida ou revogada).',
+          message: 'O OpenRouter retornou 401. A chave API em OPENROUTER_API_KEY pode ser inválida, revogada ou não ter sido carregada corretamente.',
           detail: data
         });
       }
@@ -95,12 +100,13 @@ export default async function handler(req, res) {
       return res.status(response.status).json(data);
     }
 
-    // Retornar resposta para o cliente quando OK
+    // Se tudo deu certo, retorna a resposta do OpenRouter para o cliente
     return res.status(200).json(data);
+
   } catch (error) {
-    console.error('Erro no proxy:', error);
+    console.error('❌ Erro crítico no proxy fetch:', error);
     return res.status(500).json({ 
-      error: 'Erro ao conectar com OpenRouter',
+      error: 'Erro interno ao tentar conectar com o OpenRouter.',
       details: error.message 
     });
   }
