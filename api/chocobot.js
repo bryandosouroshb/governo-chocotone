@@ -16,6 +16,31 @@ export default async function handler(req, res) {
   }
 
   // Só aceita POST
+  // Debug endpoint: retorna a chave mascarada quando chamado com ?debug=1
+  // e com o header X-Debug-Secret igual ao valor da env DEBUG_SECRET.
+  try {
+    const reqUrl = new URL(req.url, `https://${req.headers.host}`);
+    const debugFlag = reqUrl.searchParams.get('debug');
+    const providedSecret = req.headers['x-debug-secret'] || req.headers['X-Debug-Secret'];
+    const expectedSecret = process.env.DEBUG_SECRET;
+
+    if (debugFlag === '1') {
+      if (!expectedSecret) {
+        return res.status(400).json({ error: 'DEBUG_SECRET not configured on server. Set DEBUG_SECRET in Vercel env vars to use debug endpoint.' });
+      }
+
+      if (!providedSecret || providedSecret !== expectedSecret) {
+        return res.status(403).json({ error: 'Forbidden - invalid debug secret' });
+      }
+
+      const masked = `${OPENROUTER_API_KEY.slice(0,6)}...${OPENROUTER_API_KEY.slice(-6)}`;
+      return res.status(200).json({ masked });
+    }
+  } catch (e) {
+    // Se algo falhar na análise da URL, continuamos com o fluxo normal
+    console.warn('Debug URL parse failed:', e.message);
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
