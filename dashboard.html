@@ -443,6 +443,11 @@
             color: var(--primary-color);
         }
 
+        .btn-ia {
+            background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -812,6 +817,339 @@
 
         .adjustment-actions .btn-modal {
             flex: 1;
+        }
+
+        /* Legal Assistant Modal */
+        .legal-assistant-content {
+            max-width: 1100px;
+            padding: 2.5rem;
+        }
+
+        .legal-assistant-body {
+            padding: 0;
+        }
+
+        .legal-assistant-grid {
+            display: grid;
+            grid-template-columns: minmax(320px, 0.55fr) minmax(360px, 0.45fr);
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .legal-assistant-panel {
+            background: #f8f9ff;
+            border-radius: 18px;
+            padding: 1.75rem;
+            border: 1px solid #dfe4ff;
+            box-shadow: 0 18px 35px rgba(26, 35, 126, 0.08);
+        }
+
+        .legal-assistant-panel--result {
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .legal-assistant-field {
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .legal-assistant-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legal-assistant-input,
+        .legal-assistant-select,
+        .legal-assistant-textarea {
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: white;
+        }
+
+        .legal-assistant-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .legal-assistant-input:focus,
+        .legal-assistant-select:focus,
+        .legal-assistant-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.18);
+        }
+
+        .legal-assistant-helper {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .legal-assistant-signers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 0.75rem;
+            border: 1px solid #e0e7ff;
+            border-radius: 14px;
+            background: rgba(236, 239, 253, 0.65);
+        }
+
+        .legal-assistant-signer-group-title {
+            grid-column: 1 / -1;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #5c6bc0;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-top: 0.5rem;
+        }
+
+        .legal-assistant-signer {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: white;
+            box-shadow: 0 8px 18px rgba(26, 35, 126, 0.08);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .legal-assistant-signer input {
+            margin-top: 0.2rem;
+            cursor: pointer;
+        }
+
+        .legal-assistant-signer.active {
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 12px 26px rgba(102, 126, 234, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .legal-assistant-signer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .legal-assistant-signer-name {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        .legal-assistant-signer-role,
+        .legal-assistant-signer-habbo {
+            font-size: 0.78rem;
+            color: #666;
+        }
+
+        .legal-assistant-primary-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .legal-assistant-primary-actions .btn {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .legal-assistant-status {
+            min-height: 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 1rem;
+        }
+
+        .legal-assistant-status.success {
+            color: #2e7d32;
+        }
+
+        .legal-assistant-status.error {
+            color: #c62828;
+        }
+
+        .legal-assistant-result {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .legal-assistant-placeholder {
+            background: rgba(236, 239, 253, 0.65);
+            border: 1px dashed #b0b7ff;
+            border-radius: 16px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            color: #5c6bc0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .legal-assistant-placeholder strong {
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+
+        .legal-assistant-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .legal-assistant-spinner {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 4px solid rgba(102, 126, 234, 0.25);
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .legal-assistant-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid #dfe4ff;
+            box-shadow: 0 14px 32px rgba(26, 35, 126, 0.08);
+        }
+
+        .legal-assistant-section h5 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .legal-assistant-section p {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: #333;
+        }
+
+        .legal-assistant-section + .legal-assistant-section {
+            margin-top: 1rem;
+        }
+
+        .legal-assistant-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(102, 126, 234, 0.15);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .legal-assistant-list {
+            margin: 0.5rem 0 0 1.2rem;
+            display: grid;
+            gap: 0.35rem;
+        }
+
+        .legal-assistant-document-actions {
+            display: none;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .legal-assistant-document-actions.active {
+            display: flex;
+        }
+
+        .legal-assistant-preview-wrapper {
+            margin-top: 1.5rem;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #dfe4ff;
+            box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.08);
+        }
+
+        .legal-assistant-preview {
+            width: 100%;
+            min-height: 320px;
+            border: none;
+            background: white;
+        }
+
+        .legal-assistant-error {
+            background: rgba(244, 67, 54, 0.12);
+            border-left: 4px solid #f44336;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            color: #b71c1c;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .legal-assistant-raw {
+            display: none;
+            margin-top: 1.25rem;
+            border-radius: 12px;
+            background: #0d132e;
+            color: #e8eaf6;
+            font-family: 'Fira Code', monospace;
+            padding: 1rem;
+            font-size: 0.78rem;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .legal-assistant-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .legal-assistant-primary-actions .btn {
+                flex: 1;
+                min-width: 160px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .legal-assistant-content {
+                padding: 1.5rem;
+            }
+
+            .legal-assistant-panel {
+                padding: 1.25rem;
+            }
+
+            .legal-assistant-document-actions {
+                flex-direction: column;
+            }
         }
 
         @keyframes slideUp {
@@ -1590,6 +1928,84 @@
         </div>
     </div>
 
+    <div id="legalAssistantModal" class="modal" aria-hidden="true">
+        <div class="modal-content legal-assistant-content">
+            <div class="modal-header">
+                <div class="modal-title">Assistente de Atos Oficiais</div>
+                <button class="btn-close" id="legalAssistantCloseIcon" onclick="closeLegalAssistant()">&times;</button>
+            </div>
+            <div class="modal-body legal-assistant-body">
+                <form id="legalAssistantForm" novalidate>
+                    <div class="legal-assistant-grid">
+                        <div class="legal-assistant-panel">
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantAuthor">Autor responsável *</label>
+                                <select class="legal-assistant-select" id="legalAssistantAuthor" name="legalAssistantAuthor" required></select>
+                                <div class="legal-assistant-helper">Selecione quem lidera o ato. Se for você, confirme o seu nome.</div>
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantRecipients">Destinatário(s) principais</label>
+                                <input type="text" class="legal-assistant-input" id="legalAssistantRecipients" name="legalAssistantRecipients" placeholder="Ex.: Presidenta da República, Congresso Nacional, Governadores...">
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantContext">Contexto detalhado *</label>
+                                <textarea class="legal-assistant-textarea" id="legalAssistantContext" name="legalAssistantContext" required placeholder="Descreva o cenário, fatos relevantes, base legal conhecida, prazos, riscos..."></textarea>
+                                <div class="legal-assistant-helper">Quanto mais contexto, melhor a recomendação.</div>
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantGoal">Objetivo / resultado esperado</label>
+                                <textarea class="legal-assistant-textarea" id="legalAssistantGoal" name="legalAssistantGoal" placeholder="Informe o resultado desejado, políticas a serem implementadas, metas..."></textarea>
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantImpact">Impacto orçamentário estimado</label>
+                                <input type="text" class="legal-assistant-input" id="legalAssistantImpact" name="legalAssistantImpact" placeholder="Ex.: R$ 25.000.000 em 2025, sem impacto permanente">
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantPreferred">Preferência de instrumento</label>
+                                <select class="legal-assistant-select" id="legalAssistantPreferred" name="legalAssistantPreferred">
+                                    <option value="">Sem preferência (IA decide)</option>
+                                    <option value="Ofício">Ofício</option>
+                                    <option value="Portaria">Portaria</option>
+                                    <option value="Decreto Presidencial">Decreto Presidencial</option>
+                                    <option value="Medida Provisória">Medida Provisória</option>
+                                    <option value="Lei Ordinária">Lei Ordinária</option>
+                                    <option value="Resolução">Resolução</option>
+                                </select>
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label">Assinaturas necessárias</label>
+                                <div id="legalAssistantSignerList" class="legal-assistant-signers" role="group" aria-label="Assinaturas necessárias"></div>
+                                <div class="legal-assistant-helper">Marque quem deve assinar a minuta. A assinatura do autor é incluída automaticamente.</div>
+                            </div>
+                            <div class="legal-assistant-field">
+                                <label class="legal-assistant-label" for="legalAssistantNotes">Observações adicionais</label>
+                                <textarea class="legal-assistant-textarea" id="legalAssistantNotes" name="legalAssistantNotes" placeholder="Restrições políticas, prazos, conexões com legislações ou decisões anteriores..."></textarea>
+                            </div>
+                            <div class="legal-assistant-primary-actions">
+                                <button type="submit" class="btn btn-primary" id="legalAssistantSubmit">⚙️ Gerar minuta</button>
+                                <button type="button" class="btn btn-secondary" id="legalAssistantResetBtn" onclick="resetLegalAssistantForm()">↺ Limpar</button>
+                                <button type="button" class="btn" id="legalAssistantCloseBtn" onclick="closeLegalAssistant()">Fechar</button>
+                            </div>
+                        </div>
+                        <div class="legal-assistant-panel legal-assistant-panel--result">
+                            <div id="legalAssistantStatus" class="legal-assistant-status" role="status" aria-live="polite"></div>
+                            <div id="legalAssistantResult" class="legal-assistant-result"></div>
+                            <div id="legalAssistantDocActions" class="legal-assistant-document-actions">
+                                <button type="button" class="btn btn-secondary" id="legalAssistantOpenBtn" onclick="openLegalAssistantDocument()" disabled>🌐 Abrir HTML formatado</button>
+                                <button type="button" class="btn" id="legalAssistantDownloadBtn" onclick="downloadLegalAssistantDocument()" disabled>⬇️ Baixar HTML</button>
+                                <button type="button" class="btn" id="legalAssistantCopyBtn" onclick="copyLegalAssistantHtml()" disabled>📋 Copiar HTML</button>
+                            </div>
+                            <div id="legalAssistantPreviewWrapper" class="legal-assistant-preview-wrapper" style="display: none;">
+                                <iframe id="legalAssistantPreview" class="legal-assistant-preview" sandbox=""></iframe>
+                            </div>
+                            <div id="legalAssistantRaw" class="legal-assistant-raw"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="container">
         <!-- Budget Showcase -->
@@ -1668,6 +2084,9 @@
             </button>
             <button class="btn btn-secondary" onclick="openExtract()">
                 📄 Ver Extrato Completo
+            </button>
+            <button class="btn btn-ia" onclick="openLegalAssistant()">
+                🤖 Auxílio IA de Atos
             </button>
             <button class="btn btn-admin" onclick="openAdminPanel()" id="btnAdmin" style="display: none;">
                 ⚙️ Painel Administrativo
@@ -1778,6 +2197,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot, getDocs, getDoc, doc, updateDoc, addDoc, serverTimestamp, orderBy, writeBatch, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { LEGAL_CONTEXT } from './chocobot-context.js';
 
         const firebaseConfig = {
           apiKey: "AIzaSyBLmX8UGHzmnMkLy16t3SwojA6u67lyvVA",
@@ -1803,6 +2223,193 @@
                 surplus: 2192000000000
             }
         };
+
+        const AI_CONFIG = {
+            PROXY_URL: 'https://chocobot-proxy.bryandosouros.workers.dev',
+            MODEL: 'openrouter/polaris-alpha',
+            TEMPERATURE: 0.35,
+            MAX_TOKENS: 2200
+        };
+
+        const LEGAL_ASSISTANT_SYSTEM_PROMPT = `
+Você é o módulo "Atos Oficiais IA" do Governo Federal Chocotone (RPG Habbo). Aja como assessor jurídico-legislativo sênior do Poder Executivo.
+Objetivos principais:
+1. Avaliar o contexto fornecido e identificar qual instrumento normativo é mais adequado (ofício, portaria, decreto presidencial, medida provisória, lei ordinária, resolução ou outro).
+2. Justificar a escolha com base na Constituição Federal RPG, códigos correlatos e competências administrativas.
+3. Explicar a constitucionalidade, riscos e requisitos formais (inclusive necessidade de apreciação legislativa ou controle).
+4. Elaborar minuta completa do ato selecionado (título, ementa, considerandos, artigos numerados, dispositivos finais e bloco de assinaturas com os nicks Habbo indicados).
+5. Orientar próximos passos administrativos ou legislativos quando cabível.
+
+Regras obrigatórias de resposta:
+- RESPONDA EXCLUSIVAMENTE em JSON válido (sem texto fora do JSON e sem blocos de código).
+- Utilize exatamente a estrutura abaixo (sempre incluir todos os campos, mesmo vazios quando inaplicáveis):
+{
+  "recommendedInstrument": {
+    "type": "Ofício",
+    "confidence": "alta",
+    "summary": "Resumo da recomendação",
+    "alternatives": ["Portaria", "Decreto Presidencial"]
+  },
+  "constitutionalAnalysis": {
+    "status": "constitucional",
+    "explanation": "Análise detalhada",
+    "references": ["CF-RPG art. 12", "CF-RPG art. 45"],
+    "alerts": ["Risco orçamentário se não houver dotação"]
+  },
+  "budgetAssessment": {
+    "impactSummary": "Descrição do impacto",
+    "ceilingCompatibility": "dentro_do_teto",
+    "observations": ["Sugestão de fonte de custeio"]
+  },
+  "draft": {
+    "title": "TÍTULO DO ATO",
+    "ementa": "Ementa sintética",
+    "considerandos": ["Considerando 1", "Considerando 2"],
+    "articles": [
+      {"number": 1, "text": "Dispositivo com comandos detalhados"},
+      {"number": 2, "text": "Outro dispositivo necessário"}
+    ],
+    "finalDisposition": "Cláusula de vigência ou encaminhamento",
+    "signatures": [
+      {"name": "Chocotone", "role": "Presidenta da República", "habboNick": "Chocotone"}
+    ]
+  },
+  "nextSteps": ["Providência 1", "Providência 2"],
+  "htmlDocument": "<!DOCTYPE html>...HTML completo com estilos inline..."
+}
+
+Diretrizes adicionais:
+- Estruture os artigos em ordem numérica crescente, sempre começando no artigo 1.º.
+- Se o ato for inviável ou inconstitucional, defina "status" como "inviavel" e deixe o objeto "draft" com campos vazios, mas mantenha o JSON válido e proponha alternativas em "nextSteps".
+- Garanta que "htmlDocument" seja um documento HTML completo, pronto para impressão (estilos inline úteis, títulos, ementa, considerandos, artigos e assinaturas). Não inclua scripts.
+- Utilize linguagem formal, técnica e alinhada ao protocolo oficial brasileiro.
+- Utilize as assinaturas fornecidas pelo usuário; se faltar autoridade obrigatória, registre alerta em "constitutionalAnalysis.alerts".
+- Sempre considere o conteúdo legal fornecido a seguir (Constituição, códigos e demais anexos).
+`;
+
+        const GOVERNMENT_MEMBERS = [
+            {
+                id: 'Chocotone',
+                displayName: 'Chocotone',
+                habboNick: 'Chocotone',
+                role: 'Presidenta da República',
+                signatureTitle: 'Presidenta da República',
+                ministry: 'Gabinete da Presidência',
+                category: 'presidency'
+            },
+            {
+                id: 'Bryan dos Ouros',
+                displayName: 'Bryan dos Ouros',
+                habboNick: 'Bryan dos Ouros',
+                role: 'Vice-Presidente da República e Ministro-Chefe da Casa Civil',
+                signatureTitle: 'Vice-Presidente da República e Ministro-Chefe da Casa Civil',
+                ministry: 'Casa Civil',
+                category: 'presidency'
+            },
+            {
+                id: '-Furia-',
+                displayName: '-Furia-',
+                habboNick: '-Furia-',
+                role: 'Ministro da Economia e Trabalho',
+                signatureTitle: 'Ministro da Economia e Trabalho',
+                ministry: 'Economia e Trabalho',
+                category: 'minister'
+            },
+            {
+                id: 'joaobatistagc',
+                displayName: 'joaobatistagc',
+                habboNick: 'joaobatistagc',
+                role: 'Ministra da Saúde',
+                signatureTitle: 'Ministra da Saúde',
+                ministry: 'Saúde',
+                category: 'minister'
+            },
+            {
+                id: 'Stroch',
+                displayName: 'Stroch',
+                habboNick: 'Stroch',
+                role: 'Ministro da Educação, Ciência e Tecnologia',
+                signatureTitle: 'Ministro da Educação, Ciência e Tecnologia',
+                ministry: 'Educação, Ciência e Tecnologia',
+                category: 'minister'
+            },
+            {
+                id: 'Nyxalis',
+                displayName: 'Nyxalis',
+                habboNick: 'Nyxalis',
+                role: 'Ministra da Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários',
+                signatureTitle: 'Ministra da Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários',
+                ministry: 'Cidadania, Desenvolvimento Social, Direitos Humanos e Povos Originários',
+                category: 'minister'
+            },
+            {
+                id: 'MalopRRN',
+                displayName: 'MalopRRN',
+                habboNick: 'MalopRRN',
+                role: 'Ministro da Defesa',
+                signatureTitle: 'Ministro da Defesa',
+                ministry: 'Defesa',
+                category: 'minister'
+            },
+            {
+                id: 'guguinhoHop',
+                displayName: 'guguinhoHop',
+                habboNick: 'guguinhoHop',
+                role: 'Ministro da Justiça e Segurança Pública',
+                signatureTitle: 'Ministro da Justiça e Segurança Pública',
+                ministry: 'Justiça e Segurança Pública',
+                category: 'minister'
+            },
+            {
+                id: 'Dj.Bigoreia',
+                displayName: 'Dj.Bigoreia',
+                habboNick: 'Dj.Bigoreia',
+                role: 'Ministro da Infraestrutura',
+                signatureTitle: 'Ministro da Infraestrutura',
+                ministry: 'Infraestrutura',
+                category: 'minister'
+            },
+            {
+                id: 'Fabio-Blunt-UK',
+                displayName: 'Fabio-Blunt-UK',
+                habboNick: 'Fabio-Blunt-UK',
+                role: 'Ministro da Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural',
+                signatureTitle: 'Ministro da Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural',
+                ministry: 'Agricultura, Meio Ambiente, Turismo e Desenvolvimento Rural',
+                category: 'minister'
+            },
+            {
+                id: 'Brenda.M',
+                displayName: 'Brenda.M',
+                habboNick: 'Brenda.M',
+                role: 'Ministra da Cultura e Esporte',
+                signatureTitle: 'Ministra da Cultura e Esporte',
+                ministry: 'Cultura e Esporte',
+                category: 'minister'
+            },
+            {
+                id: 'Stallley',
+                displayName: 'Stallley',
+                habboNick: 'Stallley',
+                role: 'Advogado-Geral da União',
+                signatureTitle: 'Advogado-Geral da União',
+                ministry: 'Advocacia-Geral da União',
+                category: 'auxiliary'
+            }
+        ];
+
+        const GOVERNMENT_MEMBERS_MAP = new Map(GOVERNMENT_MEMBERS.map(member => [member.id, member]));
+
+        const LEGAL_ASSISTANT_INSTRUMENTS = ['Ofício', 'Portaria', 'Decreto Presidencial', 'Medida Provisória', 'Lei Ordinária', 'Resolução'];
+
+        const LEGAL_ASSISTANT_STATE = {
+            isGenerating: false,
+            lastHtml: '',
+            lastRaw: '',
+            lastResult: null
+        };
+
+        let legalAssistantInitialized = false;
 
         // Estado global
         let userData = {
@@ -1870,12 +2477,13 @@
                             document.getElementById('btnUpdateIndicators').style.display = 'block';
                         }
 
-                        // Iniciar listeners em realtime
-                        loadBudgetsRealtime();
-                        loadProposalsRealtime();
-                        loadNotificationsRealtime();
-                        updateIndicators('auto');
-                        setInterval(() => updateIndicators('auto'), CONFIG.UPDATE_INTERVAL);
+                          // Iniciar listeners em realtime
+                          loadBudgetsRealtime();
+                          loadProposalsRealtime();
+                          loadNotificationsRealtime();
+                          updateIndicators('auto');
+                          setInterval(() => updateIndicators('auto'), CONFIG.UPDATE_INTERVAL);
+                          legalAssistantInitialize();
                     } else {
                         window.location.href = 'index.html';
                     }
@@ -2038,6 +2646,867 @@
             .replace(/'/g, '&#39;')
             .replace(/\n/g, '<br>');
     }
+
+        // ==== ASSISTENTE DE ATOS OFICIAIS COM IA ====
+        function legalAssistantInitialize() {
+            if (legalAssistantInitialized) return;
+
+            const modal = document.getElementById('legalAssistantModal');
+            const form = document.getElementById('legalAssistantForm');
+            const resultContainer = document.getElementById('legalAssistantResult');
+
+            if (!modal || !form || !resultContainer) {
+                console.warn('Assistente IA: elementos do modal não encontrados.');
+                return;
+            }
+
+            legalAssistantInitialized = true;
+
+            legalAssistantPopulateSelectors();
+            legalAssistantRenderPlaceholder();
+            legalAssistantSetStatus('Informe o contexto para receber uma minuta completa com IA.', 'info');
+
+            const authorSelect = document.getElementById('legalAssistantAuthor');
+            if (authorSelect) {
+                authorSelect.addEventListener('change', (event) => {
+                    if (event.target && event.target.value) {
+                        legalAssistantEnsureSigner(event.target.value);
+                    }
+                });
+            }
+
+            form.addEventListener('submit', legalAssistantHandleSubmit);
+
+            modal.addEventListener('click', (event) => {
+                if (LEGAL_ASSISTANT_STATE.isGenerating) return;
+                if (event.target === modal) {
+                    closeLegalAssistant();
+                }
+            });
+
+            if (userData && userData.name && GOVERNMENT_MEMBERS_MAP.has(userData.name)) {
+                if (authorSelect && !authorSelect.value) {
+                    authorSelect.value = userData.name;
+                }
+                legalAssistantEnsureSigner(userData.name);
+            }
+        }
+
+        function legalAssistantPopulateSelectors() {
+            const authorSelect = document.getElementById('legalAssistantAuthor');
+            const signersContainer = document.getElementById('legalAssistantSignerList');
+            if (!authorSelect || !signersContainer) return;
+
+            const groups = [
+                { key: 'presidency', label: 'Presidência', members: [] },
+                { key: 'minister', label: 'Ministros de Estado', members: [] },
+                { key: 'auxiliary', label: 'Órgãos Essenciais', members: [] }
+            ];
+            const fallbackGroup = { key: 'other', label: 'Demais autoridades', members: [] };
+
+            GOVERNMENT_MEMBERS.forEach((member) => {
+                const target = groups.find((group) => group.key === member.category) || fallbackGroup;
+                target.members.push(member);
+            });
+
+            authorSelect.innerHTML = '<option value="">Selecione...</option>';
+
+            [...groups, fallbackGroup].forEach((group) => {
+                if (!group.members.length) return;
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = group.label;
+                group.members
+                    .slice()
+                    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'pt-BR'))
+                    .forEach((member) => {
+                        const option = document.createElement('option');
+                        option.value = member.id;
+                        option.textContent = `${member.displayName} (${member.role})`;
+                        optgroup.appendChild(option);
+                    });
+                authorSelect.appendChild(optgroup);
+            });
+
+            signersContainer.innerHTML = '';
+
+            [...groups, fallbackGroup].forEach((group) => {
+                if (!group.members.length) return;
+
+                const title = document.createElement('div');
+                title.className = 'legal-assistant-signer-group-title';
+                title.textContent = group.label;
+                signersContainer.appendChild(title);
+
+                group.members
+                    .slice()
+                    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'pt-BR'))
+                    .forEach((member) => {
+                        const label = document.createElement('label');
+                        label.className = 'legal-assistant-signer';
+                        label.dataset.memberId = member.id;
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.name = 'legalAssistantSigners';
+                        checkbox.value = member.id;
+
+                        checkbox.addEventListener('change', () => {
+                            label.classList.toggle('active', checkbox.checked);
+                        });
+
+                        const info = document.createElement('div');
+                        info.className = 'legal-assistant-signer-info';
+
+                        const nameEl = document.createElement('div');
+                        nameEl.className = 'legal-assistant-signer-name';
+                        nameEl.textContent = member.displayName;
+
+                        const roleEl = document.createElement('div');
+                        roleEl.className = 'legal-assistant-signer-role';
+                        roleEl.textContent = member.role;
+
+                        const habboEl = document.createElement('div');
+                        habboEl.className = 'legal-assistant-signer-habbo';
+                        habboEl.textContent = `Habbo: ${member.habboNick}`;
+
+                        info.appendChild(nameEl);
+                        info.appendChild(roleEl);
+                        info.appendChild(habboEl);
+
+                        label.appendChild(checkbox);
+                        label.appendChild(info);
+                        signersContainer.appendChild(label);
+                    });
+            });
+        }
+
+        function legalAssistantEnsureSigner(memberId) {
+            if (!memberId) return;
+            const checkboxes = legalAssistantGetSignerCheckboxes();
+            let hasMatch = false;
+            checkboxes.forEach((checkbox) => {
+                if (checkbox.value === memberId) {
+                    if (!checkbox.checked) {
+                        checkbox.checked = true;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                    hasMatch = true;
+                }
+            });
+            if (!hasMatch && userData && userData.name === memberId) {
+                // Autor não listado, nenhum checkbox disponível.
+            }
+        }
+
+        function legalAssistantGetSignerCheckboxes() {
+            return Array.from(document.querySelectorAll('#legalAssistantSignerList input[name="legalAssistantSigners"]'));
+        }
+
+        function legalAssistantRenderPlaceholder() {
+            const container = document.getElementById('legalAssistantResult');
+            const rawContainer = document.getElementById('legalAssistantRaw');
+            const previewWrapper = document.getElementById('legalAssistantPreviewWrapper');
+            const previewFrame = document.getElementById('legalAssistantPreview');
+
+            if (container) {
+                container.innerHTML = `
+                    <div class="legal-assistant-placeholder">
+                        <div style="font-size: 2.5rem;">🤖</div>
+                        <strong>Assistente jurídico pronto para atuar</strong>
+                        <p>Preencha os campos ao lado e clique em "Gerar minuta" para receber o ato adequado, análise de constitucionalidade e HTML pronto para publicação.</p>
+                        <p style="font-size: 0.85rem;">A IA utiliza automaticamente a Constituição Federal RPG, Código Penal, Código Civil, orçamentos e indicadores oficiais.</p>
+                    </div>
+                `;
+            }
+
+            if (rawContainer) {
+                rawContainer.style.display = 'none';
+                rawContainer.textContent = '';
+            }
+
+            if (previewWrapper && previewFrame) {
+                previewFrame.srcdoc = '';
+                previewWrapper.style.display = 'none';
+            }
+
+            LEGAL_ASSISTANT_STATE.lastHtml = '';
+            LEGAL_ASSISTANT_STATE.lastRaw = '';
+            LEGAL_ASSISTANT_STATE.lastResult = null;
+            legalAssistantUpdateDocActions(false);
+        }
+
+        function legalAssistantRenderLoadingView() {
+            const container = document.getElementById('legalAssistantResult');
+            const rawContainer = document.getElementById('legalAssistantRaw');
+
+            if (container) {
+                container.innerHTML = `
+                    <div class="legal-assistant-loading">
+                        <div class="legal-assistant-spinner"></div>
+                        <p>Consultando a inteligência jurídica do governo...</p>
+                        <p class="legal-assistant-helper">Isso pode levar alguns segundos.</p>
+                    </div>
+                `;
+            }
+
+            if (rawContainer) {
+                rawContainer.style.display = 'none';
+                rawContainer.textContent = '';
+            }
+        }
+
+        function legalAssistantSetStatus(message, variant = 'info') {
+            const statusEl = document.getElementById('legalAssistantStatus');
+            if (!statusEl) return;
+            statusEl.textContent = message || '';
+            statusEl.classList.remove('success', 'error', 'info');
+            if (message) {
+                statusEl.classList.add(variant);
+            }
+        }
+
+        function legalAssistantUpdateDocActions(hasResult) {
+            const actions = document.getElementById('legalAssistantDocActions');
+            if (!actions) return;
+            const available = Boolean(hasResult);
+            actions.classList.toggle('active', available);
+            actions.querySelectorAll('button').forEach((button) => {
+                button.disabled = !available;
+            });
+        }
+
+        function legalAssistantSetLoading(isLoading) {
+            LEGAL_ASSISTANT_STATE.isGenerating = isLoading;
+            const submitButton = document.getElementById('legalAssistantSubmit');
+            const resetButton = document.getElementById('legalAssistantResetBtn');
+            const closeButton = document.getElementById('legalAssistantCloseBtn');
+            const closeIcon = document.getElementById('legalAssistantCloseIcon');
+
+            if (submitButton) {
+                submitButton.disabled = isLoading;
+                submitButton.textContent = isLoading ? '⏳ Gerando minuta...' : '⚙️ Gerar minuta';
+            }
+            if (resetButton) {
+                resetButton.disabled = isLoading;
+            }
+            if (closeButton) {
+                closeButton.disabled = isLoading;
+            }
+            if (closeIcon) {
+                closeIcon.disabled = isLoading;
+            }
+        }
+
+        function legalAssistantCollectFormData(form) {
+            return {
+                authorId: (form.elements['legalAssistantAuthor']?.value || '').trim(),
+                recipients: (form.elements['legalAssistantRecipients']?.value || '').trim(),
+                context: (form.elements['legalAssistantContext']?.value || '').trim(),
+                goal: (form.elements['legalAssistantGoal']?.value || '').trim(),
+                impact: (form.elements['legalAssistantImpact']?.value || '').trim(),
+                preferred: (form.elements['legalAssistantPreferred']?.value || '').trim(),
+                notes: (form.elements['legalAssistantNotes']?.value || '').trim(),
+                signerIds: legalAssistantGetSignerCheckboxes()
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => checkbox.value)
+            };
+        }
+
+        async function legalAssistantHandleSubmit(event) {
+            event.preventDefault();
+            if (LEGAL_ASSISTANT_STATE.isGenerating) return;
+
+            const form = event.target;
+            const data = legalAssistantCollectFormData(form);
+
+            if (!data.context || data.context.length < 20) {
+                legalAssistantSetStatus('Descreva o contexto com pelo menos 20 caracteres.', 'error');
+                return;
+            }
+
+            let authorId = data.authorId;
+            if (!authorId && userData && userData.name && GOVERNMENT_MEMBERS_MAP.has(userData.name)) {
+                authorId = userData.name;
+                const authorSelect = document.getElementById('legalAssistantAuthor');
+                if (authorSelect) {
+                    authorSelect.value = authorId;
+                }
+            }
+
+            if (!authorId) {
+                legalAssistantSetStatus('Selecione o autor responsável pelo ato.', 'error');
+                return;
+            }
+
+            const authorMember = legalAssistantGetMember(authorId);
+            const resolvedAuthor = authorMember || {
+                id: authorId,
+                displayName: authorId,
+                habboNick: userData?.habboUsername || authorId,
+                role: userData?.role || 'Autor do ato',
+                signatureTitle: userData?.role || 'Autor do ato',
+                ministry: Array.isArray(userData?.ministries) && userData.ministries.length
+                    ? userData.ministries[0]
+                    : (typeof userData?.ministries === 'string' ? userData.ministries : '')
+            };
+
+            const signerIds = Array.from(new Set([...data.signerIds, resolvedAuthor.id].filter(Boolean)));
+            const signers = signerIds
+                .map((id) => legalAssistantGetMember(id))
+                .filter(Boolean);
+            const manualSigners = signerIds.filter((id) => !GOVERNMENT_MEMBERS_MAP.has(id));
+
+            const budgetInfo = legalAssistantGetBudgetForMinistry(resolvedAuthor.ministry);
+            const loa = legalAssistantBuildLoaContext();
+            const indicatorsSummary = legalAssistantBuildIndicatorsSummary();
+
+            legalAssistantSetStatus('Consultando a IA jurídica...', 'info');
+            legalAssistantSetLoading(true);
+            legalAssistantRenderLoadingView();
+
+            try {
+                const prompt = legalAssistantBuildPrompt({
+                    author: resolvedAuthor,
+                    signers,
+                    manualSigners,
+                    recipients: data.recipients,
+                    context: data.context,
+                    goal: data.goal,
+                    impact: data.impact,
+                    preferredInstrument: data.preferred,
+                    notes: data.notes,
+                    budgetInfo,
+                    loa,
+                    indicatorsSummary,
+                    userName: userData?.name || 'Visitante',
+                    userRole: userData?.role || 'Sem permissão'
+                });
+
+                const aiResponse = await legalAssistantCallAI(prompt);
+                LEGAL_ASSISTANT_STATE.lastRaw = aiResponse;
+
+                let parsed = null;
+                try {
+                    parsed = legalAssistantParseResponse(aiResponse);
+                } catch (parseError) {
+                    console.warn('Assistente IA: falha ao interpretar resposta JSON', parseError);
+                }
+
+                if (parsed) {
+                    LEGAL_ASSISTANT_STATE.lastResult = parsed;
+                    LEGAL_ASSISTANT_STATE.lastHtml = typeof parsed.htmlDocument === 'string' ? parsed.htmlDocument.trim() : '';
+                    legalAssistantDisplayResult(parsed, aiResponse);
+                    legalAssistantUpdateDocActions(Boolean(LEGAL_ASSISTANT_STATE.lastHtml));
+                    legalAssistantSetStatus('Minuta gerada com sucesso.', 'success');
+                } else {
+                    LEGAL_ASSISTANT_STATE.lastResult = null;
+                    LEGAL_ASSISTANT_STATE.lastHtml = '';
+                    legalAssistantDisplayFallback(aiResponse, 'Não foi possível interpretar a resposta da IA. Veja o conteúdo bruto abaixo.');
+                    legalAssistantUpdateDocActions(false);
+                    legalAssistantSetStatus('Não foi possível interpretar a resposta da IA. Veja o conteúdo bruto.', 'error');
+                }
+            } catch (error) {
+                console.error('Assistente IA: erro ao consultar IA', error);
+                LEGAL_ASSISTANT_STATE.lastResult = null;
+                LEGAL_ASSISTANT_STATE.lastHtml = '';
+                legalAssistantDisplayFallback('', error.message || 'Erro ao consultar a IA.');
+                legalAssistantUpdateDocActions(false);
+                legalAssistantSetStatus('Falha ao consultar a IA. Tente novamente em instantes.', 'error');
+            } finally {
+                legalAssistantSetLoading(false);
+            }
+        }
+
+        function legalAssistantGetMember(memberId) {
+            if (!memberId) return null;
+            return GOVERNMENT_MEMBERS_MAP.get(memberId) || null;
+        }
+
+        function legalAssistantBuildPrompt(data) {
+            const lines = [];
+
+            lines.push('## Identificação do solicitante');
+            lines.push(`- Usuário logado: ${data.userName} (${data.userRole})`);
+            if (data.author) {
+                const ministryLabel = data.author.ministry ? ` - ${data.author.ministry}` : '';
+                lines.push(`- Autor responsável: ${data.author.displayName} (${data.author.signatureTitle || data.author.role}${ministryLabel}) | Habbo: ${data.author.habboNick}`);
+            }
+            lines.push(`- Destinatários principais: ${data.recipients || 'não informado'}`);
+
+            lines.push('');
+            lines.push('## Contexto detalhado');
+            lines.push(data.context);
+
+            lines.push('');
+            lines.push('## Objetivo / resultado esperado');
+            lines.push(data.goal || 'Não informado');
+
+            lines.push('');
+            lines.push('## Impacto orçamentário estimado');
+            lines.push(data.impact || 'Não informado');
+
+            lines.push('');
+            lines.push('## Preferência declarada de instrumento');
+            lines.push(data.preferredInstrument || 'Sem preferência (IA decide)');
+
+            lines.push('');
+            lines.push('## Observações adicionais');
+            lines.push(data.notes || 'Sem observações adicionais.');
+
+            lines.push('');
+            lines.push('## Assinaturas previstas');
+            if (Array.isArray(data.signers) && data.signers.length) {
+                data.signers.forEach((signer, index) => {
+                    lines.push(`${index + 1}. ${signer.displayName} - ${signer.signatureTitle || signer.role} | Habbo: ${signer.habboNick}`);
+                });
+            } else {
+                lines.push('Nenhuma assinatura adicional além do autor informado.');
+            }
+
+            if (Array.isArray(data.manualSigners) && data.manualSigners.length) {
+                lines.push('');
+                lines.push('## Assinaturas manuais (não localizadas no cadastro oficial)');
+                data.manualSigners.forEach((name) => {
+                    lines.push(`- ${name}`);
+                });
+            }
+
+            lines.push('');
+            lines.push('## Cenário orçamentário do ministério do autor');
+            if (data.budgetInfo) {
+                const percent = data.budgetInfo.totalBudget > 0
+                    ? ((data.budgetInfo.spent / data.budgetInfo.totalBudget) * 100).toFixed(2)
+                    : '0.00';
+                lines.push(`- Ministério: ${data.budgetInfo.ministry}`);
+                lines.push(`- Dotação total: ${formatCurrency(data.budgetInfo.totalBudget)}`);
+                lines.push(`- Gasto executado: ${formatCurrency(data.budgetInfo.spent)}`);
+                lines.push(`- Saldo disponível: ${formatCurrency(data.budgetInfo.available)}`);
+                lines.push(`- Percentual executado: ${percent}%`);
+            } else {
+                lines.push('- Informação orçamentária não encontrada para o ministério do autor.');
+            }
+
+            lines.push('');
+            lines.push('## Resumo fiscal (LOA e teto de gastos)');
+            if (data.loa) {
+                lines.push(`- Despesa executada total estimada: ${formatCurrency(data.loa.spent)}`);
+                lines.push(`- Saldo estimado dentro do teto: ${formatCurrency(data.loa.remainingCeiling)}`);
+                lines.push(`- Percentual estimado do teto utilizado: ${data.loa.ceilingPercent.toFixed(2)}%`);
+            } else {
+                lines.push('- Dados agregados indisponíveis.');
+            }
+            lines.push(`- Receita total LOA 2025: ${formatCurrency(CONFIG.LOA_DATA.totalRevenue)}`);
+            lines.push(`- Despesa total planejada: ${formatCurrency(CONFIG.LOA_DATA.totalExpense)}`);
+            lines.push(`- Superávit projetado: ${formatCurrency(CONFIG.LOA_DATA.surplus)}`);
+
+            lines.push('');
+            lines.push('## Indicadores econômicos recentes');
+            lines.push(data.indicatorsSummary || 'Indicadores indisponíveis no momento.');
+
+            lines.push('');
+            lines.push('## Instruções do usuário');
+            lines.push('- Validar competências constitucionais, hierarquia normativa e rito adequado.');
+            lines.push('- Apontar riscos jurídicos, orçamentários ou procedimentais.');
+            lines.push('- Estruturar a minuta solicitada em formato oficial brasileiro.');
+
+            return lines.join('\n');
+        }
+
+        function legalAssistantGetBudgetForMinistry(ministryName) {
+            if (!ministryName || !Array.isArray(budgetData)) return null;
+            const normalized = ministryName.toLowerCase();
+            return budgetData.find((item) => (item.ministry || '').toLowerCase() === normalized) || null;
+        }
+
+        function legalAssistantBuildLoaContext() {
+            if (!Array.isArray(budgetData) || !budgetData.length) {
+                return {
+                    spent: 0,
+                    totalBudget: 0,
+                    remainingCeiling: CONFIG.SPENDING_CEILING,
+                    ceilingPercent: 0
+                };
+            }
+            const totalSpent = budgetData.reduce((sum, entry) => sum + Number(entry.spent || 0), 0);
+            const totalBudget = budgetData.reduce((sum, entry) => sum + Number(entry.totalBudget || 0), 0);
+            const remainingCeiling = CONFIG.SPENDING_CEILING - totalSpent;
+            const ceilingPercent = CONFIG.SPENDING_CEILING > 0 ? (totalSpent / CONFIG.SPENDING_CEILING) * 100 : 0;
+            return {
+                spent: totalSpent,
+                totalBudget,
+                remainingCeiling,
+                ceilingPercent
+            };
+        }
+
+        function legalAssistantBuildIndicatorsSummary() {
+            if (!indicatorsData || !indicatorsData.indicators) {
+                return 'Indicadores indisponíveis no momento.';
+            }
+
+            const entries = Object.entries(indicatorsData.indicators)
+                .filter(([, value]) => value && value.label)
+                .slice(0, 8);
+
+            if (!entries.length) {
+                return 'Indicadores indisponíveis no momento.';
+            }
+
+            return entries.map(([, value]) => {
+                const formattedValue = typeof value.formatted === 'string'
+                    ? value.formatted
+                    : typeof value.value === 'number'
+                        ? value.value.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
+                        : String(value.value ?? '');
+                const change = typeof value.changePercent === 'number'
+                    ? `${value.changePercent >= 0 ? '+' : ''}${value.changePercent.toFixed(2)}%`
+                    : 'variação não informada';
+                return `- ${value.label}: ${formattedValue} | Variação: ${change}`;
+            }).join('\n');
+        }
+
+        async function legalAssistantCallAI(userPrompt) {
+            const response = await fetch(AI_CONFIG.PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: AI_CONFIG.MODEL,
+                    messages: [
+                        { role: 'system', content: LEGAL_ASSISTANT_SYSTEM_PROMPT },
+                        { role: 'system', content: LEGAL_CONTEXT },
+                        { role: 'user', content: userPrompt }
+                    ],
+                    temperature: AI_CONFIG.TEMPERATURE,
+                    max_tokens: AI_CONFIG.MAX_TOKENS
+                })
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API retornou ${response.status}: ${errorBody}`);
+            }
+
+            const data = await response.json();
+            const content = data?.choices?.[0]?.message?.content;
+            if (!content) {
+                throw new Error('Resposta da IA vazia.');
+            }
+            return content;
+        }
+
+        function legalAssistantParseResponse(text) {
+            if (!text) throw new Error('Resposta vazia.');
+            let trimmed = text.trim();
+            if (trimmed.startsWith('```')) {
+                trimmed = trimmed.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+            }
+            return JSON.parse(trimmed);
+        }
+
+        function legalAssistantDisplayResult(result, rawText) {
+            const container = document.getElementById('legalAssistantResult');
+            const rawContainer = document.getElementById('legalAssistantRaw');
+            const previewWrapper = document.getElementById('legalAssistantPreviewWrapper');
+            const previewFrame = document.getElementById('legalAssistantPreview');
+
+            if (!container) return;
+
+            const recommended = result?.recommendedInstrument || {};
+            const constitutional = result?.constitutionalAnalysis || {};
+            const budget = result?.budgetAssessment || {};
+            const draft = result?.draft || {};
+            const nextSteps = Array.isArray(result?.nextSteps) ? result.nextSteps : [];
+            const htmlDocument = typeof result?.htmlDocument === 'string' ? result.htmlDocument.trim() : '';
+
+            const alternatives = Array.isArray(recommended.alternatives) ? recommended.alternatives : [];
+
+            const statusClass = (constitutional.status || '').toLowerCase();
+            let statusBadge = '';
+            if (constitutional.status) {
+                const label = constitutional.status.replace(/_/g, ' ').toUpperCase();
+                const badgeColor = statusBadgeColor(statusClass);
+                statusBadge = `<span class="legal-assistant-chip" style="background:${badgeColor.background};color:${badgeColor.color};">${sanitizeHtml(label)}</span>`;
+            }
+
+            const summaryHtml = `
+                <div class="legal-assistant-section">
+                    <h5>Resumo da Recomendação</h5>
+                    <p>${sanitizeHtml(recommended.summary || 'Sem resumo fornecido.')}</p>
+                    <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                        <span class="legal-assistant-chip">Instrumento recomendado: <strong>${sanitizeHtml(recommended.type || 'Não definido')}</strong></span>
+                        ${recommended.confidence ? `<span class="legal-assistant-chip">Confiança: ${sanitizeHtml(recommended.confidence)}</span>` : ''}
+                        ${alternatives.length ? `<span class="legal-assistant-chip">Alternativas: ${sanitizeHtml(alternatives.join(', '))}</span>` : ''}
+                    </div>
+                </div>
+            `;
+
+            const constitutionalHtml = `
+                <div class="legal-assistant-section">
+                    <h5>Análise Constitucional</h5>
+                    ${statusBadge || ''}
+                    <p style="margin-top: 0.75rem;">${sanitizeHtml(constitutional.explanation || 'Sem análise detalhada informada.')}</p>
+                    ${renderAssistantListSection('Referências', constitutional.references)}
+                    ${renderAssistantListSection('Alertas', constitutional.alerts)}
+                </div>
+            `;
+
+            const budgetHtml = `
+                <div class="legal-assistant-section">
+                    <h5>Avaliação Orçamentária</h5>
+                    <p>${sanitizeHtml(budget.impactSummary || 'Sem avaliação informada.')}</p>
+                    <div class="legal-assistant-list" style="margin-top: 0.75rem;">
+                        <div><strong>Compatibilidade com o teto:</strong> ${sanitizeHtml(budget.ceilingCompatibility || 'não informado')}</div>
+                    </div>
+                    ${renderAssistantListSection('Observações', budget.observations)}
+                </div>
+            `;
+
+            const draftHtml = renderAssistantDraftSection(draft);
+            const nextStepsHtml = renderAssistantListSection('Próximos passos sugeridos', nextSteps);
+
+            container.innerHTML = [summaryHtml, constitutionalHtml, budgetHtml, draftHtml, nextStepsHtml].join('');
+
+            if (htmlDocument && previewWrapper && previewFrame) {
+                previewFrame.srcdoc = htmlDocument;
+                previewWrapper.style.display = 'block';
+            } else if (previewWrapper && previewFrame) {
+                previewFrame.srcdoc = '';
+                previewWrapper.style.display = 'none';
+            }
+
+            if (rawContainer) {
+                rawContainer.style.display = 'none';
+                rawContainer.textContent = '';
+            }
+        }
+
+        function statusBadgeColor(status) {
+            switch (status) {
+                case 'constitucional':
+                case 'sem_risco':
+                    return { background: 'rgba(76, 175, 80, 0.2)', color: '#2e7d32' };
+                case 'condicionado':
+                case 'risco':
+                case 'atenção':
+                    return { background: 'rgba(255, 152, 0, 0.2)', color: '#ef6c00' };
+                case 'inviavel':
+                case 'inconstitucional':
+                    return { background: 'rgba(244, 67, 54, 0.2)', color: '#c62828' };
+                default:
+                    return { background: 'rgba(102, 126, 234, 0.15)', color: '#1a237e' };
+            }
+        }
+
+        function renderAssistantListSection(title, items) {
+            if (!items || (Array.isArray(items) && !items.length)) {
+                return '';
+            }
+            const values = Array.isArray(items) ? items : [items];
+            const listItems = values
+                .filter((item) => item !== null && item !== undefined && String(item).trim() !== '')
+                .map((item) => `<li>${sanitizeHtml(String(item))}</li>`);
+            if (!listItems.length) return '';
+            return `
+                <div style="margin-top: 0.75rem;">
+                    <strong>${sanitizeHtml(title)}:</strong>
+                    <ul class="legal-assistant-list">
+                        ${listItems.join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderAssistantDraftSection(draft) {
+            if (!draft || (!draft.title && !draft.ementa && (!Array.isArray(draft.articles) || !draft.articles.length))) {
+                return `
+                    <div class="legal-assistant-section">
+                        <h5>Minuta do Ato</h5>
+                        <p>Sem minuta gerada.</p>
+                    </div>
+                `;
+            }
+
+            const considerandos = renderAssistantListSection('Considerandos', draft.considerandos);
+            const articles = renderAssistantArticles(draft.articles);
+            const signatures = renderAssistantSignatures(draft.signatures);
+
+            return `
+                <div class="legal-assistant-section">
+                    <h5>Minuta do Ato</h5>
+                    ${draft.title ? `<p><strong>Título:</strong> ${sanitizeHtml(draft.title)}</p>` : ''}
+                    ${draft.ementa ? `<p><strong>Ementa:</strong> ${sanitizeHtml(draft.ementa)}</p>` : ''}
+                    ${considerandos}
+                    ${articles}
+                    ${draft.finalDisposition ? `<p><strong>Disposição final:</strong> ${sanitizeHtml(draft.finalDisposition)}</p>` : ''}
+                    ${signatures}
+                </div>
+            `;
+        }
+
+        function renderAssistantArticles(articles) {
+            if (!Array.isArray(articles) || !articles.length) return '';
+            const items = articles.map((article) => {
+                const number = article?.number !== undefined ? article.number : '?';
+                const text = article?.text || '';
+                return `<li><strong>Art. ${sanitizeHtml(String(number))}º -</strong> ${sanitizeHtml(text)}</li>`;
+            });
+            return `
+                <div style="margin-top: 0.75rem;">
+                    <strong>Artigos:</strong>
+                    <ol class="legal-assistant-list">
+                        ${items.join('')}
+                    </ol>
+                </div>
+            `;
+        }
+
+        function renderAssistantSignatures(signatures) {
+            if (!Array.isArray(signatures) || !signatures.length) return '';
+            const items = signatures.map((signature) => {
+                const name = signature?.name || signature?.displayName || '';
+                const role = signature?.role || signature?.signatureTitle || '';
+                const nick = signature?.habboNick || '';
+                return `<li><strong>${sanitizeHtml(name)}</strong> - ${sanitizeHtml(role)} (Habbo: ${sanitizeHtml(nick)})</li>`;
+            });
+            return `
+                <div style="margin-top: 0.75rem;">
+                    <strong>Assinaturas:</strong>
+                    <ul class="legal-assistant-list">
+                        ${items.join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function legalAssistantDisplayFallback(rawText, errorMessage) {
+            const container = document.getElementById('legalAssistantResult');
+            const rawContainer = document.getElementById('legalAssistantRaw');
+            const previewWrapper = document.getElementById('legalAssistantPreviewWrapper');
+            const previewFrame = document.getElementById('legalAssistantPreview');
+
+            if (container) {
+                container.innerHTML = `
+                    <div class="legal-assistant-error">
+                        ${sanitizeHtml(errorMessage || 'Não foi possível interpretar a resposta da IA.')}
+                    </div>
+                `;
+            }
+
+            if (rawContainer) {
+                if (rawText) {
+                    rawContainer.style.display = 'block';
+                    rawContainer.textContent = rawText;
+                } else {
+                    rawContainer.style.display = 'none';
+                    rawContainer.textContent = '';
+                }
+            }
+
+            if (previewWrapper && previewFrame) {
+                previewFrame.srcdoc = '';
+                previewWrapper.style.display = 'none';
+            }
+        }
+
+        function resetLegalAssistantForm() {
+            if (LEGAL_ASSISTANT_STATE.isGenerating) return;
+            const form = document.getElementById('legalAssistantForm');
+            if (form) {
+                form.reset();
+            }
+            legalAssistantGetSignerCheckboxes().forEach((checkbox) => {
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change'));
+            });
+            if (userData && userData.name && GOVERNMENT_MEMBERS_MAP.has(userData.name)) {
+                const authorSelect = document.getElementById('legalAssistantAuthor');
+                if (authorSelect) {
+                    authorSelect.value = userData.name;
+                }
+                legalAssistantEnsureSigner(userData.name);
+            } else {
+                const authorSelect = document.getElementById('legalAssistantAuthor');
+                if (authorSelect) {
+                    authorSelect.value = '';
+                }
+            }
+            legalAssistantRenderPlaceholder();
+            legalAssistantSetStatus('Formulário limpo. Preencha os dados para gerar uma nova minuta.', 'info');
+        }
+
+        function openLegalAssistant() {
+            const modal = document.getElementById('legalAssistantModal');
+            if (!modal) return;
+
+            if (!legalAssistantInitialized) {
+                legalAssistantInitialize();
+            }
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+
+            const contextField = document.getElementById('legalAssistantContext');
+            if (contextField) {
+                setTimeout(() => contextField.focus(), 150);
+            }
+        }
+
+        function closeLegalAssistant() {
+            if (LEGAL_ASSISTANT_STATE.isGenerating) return;
+            const modal = document.getElementById('legalAssistantModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function downloadLegalAssistantDocument() {
+            if (!LEGAL_ASSISTANT_STATE.lastHtml) {
+                legalAssistantSetStatus('Gere uma minuta antes de baixar o HTML.', 'error');
+                return;
+            }
+            try {
+                const blob = new Blob([LEGAL_ASSISTANT_STATE.lastHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `minuta-oficial-${Date.now()}.html`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                legalAssistantSetStatus('Arquivo HTML baixado com sucesso.', 'success');
+            } catch (error) {
+                console.error('Assistente IA: erro ao baixar HTML', error);
+                legalAssistantSetStatus('Não foi possível baixar o HTML.', 'error');
+            }
+        }
+
+        function openLegalAssistantDocument() {
+            if (!LEGAL_ASSISTANT_STATE.lastHtml) {
+                legalAssistantSetStatus('Gere uma minuta antes de abrir o HTML.', 'error');
+                return;
+            }
+            const blob = new Blob([LEGAL_ASSISTANT_STATE.lastHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank', 'noopener');
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }
+
+        async function copyLegalAssistantHtml() {
+            if (!LEGAL_ASSISTANT_STATE.lastHtml) {
+                legalAssistantSetStatus('Gere uma minuta antes de copiar o HTML.', 'error');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(LEGAL_ASSISTANT_STATE.lastHtml);
+                legalAssistantSetStatus('HTML copiado para a área de transferência.', 'success');
+            } catch (error) {
+                console.error('Assistente IA: erro ao copiar HTML', error);
+                legalAssistantSetStatus('Não foi possível copiar o HTML. Verifique as permissões do navegador.', 'error');
+            }
+        }
 
     function loadProposalsRealtime() {
             const q = query(
@@ -2922,11 +4391,17 @@
             window.location.reload();
         }
 
-        // Expor funções para uso global (chamadas via onclick)
-        window.openSubmitProposal = openSubmitProposal;
-        window.openExtract = openExtract;
-        window.openAdminPanel = openAdminPanel;
-        window.logout = logout;
+          // Expor funções para uso global (chamadas via onclick)
+          window.openSubmitProposal = openSubmitProposal;
+          window.openExtract = openExtract;
+          window.openAdminPanel = openAdminPanel;
+          window.logout = logout;
+          window.openLegalAssistant = openLegalAssistant;
+          window.closeLegalAssistant = closeLegalAssistant;
+          window.resetLegalAssistantForm = resetLegalAssistantForm;
+          window.downloadLegalAssistantDocument = downloadLegalAssistantDocument;
+          window.openLegalAssistantDocument = openLegalAssistantDocument;
+          window.copyLegalAssistantHtml = copyLegalAssistantHtml;
 
         // ==== SISTEMA DE NOTIFICAÇÕES ====
         function toggleNotifications() {
